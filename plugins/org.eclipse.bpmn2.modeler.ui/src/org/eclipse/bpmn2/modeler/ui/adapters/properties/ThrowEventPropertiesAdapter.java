@@ -48,7 +48,7 @@ public class ThrowEventPropertiesAdapter extends EventPropertiesAdapter<ThrowEve
 			public EObject createFeature(Resource resource, EClass eclass) {
 				InputSet inputSet = object.getInputSet();
 				if (inputSet==null) {
-					inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+					inputSet = Bpmn2ModelerFactory.create(resource, InputSet.class);
 					object.setInputSet(inputSet);
 				}
 				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, object.getDataInputs());

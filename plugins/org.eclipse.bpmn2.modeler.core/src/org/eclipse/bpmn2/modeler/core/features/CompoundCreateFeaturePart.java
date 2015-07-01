@@ -359,7 +359,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 	
 	private void applyBusinessObjectProperties(BaseElement be) {
 		if (be!=null && properties!=null) {
-			ModelDescriptor md = TargetRuntime.getCurrentRuntime().getModelDescriptor();
+			ModelDescriptor md = TargetRuntime.getRuntime(be).getModelDescriptor();
 			for (Entry<String, String> entry : properties.entrySet()) {
 				if (entry.getKey().startsWith("$")) { //$NON-NLS-1$
 					String featureName = entry.getKey().substring(1);

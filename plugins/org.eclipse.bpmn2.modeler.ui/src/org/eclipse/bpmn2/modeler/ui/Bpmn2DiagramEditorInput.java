@@ -77,17 +77,7 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 	 *         Target Runtime owns the targetNamespace.
 	 */
 	public TargetRuntime getRuntime() {
-		TargetRuntime targetRuntime = null;
-		if (targetNamespace!=null && initialDiagramType!=null) {
-			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				String tns = rt.getRuntimeExtension().getTargetNamespace(initialDiagramType);
-				if (targetNamespace.equals(tns)) {
-					targetRuntime = rt;
-					break;
-				}
-			}
-		}
-		return targetRuntime;
+		return TargetRuntime.getRuntime(targetNamespace, initialDiagramType);
 	}
 	
 	public void updateUri(URI diagramFileUri) {

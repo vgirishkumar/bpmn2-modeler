@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.bpmn2.provider.Bpmn2ItemProviderAdapterFactory;
@@ -210,16 +211,17 @@ public class AdvancedDetailComposite extends AbstractDetailComposite {
 			detailsSection.setVisible(false);
 		}
 		else {
+			TargetRuntime rt = TargetRuntime.getRuntime(obj);
 			// construct a details composite based on the selected object's class
 			if (fullDetails.getSelection()) {
 				detailsDetailComposite = new DefaultDetailComposite(detailsComposite,SWT.NONE);
 			}
 			else {
-				detailsDetailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(obj.getClass(), detailsComposite, SWT.NONE);
+				detailsDetailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(obj.getClass(), detailsComposite, rt, SWT.NONE);
 			}
 			detailsDetailComposite.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,3,1));
 
-			Class cc = PropertiesCompositeFactory.findDetailCompositeClass(obj.getClass());
+			Class cc = PropertiesCompositeFactory.findDetailCompositeClass(obj.getClass(), rt);
 			if (cc==null||cc==DefaultDetailComposite.class)
 				fullDetails.setVisible(false);
 			else

@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
@@ -127,51 +128,57 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 
     	ObjectPropertyProvider adapter = ObjectPropertyProvider.getAdapter(this);
 		try {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-	    	if (rt!=null) {
-	    		Resource resource = null;
-	    		String customElementId = null;
-	    		if (adapter!=null) {
-	    			resource = adapter.getResource();
-	    			adapter.setResource(null);
-	    			customElementId = (String)adapter.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
-	    			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, null);
-	    		}
-	    		
-				String className = eClass.getName();
-	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
-	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
-	    			rt.getModelDescriptor().getEPackage() != null &&
-	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
-					EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
-	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
-				}
-	    		
-	    		// first look for Model Extension Descriptors for this specific object type
-	    		if (customElementId!=null) {
-	    			CustomTaskDescriptor ctd = rt.getCustomTask(customElementId);
-	    			if (ctd!=null)
-	    				ctd.populateObject(object, resource, enableModelExtensions);
-	    		}
-	    		else {
-		    		List<ModelExtensionDescriptor> list = rt.getModelExtensionDescriptors();
-			    	for (ModelExtensionDescriptor med : list) {
-			    		if (className.equals(med.getType())) {
-			    			med.populateObject(object, resource, enableModelExtensions);
-			    		}
-			    	}
-			    	// then check if there are any MEDs for any supertypes of this object type
-			    	for (ModelExtensionDescriptor med : list) {
-			    		for (EClass st : eClass.getEAllSuperTypes()) {
-				    		if (st.getName().equals(med.getType())) {
-				    			med.populateObject(object, resource, enableModelExtensions);
-				    		}
-			    		}
-			    	}
-	    		}
-	    		
-	    		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
-	    	}
+			Resource resource = null;
+    		String customElementId = null;
+    		if (adapter!=null) {
+    			resource = adapter.getResource();
+//    			adapter.setResource(null);
+    			customElementId = (String)adapter.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+    			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, null);
+
+    			TargetRuntime rt = null;
+    			if (resource != null) {
+    				rt = TargetRuntime.getRuntime(resource);
+    			}
+
+    	    	if (rt!=null) {
+    	    		TargetRuntimeAdapter.adapt(object, rt);
+
+    				String className = eClass.getName();
+    	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
+    	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
+    	    			rt.getModelDescriptor().getEPackage() != null &&
+    	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
+    					EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
+    	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
+    				}
+    	    		
+    	    		// first look for Model Extension Descriptors for this specific object type
+    	    		if (customElementId!=null) {
+    	    			CustomTaskDescriptor ctd = rt.getCustomTask(customElementId);
+    	    			if (ctd!=null)
+    	    				ctd.populateObject(object, resource, enableModelExtensions);
+    	    		}
+    	    		else {
+    		    		List<ModelExtensionDescriptor> list = rt.getModelExtensionDescriptors();
+    			    	for (ModelExtensionDescriptor med : list) {
+    			    		if (className.equals(med.getType())) {
+    			    			med.populateObject(object, resource, enableModelExtensions);
+    			    		}
+    			    	}
+    			    	// then check if there are any MEDs for any supertypes of this object type
+    			    	for (ModelExtensionDescriptor med : list) {
+    			    		for (EClass st : eClass.getEAllSuperTypes()) {
+    				    		if (st.getName().equals(med.getType())) {
+    				    			med.populateObject(object, resource, enableModelExtensions);
+    				    		}
+    			    		}
+    			    	}
+    	    		}
+    	    		
+    	    		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object, rt));
+    	    	}
+    		}
 		}
 		finally {
 			if (adapter!=null) {
@@ -190,9 +197,6 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     	return enableModelExtensions;
     }
 	
-	public static <T extends EObject> T create(Class<T> clazz) {
-		return create(null, clazz);
-	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
@@ -213,7 +217,9 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	
 	public static EObject create(Resource resource, EClass eClass) {
 		Assert.isTrue(eClass!=null);
-		
+
+		ObjectPropertyProvider.adapt(eClass.getEPackage().getEFactoryInstance(), resource);
+
 		EObject newObject = null;
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
 		if (adapter!=null) {
@@ -229,8 +235,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 			}
 		}
 		if (newObject!=null) {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
+			TargetRuntime rt = TargetRuntime.getRuntime(newObject);
+			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject, rt));
 		}
 		return newObject;
 	}
@@ -300,8 +306,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 			}
 		}
 		if (newObject!=null) {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
+	    	TargetRuntime rt = TargetRuntime.getRuntime(resource);
+			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject, rt));
 		}
 		return newObject;
 	}

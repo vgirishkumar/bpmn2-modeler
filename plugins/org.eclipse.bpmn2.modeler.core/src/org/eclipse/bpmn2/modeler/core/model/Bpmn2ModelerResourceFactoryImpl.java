@@ -63,8 +63,8 @@ public class Bpmn2ModelerResourceFactoryImpl extends ResourceFactoryImpl {
 
     public Definitions createAndInitResource(URI uri) {
         Resource resource = createResource(uri);
-        Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
-        DocumentRoot docummentRoot = Bpmn2ModelerFactory.create(DocumentRoot.class);
+        Definitions definitions = Bpmn2ModelerFactory.create(resource, Definitions.class);
+        DocumentRoot docummentRoot = Bpmn2ModelerFactory.create(resource, DocumentRoot.class);
         docummentRoot.setDefinitions(definitions);
         resource.getContents().add(docummentRoot);
 

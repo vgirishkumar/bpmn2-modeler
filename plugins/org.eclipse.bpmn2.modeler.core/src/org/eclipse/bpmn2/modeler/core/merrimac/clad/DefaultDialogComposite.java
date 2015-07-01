@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.PropertyTabDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -58,11 +59,13 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 	protected void init() {
 		Composite parent = getParent();
 		setLayout(new FormLayout());
+
+		TargetRuntime rt = TargetRuntime.getRuntime(businessObject);
 		
 		if (compositeFactory!=null) {
 			// client provided us with a IPropertiesCompositeFactory:
 			// use it to create the Property Sheet composite
-			control = compositeFactory.createDetailComposite(eclass.getInstanceClass(), this, SWT.NONE);
+			control = compositeFactory.createDetailComposite(eclass.getInstanceClass(), this, rt, SWT.NONE);
 		}
 		else {
 			// Get a list of Property Sheet tabs using the current selection from the active WorkbenchPart
@@ -130,7 +133,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		if (control==null) {
 			// Unable to get the current selection from the WorkbenchPart?
 			// Look up the Property Sheet composite in the global registry.
-			control = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eclass.getInstanceClass(), this, SWT.NONE);
+			control = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eclass.getInstanceClass(), this, rt, SWT.NONE);
 		}
 		
 		FormData data = new FormData();

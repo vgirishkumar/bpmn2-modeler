@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.IStatus;
@@ -230,13 +231,14 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 	@Override
 	public void historyNotification(OperationHistoryEvent event) {
 		super.historyNotification(event);
-		
+
+		TargetRuntime rt = TargetRuntime.getRuntime(diagramBehavior.getDiagramContainer());
 		switch (event.getEventType()) {
 		case OperationHistoryEvent.REDONE:
-			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation(), rt));
 			break;
 		case OperationHistoryEvent.UNDONE:
-			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation(), rt));
 			break;
 		}
 	}

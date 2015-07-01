@@ -56,7 +56,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
-				Operation operation = Bpmn2ModelerFactory.create(Operation.class);
+				Operation operation = Bpmn2ModelerFactory.create(resource, Operation.class);
 				ModelUtil.setID(operation, resource);
 				operation.setName( ModelUtil.toCanonicalString(operation.getId()) );
 //				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);

@@ -49,6 +49,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataOutputPropertiesAdapter;
@@ -227,8 +228,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			});
 			
 			if (loopCharacteristics != null) {
+				TargetRuntime rt = TargetRuntime.getRuntime(object);
 				loopCharacteristicsComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-						loopCharacteristics.eClass().getInstanceClass(), composite, SWT.NONE);
+						loopCharacteristics.eClass().getInstanceClass(), composite, rt, SWT.NONE);
 				loopCharacteristicsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 				loopCharacteristicsComposite.setBusinessObject(loopCharacteristics);
 				loopCharacteristicsComposite.setTitle(loopCharacteristics instanceof StandardLoopCharacteristics ?

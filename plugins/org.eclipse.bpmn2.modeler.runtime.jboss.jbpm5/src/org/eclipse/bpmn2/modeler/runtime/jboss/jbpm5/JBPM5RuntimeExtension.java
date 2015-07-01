@@ -134,29 +134,31 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	
 	@Override
 	public void notify(LifecycleEvent event) {
+        TargetRuntime targetRuntime = event.targetRuntime;
+
 		if (event.eventType == EventType.EDITOR_INITIALIZED) {
 			// Register all of our Property Tab Detail overrides here. 
-	        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
-	        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
-	        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
-	        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
-	        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
-	        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
-	        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
-	        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
-	        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
-	        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
-	        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
-	        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
-	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
-			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
-			PropertiesCompositeFactory.register(Operation.class, JbpmOperationDetailComposite.class);
-			PropertiesCompositeFactory.register(Expression.class, JbpmExpressionDetailComposite.class);
+			PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class, targetRuntime);
+	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Operation.class, JbpmOperationDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Expression.class, JbpmExpressionDetailComposite.class, targetRuntime);
 
 			// TODO: if file was opened from a Guvnor Repository view (or git in jBPM 6)
 			// we may want to explicitly make the editor read-only
@@ -183,18 +185,18 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 					}
 					if (!workItemDefinitions.isEmpty()) {
 						List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
-						for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors()) {
+						for (CustomTaskDescriptor d : targetRuntime.getCustomTaskDescriptors()) {
 							if (!d.isPermanent())
 								removed.add(d);
 						}
-						TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors().removeAll(removed);
+						targetRuntime.getCustomTaskDescriptors().removeAll(removed);
 					
 						java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 						while(widIterator.hasNext()) {
 							final WorkItemDefinition wid = widIterator.next();
 							final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
 							if (ctd != null) {
-								if (TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId())) {
+								if (targetRuntime.customTaskExists(ctd.getId())) {
 									Display.getDefault().asyncExec( new Runnable() {
 										@Override
 										public void run() {
@@ -209,7 +211,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 									});
 								}
 								else
-									TargetRuntime.getCurrentRuntime().addCustomTask(ctd);
+									targetRuntime.addCustomTask(ctd);
 							}
 						}
 					}

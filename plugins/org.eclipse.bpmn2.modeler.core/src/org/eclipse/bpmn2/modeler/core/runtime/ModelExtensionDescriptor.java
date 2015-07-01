@@ -453,6 +453,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			else {
 				modelDecorator = new ModelDecorator(pkg);
 			}
+			modelDecorator.setTargetRuntime(targetRuntime);
 		}
 		return modelDecorator;
 	}
@@ -652,6 +653,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
                 if (reftype == null || !(reftype instanceof EClass)) {
                     reftype = ref.getEReferenceType();
                 }
+
+                // if the factory of the parent object differs from child, create a new adapter on the factory and copy the resource 
+                if (!object.eClass().getEPackage().equals(reftype.getEPackage())) {
+                	ObjectPropertyProvider adapter = ObjectPropertyProvider.getAdapter(object.eClass().getEPackage().getEFactoryInstance());
+                	ObjectPropertyProvider.adapt(reftype.getEPackage().getEFactoryInstance(), adapter.getResource());
+                }
+
                 childObject = basicCreateObject((EClass) reftype);
                 if (property.label!=null) {
                 	ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(childObject);

@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.core.model;
 
-import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -23,7 +22,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 
 /**
@@ -59,16 +57,18 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 			else
 				object = create(eClass, (Class<EObject>)eClass.getInstanceClass());
 		}
+		TargetRuntime rt = modelDecorator.getTargetRuntime();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object, rt));
 		return object;
 	}
-	
+
 	public EObject create(EClass eClass, Class<EObject> instanceClass) {
 		try {
 			EObject object = instanceClass.newInstance();
+			TargetRuntime rt = modelDecorator.getTargetRuntime();
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-			LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object, rt));
 			return object;
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -77,6 +77,7 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 		}
 		return null;
 	}
+	
 	protected EObject basicCreate(EClass eClass) {
 		return eClass.getInstanceClassName() == "java.util.Map$Entry" ? //$NON-NLS-1$
 				new DynamicEObjectImpl.BasicEMapEntry<String, String>(eClass) :

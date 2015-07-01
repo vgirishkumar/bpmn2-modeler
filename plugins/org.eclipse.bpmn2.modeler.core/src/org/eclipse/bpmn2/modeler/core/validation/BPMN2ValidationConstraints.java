@@ -215,7 +215,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	 * @return
 	 */
 	private boolean deferValidationToTargetRuntime(IValidationContext ctx, EObject object) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		TargetRuntime rt = TargetRuntime.getRuntime(object);
 		if (rt != TargetRuntime.getDefaultRuntime()) {
 			ClassLoader cl = rt.getRuntimeExtension().getClass().getClassLoader();
 			Bundle b = ((BundleReference)cl).getBundle();

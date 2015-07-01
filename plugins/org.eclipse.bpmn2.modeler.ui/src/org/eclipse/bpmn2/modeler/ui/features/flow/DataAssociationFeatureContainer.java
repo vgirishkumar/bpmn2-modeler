@@ -52,6 +52,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.emf.transaction.Transaction;
@@ -596,7 +597,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 						ioSpec = Bpmn2ModelerFactory.createFeature(activity, "ioSpecification", InputOutputSpecification.class); //$NON-NLS-1$
 					}
 					if (ioSpec.getOutputSets().size()==0) {
-						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						outputSet = Bpmn2ModelerFactory.create(activity.eResource(), OutputSet.class);
 						ioSpec.getOutputSets().add(outputSet);
 					}
 					else {
@@ -611,7 +612,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					CatchEvent event = (CatchEvent)source;
 					outputSet = event.getOutputSet();
 					if (outputSet==null) {
-						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						outputSet = Bpmn2ModelerFactory.create(event.eResource(), OutputSet.class);
 						event.setOutputSet(outputSet);
 					}
 					dataOutputAssoc = selectOutput(source, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
@@ -634,7 +635,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 						ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification"); //$NON-NLS-1$
 					}
 					if (ioSpec.getInputSets().size()==0) {
-						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						inputSet = Bpmn2ModelerFactory.create(activity.eResource(), InputSet.class);
 						ioSpec.getInputSets().add(inputSet);
 					}
 					else {
@@ -649,7 +650,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					ThrowEvent event = (ThrowEvent)target;
 					inputSet = event.getInputSet();
 					if (inputSet==null) {
-						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						inputSet = Bpmn2ModelerFactory.create(event.eResource(), InputSet.class);
 						event.setInputSet(inputSet);
 					}
 					dataInputAssoc = selectInput(target, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
@@ -931,6 +932,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 			oldElement = BusinessObjectUtil.getFirstElementOfType(context.getOldAnchor().getParent(), BaseElement.class);
 			newElement = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+			
+			Resource resource = oldElement.eResource();
+			
 			if (oldElement instanceof Activity) {
 				// disconnect the DataAssociation
 				if (isInput) {
@@ -1001,7 +1005,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					List<DataInput> dataInputs = null;
 					List<DataInputAssociation> dataInputAssociations = null;
 					if (ioSpec.getInputSets().size()==0) {
-						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						inputSet = Bpmn2ModelerFactory.create(resource, InputSet.class);
 						ioSpec.getInputSets().add(inputSet);
 					}
 					else {
@@ -1021,7 +1025,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					List<DataOutput> dataOutputs = null;
 					List<DataOutputAssociation> dataOutputAssociations = null;
 					if (ioSpec.getOutputSets().size()==0) {
-						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						outputSet = Bpmn2ModelerFactory.create(resource, OutputSet.class);
 						ioSpec.getOutputSets().add(outputSet);
 					}
 					else {
@@ -1044,7 +1048,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					CatchEvent event = (CatchEvent)newElement;
 					outputSet = event.getOutputSet();
 					if (outputSet==null) {
-						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						outputSet = Bpmn2ModelerFactory.create(resource, OutputSet.class);
 						event.setOutputSet(outputSet);
 					}
 					newAssociation = selectOutput(event, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
@@ -1058,7 +1062,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					ThrowEvent event = (ThrowEvent)newElement;
 					inputSet = event.getInputSet();
 					if (inputSet==null) {
-						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						inputSet = Bpmn2ModelerFactory.create(resource, InputSet.class);
 						event.setInputSet(inputSet);
 					}
 					newAssociation = selectInput(newElement, event.getDataInputs(), event.getDataInputAssociation(), inputSet);

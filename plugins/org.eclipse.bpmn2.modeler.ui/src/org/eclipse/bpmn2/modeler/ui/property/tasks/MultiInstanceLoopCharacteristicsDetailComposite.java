@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -601,13 +602,14 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 	
 	protected void bindReference(Composite parent, final EObject object, final EReference reference) {
 		final MultiInstanceLoopCharacteristics lc = (MultiInstanceLoopCharacteristics)object;
+		TargetRuntime rt = TargetRuntime.getRuntime(object);
 
 		if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_CompletionCondition()) {
 			if (isModelObjectEnabled(lc.eClass(), reference)) {
 				// use a FormalExpression detail composite here
 				if (completionConditionEditor==null) {
 					completionConditionEditor = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-							Expression.class, completionConditionWidgets, SWT.BORDER);
+							Expression.class, completionConditionWidgets, rt, SWT.BORDER);
 					((DefaultDetailComposite)completionConditionEditor).setPropertiesProvider( new AbstractPropertiesProvider(getBO()) {
 						String[] properties = new String[] {
 								"language", //$NON-NLS-1$
@@ -697,7 +699,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 				// use a FormalExpression detail composite here
 				if (loopCardinalityEditor==null) {
 					loopCardinalityEditor = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-							Expression.class, loopCardinalityWidgets, SWT.BORDER);
+							Expression.class, loopCardinalityWidgets, rt, SWT.BORDER);
 				}
 				
 				// create a new Loop Cardinality FormalExpression if necessary

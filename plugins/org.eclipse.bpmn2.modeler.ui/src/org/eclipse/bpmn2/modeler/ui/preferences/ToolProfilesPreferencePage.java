@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -168,7 +169,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		container.setLayout(new GridLayout(4, false));
 		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
 
-		currentRuntime = TargetRuntime.getCurrentRuntime();
+		BPMN2Editor activeEditor = BPMN2Editor.getActiveEditor();
+		currentRuntime = activeEditor != null ? activeEditor.getTargetRuntime() : TargetRuntime.getDefaultRuntime();
 		currentProfileName = ""; //$NON-NLS-1$
 		
 		final Label lblRuntime = new Label(container, SWT.NONE);

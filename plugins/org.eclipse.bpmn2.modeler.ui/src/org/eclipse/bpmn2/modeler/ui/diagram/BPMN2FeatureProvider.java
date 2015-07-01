@@ -208,6 +208,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 
@@ -314,7 +315,8 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		
 		// Collect all of the <featureContainerDelegate> extensions defined by the current TargetRuntime
 		// and replace the ones in our list of FeatureContainers
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		IDiagramBehavior diagramBehavior = getDiagramTypeProvider().getDiagramBehavior();
+		TargetRuntime rt = diagramBehavior != null ? TargetRuntime.getRuntime(diagramBehavior) : TargetRuntime.getDefaultRuntime();
 		for (FeatureContainerDescriptor fcd : rt.getFeatureContainerDescriptors()) {
 			IFeatureContainer fc = fcd.getFeatureContainer();
 			if (fc instanceof IConnectionFeatureContainer) {
@@ -741,7 +743,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	@Override
 	public IReason canAdd(IAddContext context) {
 		IReason reason = super.canAdd(context);
-		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_ADD, this, context, context.getNewObject());
+		EObject object = (EObject) context.getNewObject();
+		TargetRuntime rt = TargetRuntime.getRuntime(object);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_ADD, this, context, object, rt);
 		event.doit = reason.toBoolean();
 		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
@@ -752,7 +756,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		IReason reason = super.updateNeeded(context);
-		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED, this, context, context.getPictogramElement());
+		PictogramElement pe = context.getPictogramElement();
+		TargetRuntime rt = TargetRuntime.getRuntime(pe);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED, this, context, pe, rt);
 		event.doit = reason.toBoolean();
 		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
@@ -763,7 +769,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	@Override
 	public IReason canUpdate(IUpdateContext context) {
 		IReason reason = super.canUpdate(context);
-		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_UPDATE, this, context, context.getPictogramElement());
+		PictogramElement pe = context.getPictogramElement();
+		TargetRuntime rt = TargetRuntime.getRuntime(pe);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_UPDATE, this, context, pe, rt);
 		event.doit = reason.toBoolean();
 		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
@@ -774,7 +782,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	@Override
 	public IReason canLayout(ILayoutContext context) {
 		IReason reason = super.canLayout(context);
-		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_LAYOUT, this, context, context.getPictogramElement());
+		PictogramElement pe = context.getPictogramElement();
+		TargetRuntime rt = TargetRuntime.getRuntime(pe);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_LAYOUT, this, context, pe, rt);
 		event.doit = reason.toBoolean();
 		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
@@ -796,8 +806,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 				}
 			}
 			
+			TargetRuntime rt = TargetRuntime.getRuntime(pe);
 			List<PictogramElement> pes = new ArrayList<PictogramElement>();
-			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe, rt));
 			
 			if (le!=null) {
 				((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);

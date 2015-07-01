@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -52,7 +53,8 @@ public class ResourceAssignmentExpressionDetailComposite extends ExpressionDetai
 		if (be instanceof ResourceAssignmentExpression) {
 			
 			final ResourceAssignmentExpression rae = (ResourceAssignmentExpression) be;
-			
+			TargetRuntime rt = TargetRuntime.getRuntime(be);
+
 			// an MultipleAssignments is not really valid without both a From and To
 			Expression expr = rae.getExpression();
 			if (expr==null) {
@@ -62,7 +64,7 @@ public class ResourceAssignmentExpressionDetailComposite extends ExpressionDetai
 			
 			if (exprDetails==null) {
 				exprDetails = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-						Expression.class, this, SWT.NONE);
+						Expression.class, this, rt, SWT.NONE);
 			}
 			exprDetails.setBusinessObject(expr);
 			exprDetails.setTitle(Messages.ResourceAssignmentExpressionDetailComposite_Title);

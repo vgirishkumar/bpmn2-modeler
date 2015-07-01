@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNLabelStyle;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
@@ -779,9 +780,15 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				ShapeStyle ss = getShapeStyle(element);
 				style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
 				if (style==null) {
+					EClass eClass = (EClass)styleFeature.getEType();
+	                // if the factory of the parent object differs from child, create a new adapter on the factory and copy the resource
+					if (!element.eClass().getEPackage().equals(eClass.getEPackage())) {
+						ObjectPropertyProvider.adapt(eClass.getEPackage().getEFactoryInstance(), element.eResource());
+					}
+					
 					// this object does not have a <style> extension element yet so create one
 					// and initialize it from the User Preference store
-					style = med.createObject((EClass)styleFeature.getEType());
+					style = med.createObject(eClass);
 					setShapeStyle(element, style, ss);
 					// add it to the BaseElement extension values
 					InsertionAdapter.add(element, styleFeature, style);

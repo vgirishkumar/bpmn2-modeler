@@ -237,7 +237,7 @@ public class JbpmModelUtil {
 
 	public static void removeImport(ImportType importType) {
 		Definitions definitions = ModelUtil.getDefinitions(importType);
-		Import imp = Bpmn2ModelerFactory.create(Import.class);
+		Import imp = Bpmn2ModelerFactory.create(definitions.eResource(), Import.class);
 		imp.setImportType(ImportUtil.IMPORT_TYPE_JAVA);
 		imp.setLocation(importType.getName());
 		definitions.getImports().add(imp);

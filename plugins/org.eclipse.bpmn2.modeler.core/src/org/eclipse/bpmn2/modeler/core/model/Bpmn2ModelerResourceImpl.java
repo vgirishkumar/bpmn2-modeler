@@ -55,6 +55,7 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -114,6 +115,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -443,6 +446,19 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 
 		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+			// read the targetNamespace as early as possible
+			if ("bpmn2:definitions".equals(qName)) { //$NON-NLS-1$
+				targetNamespace = attributes.getValue("targetNamespace"); //$NON-NLS-1$
+				if (targetNamespace != null) {
+					((Bpmn2ModelerXmlHelper)helper).initializeTargetRuntime(targetNamespace);
+				}
+			}
+
+			super.startElement(uri, localName, qName, attributes);
+		}
+		
+		@Override
 		public void startDocument() {
 			super.startDocument();
 			Bpmn2ModelerFactory.setEnableModelExtensions(false);
@@ -459,7 +475,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			if (typeLanguage!=null) {
 				String prefix = NamespaceUtil.getPrefixForNamespace(helper.getResource(), typeLanguage);
     			if (prefix==null) {
-    				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+    				TargetRuntime rt = TargetRuntime.getRuntime(xmlResource);
     				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
     				if (tld!=null)
     					prefix = tld.getPrefix();
@@ -591,6 +607,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			EPackage pkg = ModelDecorator.getEPackage(nsURI);
 			if (pkg!=null) {
 				EClassifier eType = feature.getEType();
+
+				ObjectPropertyProvider.adapt(eType.getEPackage().getEFactoryInstance(), peekObject.eResource());
+				
 				newObject = pkg.getEFactoryInstance().create((EClass)eType);
 				
 //				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
@@ -606,7 +625,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 			else {
 				newObject = super.createObjectFromFeatureType(peekObject, feature);
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(xmlResource);
 				String id = rt.getCustomTaskId(newObject);
 				if (id!=null) {
 					// if this is a CustomElement we need to discard this object and construct it
@@ -966,7 +985,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			String typeLanguage = definitions.getTypeLanguage();
 			if (!map.containsValue(typeLanguage)) {
 				String prefix = "tl"; //$NON-NLS-1$
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(xmlResource);
 				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
 				if (tld!=null)
 					prefix = tld.getPrefix();
@@ -1622,9 +1641,32 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		boolean isQNameFeature = false;
 		ImportUtil importHandler = new ImportUtil();
 
+		/** associated target runtime, only used in "load" scenario */
+		protected TargetRuntime runtime = null;
+		
 		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
 		}		
+		
+		/**
+		 * initialize the target runtime according to the parsed namespace
+		 * 
+		 * @param targetNamespace
+		 */
+		protected void initializeTargetRuntime(String targetNamespace) {
+			runtime = TargetRuntime.getRuntimeByNamespace(targetNamespace);
+			if (runtime == null) {
+				runtime = TargetRuntime.getDefaultRuntime();
+			}
+			TargetRuntimeAdapter.adapt(resource, runtime);
+		}
+
+		@Override
+		public EObject createObject(EFactory eFactory, EClassifier type) {
+			ObjectPropertyProvider.adapt(eFactory, resource);
+
+			return super.createObject(eFactory, type);
+		}
 		
 		@Override
 		public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
@@ -1816,7 +1858,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					pkg != BpmnDiPackage.eINSTANCE &&
 					pkg != DcPackage.eINSTANCE &&
 					pkg != DiPackage.eINSTANCE &&
-					pkg != TargetRuntime.getCurrentRuntime().getModelDescriptor().getEPackage()) {
+					pkg != TargetRuntime.getRuntime(resource).getModelDescriptor().getEPackage()) {
 				feature = eClass.getEStructuralFeature(name);
 			}
 			if (feature==null)

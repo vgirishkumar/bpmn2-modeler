@@ -81,13 +81,13 @@ import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
@@ -144,8 +144,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.part.IPage;
-import org.eclipse.ui.views.properties.PropertySheet;
 import org.xml.sax.InputSource;
 
 
@@ -170,19 +168,21 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override
 	public String getTargetNamespace(Bpmn2DiagramType diagramType){
 		String type = ""; //$NON-NLS-1$
-		switch (diagramType) {
-		case PROCESS:
-			type = "/process"; //$NON-NLS-1$
-			break;
-		case COLLABORATION:
-			type = "/collaboration"; //$NON-NLS-1$
-			break;
-		case CHOREOGRAPHY:
-			type = "/choreography"; //$NON-NLS-1$
-			break;
-		default:
-			type = ""; //$NON-NLS-1$
-			break;
+		if (diagramType != null) {
+			switch (diagramType) {
+			case PROCESS:
+				type = "/process"; //$NON-NLS-1$
+				break;
+			case COLLABORATION:
+				type = "/collaboration"; //$NON-NLS-1$
+				break;
+			case CHOREOGRAPHY:
+				type = "/choreography"; //$NON-NLS-1$
+				break;
+			default:
+				type = ""; //$NON-NLS-1$
+				break;
+			}
 		}
 		return targetNamespace + type;
 	}
@@ -194,84 +194,85 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override
 	public void notify(LifecycleEvent event) {
 //		System.out.println(event.eventType+ ": " + event.target);
+		TargetRuntime targetRuntime = event.targetRuntime;
 		if (event.eventType.equals(EventType.EDITOR_INITIALIZED)) {
 			if (event.target instanceof IAdaptable) {
 				ModelEnablements me = (ModelEnablements) ((IAdaptable)event.target).getAdapter(ModelEnablements.class);
 				me.setEnabled("BaseElement", "style", true); //$NON-NLS-1$ //$NON-NLS-2$
 				me.setEnabled("ShapeStyle", true); //$NON-NLS-1$
 			}
-			PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class);
-			PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class);
-			PropertiesCompositeFactory.register(EObject.class, DefaultDialogComposite.class);
-			PropertiesCompositeFactory.register(Message.class, MessageDetailComposite.class);
-			PropertiesCompositeFactory.register(Message.class, MessageListComposite.class);
-			PropertiesCompositeFactory.register(MessageFlow.class, MessageFlowDetailComposite.class);
-			PropertiesCompositeFactory.register(Property.class, ItemAwareElementDetailComposite.class);
-			PropertiesCompositeFactory.register(CallActivity.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(GlobalTask.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(GlobalBusinessRuleTask.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(GlobalManualTask.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(GlobalScriptTask.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(GlobalUserTask.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(Import.class, ImportDetailComposite.class);
-			PropertiesCompositeFactory.register(Category.class, CategoryDetailComposite.class);
-			PropertiesCompositeFactory.register(TextAnnotation.class, TextAnnotationDetailComposite.class);
-			PropertiesCompositeFactory.register(SequenceFlow.class, SequenceFlowDetailComposite.class);
-			PropertiesCompositeFactory.register(DataObject.class, DataObjectDetailComposite.class);
-			PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectDetailComposite.class);
-			PropertiesCompositeFactory.register(Assignment.class, DataAssignmentDetailComposite.class);
-			PropertiesCompositeFactory.register(Expression.class, ExpressionDetailComposite.class);
-			PropertiesCompositeFactory.register(FormalExpression.class, ExpressionDetailComposite.class);
-			PropertiesCompositeFactory.register(ResourceAssignmentExpression.class, ResourceAssignmentExpressionDetailComposite.class);
-			PropertiesCompositeFactory.register(ResourceParameterBinding.class, ResourceParameterBindingDetailComposite.class);
-			PropertiesCompositeFactory.register(PotentialOwner.class, ResourceRoleDetailComposite.class);
-			PropertiesCompositeFactory.register(HumanPerformer.class, ResourceRoleDetailComposite.class);
-			PropertiesCompositeFactory.register(Performer.class, ResourceRoleDetailComposite.class);
-			PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectReferenceDetailComposite.class);
-			PropertiesCompositeFactory.register(DataStore.class, DataStoreDetailComposite.class);
-			PropertiesCompositeFactory.register(DataStoreReference.class, DataStoreReferenceDetailComposite.class);
-			PropertiesCompositeFactory.register(Interface.class, InterfaceDetailComposite.class);
-			PropertiesCompositeFactory.register(Operation.class, OperationDetailComposite.class);
-			PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionListComposite.class);
-			PropertiesCompositeFactory.register(CorrelationPropertyRetrievalExpression.class, CorrelationPropertyREListComposite.class);
-			PropertiesCompositeFactory.register(Property.class, PropertyListComposite.class);
-			PropertiesCompositeFactory.register(ResourceRole.class, ResourceRoleListComposite.class);
-			PropertiesCompositeFactory.register(Event.class, CommonEventDetailComposite.class);
-			PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class);
-			PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class);
-			PropertiesCompositeFactory.register(CatchEvent.class, CatchEventDetailComposite.class);
-			PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class);
-			PropertiesCompositeFactory.register(BoundaryEvent.class, BoundaryEventDetailComposite.class);
-			PropertiesCompositeFactory.register(TimerEventDefinition.class, TimerEventDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(LinkEventDefinition.class, LinkEventDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(ConditionalEventDefinition.class, ConditionalEventDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(CompensateEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(ConditionalEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(ErrorEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(EscalationEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(LinkEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(MessageEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(SignalEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(TimerEventDefinition.class, EventDefinitionDialogComposite.class);
-			PropertiesCompositeFactory.register(Process.class, ProcessDiagramDetailComposite.class);
-			PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class);
-			PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class);
-			PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class);
-			PropertiesCompositeFactory.register(StandardLoopCharacteristics.class, StandardLoopCharacteristicsDetailComposite.class);
-			PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, MultiInstanceLoopCharacteristicsDetailComposite.class);
-			PropertiesCompositeFactory.register(Gateway.class, GatewayDetailComposite.class);
-			PropertiesCompositeFactory.register(Activity.class, ActivityInputDetailComposite.class);
-			PropertiesCompositeFactory.register(InputOutputSpecification.class, ActivityInputDetailComposite.class);
-			PropertiesCompositeFactory.register(Activity.class, ActivityOutputDetailComposite.class);
-			PropertiesCompositeFactory.register(CallChoreography.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(InputOutputSpecification.class, IoParametersDetailComposite.class);
-			PropertiesCompositeFactory.register(DataInput.class, DataAssociationDetailComposite.class);
-			PropertiesCompositeFactory.register(DataOutput.class, DataAssociationDetailComposite.class);
-			PropertiesCompositeFactory.register(ManualTask.class, ManualTaskDetailComposite.class);
-			PropertiesCompositeFactory.register(ScriptTask.class, ScriptTaskDetailComposite.class);
-			PropertiesCompositeFactory.register(SubProcess.class, ActivityDetailComposite.class);
-			PropertiesCompositeFactory.register(Task.class, TaskDetailComposite.class);
+			PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(EObject.class, DefaultDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Message.class, MessageDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Message.class, MessageListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(MessageFlow.class, MessageFlowDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Property.class, ItemAwareElementDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(CallActivity.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(GlobalTask.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(GlobalBusinessRuleTask.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(GlobalManualTask.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(GlobalScriptTask.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(GlobalUserTask.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Import.class, ImportDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Category.class, CategoryDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(TextAnnotation.class, TextAnnotationDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(SequenceFlow.class, SequenceFlowDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataObject.class, DataObjectDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Assignment.class, DataAssignmentDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Expression.class, ExpressionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(FormalExpression.class, ExpressionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ResourceAssignmentExpression.class, ResourceAssignmentExpressionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ResourceParameterBinding.class, ResourceParameterBindingDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(PotentialOwner.class, ResourceRoleDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(HumanPerformer.class, ResourceRoleDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Performer.class, ResourceRoleDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectReferenceDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataStore.class, DataStoreDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataStoreReference.class, DataStoreReferenceDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Interface.class, InterfaceDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Operation.class, OperationDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(CorrelationPropertyRetrievalExpression.class, CorrelationPropertyREListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Property.class, PropertyListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ResourceRole.class, ResourceRoleListComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Event.class, CommonEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(CatchEvent.class, CatchEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(BoundaryEvent.class, BoundaryEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(TimerEventDefinition.class, TimerEventDefinitionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(LinkEventDefinition.class, LinkEventDefinitionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ConditionalEventDefinition.class, ConditionalEventDefinitionDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(CompensateEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ConditionalEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ErrorEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(EscalationEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(LinkEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(MessageEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(SignalEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(TimerEventDefinition.class, EventDefinitionDialogComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Process.class, ProcessDiagramDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(StandardLoopCharacteristics.class, StandardLoopCharacteristicsDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, MultiInstanceLoopCharacteristicsDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Gateway.class, GatewayDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Activity.class, ActivityInputDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(InputOutputSpecification.class, ActivityInputDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Activity.class, ActivityOutputDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(CallChoreography.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(InputOutputSpecification.class, IoParametersDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataInput.class, DataAssociationDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(DataOutput.class, DataAssociationDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ManualTask.class, ManualTaskDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(ScriptTask.class, ScriptTaskDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(SubProcess.class, ActivityDetailComposite.class, targetRuntime);
+			PropertiesCompositeFactory.register(Task.class, TaskDetailComposite.class, targetRuntime);
 		}
 		else if (event.eventType.equals(EventType.PICTOGRAMELEMENT_ADDED)) {
 			StyleChangeAdapter.adapt((PictogramElement) event.target);

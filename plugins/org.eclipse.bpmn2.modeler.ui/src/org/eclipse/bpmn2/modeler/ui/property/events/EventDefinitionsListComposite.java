@@ -45,6 +45,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -386,7 +387,8 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 	
 	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
-		AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, style);
+		TargetRuntime rt = TargetRuntime.getRuntime(event);
+		AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, rt, style);
 		if (detailComposite!=null)
 			return detailComposite;
 		

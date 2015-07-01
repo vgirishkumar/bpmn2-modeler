@@ -68,8 +68,9 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		// don't delete the Diagram!
 		if (context.getPictogramElement() instanceof Diagram)
 			return false;
+		TargetRuntime rt = TargetRuntime.getRuntime(context.getPictogramElement());
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_DELETE,
-				getFeatureProvider(), context, context.getPictogramElement());
+				getFeatureProvider(), context, context.getPictogramElement(), rt);
 		LifecycleEvent.notify(event);
 		return event.doit;
 	}
@@ -137,8 +138,8 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			deletePeEnvironment(pe);
 			Graphiti.getPeService().deletePictogramElement(pe);
 		}
-
-		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_DELETED, bo));
+		TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramBehavior());
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_DELETED, bo, targetRuntime));
 
 		super.deleteBusinessObject(bo);
 	}
@@ -168,18 +169,19 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 	 * @param containerShape the container shape
 	 */
 	protected void deleteContainer(IFeatureProvider fp, ContainerShape containerShape) {
+		TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramBehavior());
+
 		Object[] children = containerShape.getChildren().toArray();
 		for (Object shape : children) {
 			if (shape instanceof ContainerShape) {
 				DeleteContext context = new DeleteContext((PictogramElement) shape);
-
-				LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, shape));
+				LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, shape, targetRuntime));
 
 				fp.getDeleteFeature(context).delete(context);
 			}
 		}
 
-		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape, targetRuntime));
 	}
 
 	/**
@@ -194,7 +196,8 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		for (Connection connection : allConnections) {
 			IDeleteContext context = new DeleteContext(connection);
 
-			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, connection));
+			TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramBehavior());
+			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, connection, targetRuntime));
 			fp.getDeleteFeature(context).delete(context);
 		}
 	}

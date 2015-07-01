@@ -57,7 +57,8 @@ public abstract class AbstractBpmn2UpdateFeature extends AbstractUpdateFeature {
 	@Override
 	public void execute(IContext context) {
 		PictogramElement pe = ((IUpdateContext)context).getPictogramElement();
-		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE, getFeatureProvider(), context, pe));
+		TargetRuntime rt = TargetRuntime.getRuntime(getDiagramBehavior().getDiagramContainer());
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE, getFeatureProvider(), context, pe, rt));
 		super.execute(context);
 	}
 

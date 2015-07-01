@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.impl.Bpmn2PackageImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -238,7 +239,8 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 					expression = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(object, reference, expression);
 				}
-				AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(Expression.class, getAttributesParent(), SWT.BORDER);
+				TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramEditor());
+				AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(Expression.class, getAttributesParent(), targetRuntime, SWT.BORDER);
 				composite.setBusinessObject(expression);
 				composite.setTitle(displayName);
 			}

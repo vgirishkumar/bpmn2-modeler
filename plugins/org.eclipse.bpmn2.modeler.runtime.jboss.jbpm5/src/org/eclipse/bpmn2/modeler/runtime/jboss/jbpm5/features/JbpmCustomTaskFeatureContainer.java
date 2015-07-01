@@ -327,7 +327,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 						if (value!=null && !value.isEmpty()) {
 							EObject structureRef = ModelUtil.createStringWrapper(value);
 							if (itemDefinition==null) {
-								itemDefinition = Bpmn2ModelerFactory.create(ItemDefinition.class);
+								itemDefinition = Bpmn2ModelerFactory.create(task.eResource(), ItemDefinition.class);
 								ModelUtil.getDefinitions(task).getRootElements().add(itemDefinition);
 								ModelUtil.setID(itemDefinition);
 							}

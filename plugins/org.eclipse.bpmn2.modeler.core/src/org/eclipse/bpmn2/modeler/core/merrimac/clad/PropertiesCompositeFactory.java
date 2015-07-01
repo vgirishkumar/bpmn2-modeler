@@ -49,15 +49,14 @@ public class PropertiesCompositeFactory implements IPropertiesCompositeFactory {
 	
 	public static IPropertiesCompositeFactory INSTANCE = new PropertiesCompositeFactory();
 	
-	public static void register(Class eClass, Class composite) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+	public static void register(Class eClass, Class composite, TargetRuntime targetRuntime) {
 		Hashtable<Class,Class> map = null;
 		if (AbstractListComposite.class.isAssignableFrom(composite))
-			map = listRegistry.get(rt);
+			map = listRegistry.get(targetRuntime);
 		else if (AbstractDialogComposite.class.isAssignableFrom(composite))
-			map = dialogRegistry.get(rt);
+			map = dialogRegistry.get(targetRuntime);
 		else if (AbstractDetailComposite.class.isAssignableFrom(composite))
-			map = detailRegistry.get(rt);
+			map = detailRegistry.get(targetRuntime);
 		else
 			throw new IllegalArgumentException(
 				NLS.bind(Messages.PropertiesCompositeFactory_Unknown_Type,composite.getName()));
@@ -65,11 +64,11 @@ public class PropertiesCompositeFactory implements IPropertiesCompositeFactory {
 		if (map==null) {
 			map = new Hashtable<Class,Class>();
 			if (AbstractListComposite.class.isAssignableFrom(composite))
-				listRegistry.put(rt,map);
+				listRegistry.put(targetRuntime,map);
 			else if (AbstractDialogComposite.class.isAssignableFrom(composite))
-				dialogRegistry.put(rt,map);
+				dialogRegistry.put(targetRuntime,map);
 			else if (AbstractDetailComposite.class.isAssignableFrom(composite))
-				detailRegistry.put(rt,map);
+				detailRegistry.put(targetRuntime,map);
 		}
 		map.put(eClass, composite);
 		
@@ -103,67 +102,64 @@ public class PropertiesCompositeFactory implements IPropertiesCompositeFactory {
 	////////////////////////////////////////////////////////////////////////////////
 	// Detail Composite methods
 	////////////////////////////////////////////////////////////////////////////////
-	public static Class findDetailCompositeClass(Class eClass) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		Class composite = findCompositeClass(detailRegistry.get(rt),eClass);
-		if (composite==null && rt!=TargetRuntime.getDefaultRuntime()) {
+	public static Class findDetailCompositeClass(Class eClass, TargetRuntime targetRuntime) {
+		Class composite = findCompositeClass(detailRegistry.get(targetRuntime),eClass);
+		if (composite==null && targetRuntime!=TargetRuntime.getDefaultRuntime()) {
 			// fall back to default target runtime
-			rt = TargetRuntime.getDefaultRuntime();
-			composite = findCompositeClass(detailRegistry.get(rt),eClass);
+			targetRuntime = TargetRuntime.getDefaultRuntime();
+			composite = findCompositeClass(detailRegistry.get(targetRuntime),eClass);
 		}
 		return composite;
 	}
 
-	public AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section) {
-		Class clazz = findDetailCompositeClass(eClass);
+	public AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime) {
+		Class clazz = findDetailCompositeClass(eClass, targetRuntime);
 		return (AbstractDetailComposite)createComposite(clazz, eClass, section);
 	}
 	
-	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
-		Class clazz = findDetailCompositeClass(eClass);
+	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style) {
+		Class clazz = findDetailCompositeClass(eClass, targetRuntime);
 		return (AbstractDetailComposite)createComposite(clazz, eClass, parent, style);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// List Composite methods
 	////////////////////////////////////////////////////////////////////////////////
-	public static Class findListCompositeClass(Class eClass) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		Class composite = findCompositeClass(listRegistry.get(rt),eClass);
-		if (composite==null && rt!=TargetRuntime.getDefaultRuntime()) {
+	public static Class findListCompositeClass(Class eClass, TargetRuntime targetRuntime) {
+		Class composite = findCompositeClass(listRegistry.get(targetRuntime),eClass);
+		if (composite==null && targetRuntime!=TargetRuntime.getDefaultRuntime()) {
 			// fall back to default target runtime
-			rt = TargetRuntime.getDefaultRuntime();
-			composite = findCompositeClass(listRegistry.get(rt),eClass);
+			targetRuntime = TargetRuntime.getDefaultRuntime();
+			composite = findCompositeClass(listRegistry.get(targetRuntime),eClass);
 		}
 		return composite;
 	}
 
-	public AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section) {
-		Class clazz = findListCompositeClass(eClass);
+	public AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime) {
+		Class clazz = findListCompositeClass(eClass, targetRuntime);
 		return (AbstractListComposite)createComposite(clazz, eClass, section);
 	}
 	
-	public AbstractListComposite createListComposite(Class eClass, Composite parent, int style) {
-		Class clazz = findListCompositeClass(eClass);
+	public AbstractListComposite createListComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style) {
+		Class clazz = findListCompositeClass(eClass, targetRuntime);
 		return (AbstractListComposite)createComposite(clazz, eClass, parent, style);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////
 	// Dialog Composite methods
 	////////////////////////////////////////////////////////////////////////////////
-	public static Class findDialogCompositeClass(Class eClass) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		Class composite = findCompositeClass(dialogRegistry.get(rt),eClass);
-		if (composite==null && rt!=TargetRuntime.getDefaultRuntime()) {
+	public static Class findDialogCompositeClass(Class eClass, TargetRuntime targetRuntime) {
+		Class composite = findCompositeClass(dialogRegistry.get(targetRuntime),eClass);
+		if (composite==null && targetRuntime!=TargetRuntime.getDefaultRuntime()) {
 			// fall back to default target runtime
-			rt = TargetRuntime.getDefaultRuntime();
-			composite = findCompositeClass(dialogRegistry.get(rt),eClass);
+			targetRuntime = TargetRuntime.getDefaultRuntime();
+			composite = findCompositeClass(dialogRegistry.get(targetRuntime),eClass);
 		}
 		return composite;
 	}
 	
-	public AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, int style) {
-		Class clazz = findDialogCompositeClass(eClass.getInstanceClass());
+	public AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, TargetRuntime targetRuntime, int style) {
+		Class clazz = findDialogCompositeClass(eClass.getInstanceClass(), targetRuntime);
 		Composite composite = null;
 		for (int i=0; i<2 && composite==null; ++i) {
 			try {
@@ -181,7 +177,7 @@ public class PropertiesCompositeFactory implements IPropertiesCompositeFactory {
 			} catch (Exception e) {
 				if (i==0)
 					logError(eClass.getInstanceClass(),e);
-				clazz = findDialogCompositeClass(EObject.class);
+				clazz = findDialogCompositeClass(EObject.class, targetRuntime);
 			}
 		}
 		return (AbstractDialogComposite)composite;

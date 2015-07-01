@@ -55,7 +55,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			public EObject createFeature(Resource resource, EClass eclass) {
 				List<InputSet> inputSets = object.getInputSets();
 				if (inputSets.size()==0) {
-					inputSets.add(Bpmn2ModelerFactory.create(InputSet.class));
+					inputSets.add(Bpmn2ModelerFactory.create(resource, InputSet.class));
 				}
 				InputSet inputSet = inputSets.get(0);
 				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, object.getDataInputs());
@@ -72,7 +72,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			public EObject createFeature(Resource resource, EClass eclass) {
 				List<OutputSet> outputSets = object.getOutputSets();
 				if (outputSets.size()==0) {
-					outputSets.add(Bpmn2ModelerFactory.create(OutputSet.class));
+					outputSets.add(Bpmn2ModelerFactory.create(resource, OutputSet.class));
 				}
 				OutputSet outputSet = outputSets.get(0);
 				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, object.getDataOutputs());

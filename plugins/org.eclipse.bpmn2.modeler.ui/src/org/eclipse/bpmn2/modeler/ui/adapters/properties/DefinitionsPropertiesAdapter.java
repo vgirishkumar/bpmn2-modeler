@@ -58,7 +58,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			@Override
 			public Hashtable<String, Object> getChoiceOfValues() {
 				Hashtable<String,Object> choices = new Hashtable<String,Object>();
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(object);
 				for (TypeLanguageDescriptor tld : rt.getTypeLanguageDescriptors()) {
 					choices.put(tld.getName(), tld.getUri());
 				}
@@ -70,7 +70,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			@Override
 			public Definitions createObject(Resource resource, EClass eclass) {
 				Definitions definitions = Bpmn2Factory.eINSTANCE.createDefinitions();
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(object);
 				definitions.setTypeLanguage(rt.getTypeLanguage());
 				definitions.setExpressionLanguage(rt.getExpressionLanguage());
 				return definitions;
@@ -90,7 +90,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			@Override
 			public Hashtable<String, Object> getChoiceOfValues() {
 				Hashtable<String,Object> choices = new Hashtable<String,Object>();
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(object);
 				for (ExpressionLanguageDescriptor eld : rt.getExpressionLanguageDescriptors()) {
 					choices.put(eld.getName(), eld.getUri());
 				}

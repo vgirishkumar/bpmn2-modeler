@@ -42,6 +42,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.emf.ecore.EObject;
@@ -766,8 +767,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 					InsertionAdapter.add(association, PACKAGE.getDataAssociation_Transformation(), transformation);
 				}
 				if (transformationDetailsComposite==null) {
+					TargetRuntime rt = TargetRuntime.getRuntime(association);
 					transformationDetailsComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-							Expression.class, transformationComposite, SWT.NONE);
+							Expression.class, transformationComposite, rt, SWT.NONE);
 				}
 				transformationDetailsComposite.setBusinessObject(transformation);
 				transformationDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Transform_Title);
@@ -859,8 +861,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 	
 				if (expressionDetailsComposite==null) {
+					TargetRuntime rt = TargetRuntime.getRuntime(association);
 					expressionDetailsComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-							Expression.class, expressionComposite, SWT.NONE);
+							Expression.class, expressionComposite, rt, SWT.NONE);
 				}
 				expressionDetailsComposite.setBusinessObject(expression);//association.getexpression());
 				expressionDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Expression_Title);

@@ -563,7 +563,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					value = getBusinessObjectDelegate().createFeature(object,reference);
 					InsertionAdapter.add(object, reference, value);
 				}
-				AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass.getInstanceClass(), this, SWT.NONE);
+				AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass.getInstanceClass(), this, getTargetRuntime(), SWT.NONE);
 				detailComposite.setBusinessObject(value);
 				detailComposite.setTitle(getBusinessObjectDelegate().getLabel(value));
 			}
@@ -597,10 +597,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					listItemClass.getInstanceClass() :
 					feature.getEType().getInstanceClass();
 			if (propertySection!=null) {
-				tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, propertySection);
+				tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, propertySection, getTargetRuntime());
 			}
 			else {
-				tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, this, AbstractListComposite.DEFAULT_STYLE);
+				tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, this, getTargetRuntime(), AbstractListComposite.DEFAULT_STYLE);
 			}
 			
 			tableComposite.setListItemClass(listItemClass);
@@ -616,7 +616,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			Class clazz = (listItemClass!=null) ?
 					listItemClass.getInstanceClass() :
 					feature.getEType().getInstanceClass();
-			tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, parent, AbstractListComposite.DEFAULT_STYLE);
+			tableComposite = PropertiesCompositeFactory.INSTANCE.createListComposite(clazz, parent, getTargetRuntime(), AbstractListComposite.DEFAULT_STYLE);
 			tableComposite.setListItemClass(listItemClass);
 			tableComposite.bindList(object, feature);
 		}

@@ -89,8 +89,10 @@ import org.eclipse.bpmn2.impl.ThrowEventImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.PropertyExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ActivityPropertiesAdapter;
@@ -273,7 +275,12 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 	        	    		adapter = new ExtendedPropertiesAdapter<LoopCharacteristics> (adapterFactory, (LoopCharacteristics)object);
 	        	    	}
 	        	    	else {
-		   		    		object = ExtendedPropertiesAdapter.getDummyObject(eclass);
+	        	    		object = ExtendedPropertiesAdapter.getDummyObject(eclass);
+	        	    		
+	        	    		ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(eclass.getEPackage().getEFactoryInstance());
+	        	    		TargetRuntime rt = TargetRuntime.getRuntime(factoryAdapter.getResource());
+	        	    		TargetRuntimeAdapter.adapt(object, rt);
+
 		   		    		adapter = doSwitch(object);
 	        	    	}
 	        	    }
@@ -307,17 +314,21 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 		}
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EClass eclass) {
-            PropertyExtensionDescriptor ped = TargetRuntime.getCurrentRuntime().getPropertyExtension(eclass.getInstanceClass());
-            if (ped==null && TargetRuntime.getCurrentRuntime() != TargetRuntime.getDefaultRuntime())
-            	ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(eclass.getInstanceClass());
+    		ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(eclass.getEPackage().getEFactoryInstance());
+    		TargetRuntime rt = TargetRuntime.getRuntime(factoryAdapter.getResource());
+
+            PropertyExtensionDescriptor ped = rt.getPropertyExtension(eclass.getInstanceClass());
+            if (ped==null && rt != TargetRuntime.getDefaultRuntime())
+                ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(eclass.getInstanceClass());
             if (ped!=null)
                 return ped.getAdapter(adapterFactory,eclass);
             return null;
         }
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EObject object) {
-			PropertyExtensionDescriptor ped = TargetRuntime.getCurrentRuntime().getPropertyExtension(object.getClass());
-            if (ped==null && TargetRuntime.getCurrentRuntime() != TargetRuntime.getDefaultRuntime())
+        	TargetRuntime rt = TargetRuntime.getRuntime(object);
+			PropertyExtensionDescriptor ped = rt.getPropertyExtension(object.getClass());
+            if (ped==null && rt != TargetRuntime.getDefaultRuntime())
                 ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(object.getClass());
 			if (ped!=null)
 				return ped.getAdapter(adapterFactory,object);

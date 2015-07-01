@@ -35,8 +35,9 @@ public class ValidationDelegateClientSelector implements IClientSelector {
 				return true;
 			if (pkg == DcPackage.eINSTANCE)
 				return true;
-			if (TargetRuntime.getCurrentRuntime()!=null) {
-				ModelDescriptor md = TargetRuntime.getCurrentRuntime().getModelDescriptor();
+			TargetRuntime rt = TargetRuntime.getRuntime((EObject)object);
+			if (rt != null) {
+				ModelDescriptor md = rt.getModelDescriptor();
 				if (md!=null && pkg == md.getEPackage())
 					return true;
 			}

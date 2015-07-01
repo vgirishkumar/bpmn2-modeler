@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.JavaProjectClassLoader;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -126,7 +127,8 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		addImport.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SchemaImportDialog dialog = new SchemaImportDialog(getShell());
+				TargetRuntime rt = TargetRuntime.getRuntime(modelObject);
+				SchemaImportDialog dialog = new SchemaImportDialog(getShell(), rt);
 				if (dialog.open() == Window.OK) {
 					final Object result[] = dialog.getResult();
 					if (result.length == 1) {

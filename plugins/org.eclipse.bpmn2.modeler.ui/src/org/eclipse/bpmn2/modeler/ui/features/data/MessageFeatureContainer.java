@@ -303,12 +303,13 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		public Message createBusinessObject(ICreateContext context) {
 			changesDone = true;
 
-			Message message = Bpmn2ModelerFactory.create(Message.class);
+			EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
+			Definitions definitions = ModelUtil.getDefinitions(targetBusinessObject);
+			
+			Message message = Bpmn2ModelerFactory.create(targetBusinessObject.eResource(), Message.class);
 			String oldName = message.getName();
 			message.setName(Messages.MessageFeatureContainer_New);
 			message.setId(null);
-			EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
-			Definitions definitions = ModelUtil.getDefinitions(targetBusinessObject);
 
 			List<Message> messageList = new ArrayList<Message>();
 			messageList.add(message);

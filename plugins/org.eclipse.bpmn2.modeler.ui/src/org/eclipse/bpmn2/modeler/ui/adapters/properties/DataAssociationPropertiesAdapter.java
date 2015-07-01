@@ -220,7 +220,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					}
 						
 					containerFeature = container.eClass().getEStructuralFeature("properties"); //$NON-NLS-1$
-					property = Bpmn2ModelerFactory.create(Property.class);
+					property = Bpmn2ModelerFactory.create(association.eResource(), Property.class);
 					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(property);
 					adapter.getObjectDescriptor().setTextValue((String)value);
 				}

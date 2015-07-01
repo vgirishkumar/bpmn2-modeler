@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.Messages;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
@@ -86,6 +87,7 @@ public class ModelDecorator {
 	protected EPackage ePackage;
 	protected static ResourceSet resourceSet;
 	protected List<EPackage> relatedEPackages;
+	protected TargetRuntime targetRuntime;
 	
 	/**
 	 * Construct a new EPackage for extension classes and features, and add the given
@@ -1207,7 +1209,7 @@ public class ModelDecorator {
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
-			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(ExtensionAttributeValue.class);
+			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(object.eResource(), ExtensionAttributeValue.class);
 			ModelUtil.setID(newItem);
 			FeatureMap map = newItem.getValue();
 			map.add(feature, value);
@@ -1266,7 +1268,7 @@ public class ModelDecorator {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								Process process = Bpmn2ModelerFactory.create(Process.class);
+								Process process = Bpmn2ModelerFactory.create(participant.eResource(), Process.class);
 								participant.setProcessRef(process);
 								definitions.getRootElements().add(process);
 								ModelUtil.setID(process);
@@ -1409,5 +1411,13 @@ public class ModelDecorator {
 			return feature;
 
 		return null;
+	}
+
+	public void setTargetRuntime(TargetRuntime targetRuntime) {
+		this.targetRuntime = targetRuntime;
+	}
+	
+	public TargetRuntime getTargetRuntime() {
+		return targetRuntime;
 	}
 }

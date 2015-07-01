@@ -114,7 +114,8 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 							// This editor lifecycle event is normally triggered by the Bpmn2ModelerFactory
 							// when an object is created. We need to send this event from here to make sure
 							// a {@see ProcessVariableNameChangeAdapter} is attached to the object.
-							LifecycleEvent.notify(EventType.BUSINESSOBJECT_CREATED, newGlobal);
+							TargetRuntime rt = TargetRuntime.getRuntime(object);
+							LifecycleEvent.notify(EventType.BUSINESSOBJECT_CREATED, newGlobal, rt);
 							
 							addExtensionValue(newGlobal);
 							return newGlobal;

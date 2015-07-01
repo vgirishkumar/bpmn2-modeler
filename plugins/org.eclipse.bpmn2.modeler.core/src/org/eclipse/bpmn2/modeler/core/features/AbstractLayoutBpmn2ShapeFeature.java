@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -42,8 +43,9 @@ public abstract class AbstractLayoutBpmn2ShapeFeature extends AbstractLayoutFeat
 
 	@Override
 	public void execute(IContext context) {
+		TargetRuntime rt = TargetRuntime.getRuntime(getDiagramBehavior());
 		PictogramElement pe = ((ILayoutContext)context).getPictogramElement();
-		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, getFeatureProvider(), context, pe));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, getFeatureProvider(), context, pe, rt));
 		super.execute(context);
 	}
 }

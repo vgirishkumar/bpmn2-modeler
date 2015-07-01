@@ -146,10 +146,7 @@ public class BPMN2Editor extends DefaultBPMN2Editor implements IGotoMarker {
 		activeEditor = editor;
 		if (activeEditor!=null) {
 			Bpmn2Preferences.setActiveProject(activeEditor.getProject());
-			TargetRuntime.setCurrentRuntime( activeEditor.getTargetRuntime() );
 		}
-		else
-			TargetRuntime.setCurrentRuntime(null);
 	}
 
 	@SuppressWarnings("rawtypes")

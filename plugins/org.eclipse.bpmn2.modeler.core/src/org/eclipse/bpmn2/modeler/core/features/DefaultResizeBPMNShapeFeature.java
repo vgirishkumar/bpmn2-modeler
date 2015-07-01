@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -48,23 +49,26 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		if (FeatureSupport.isLabelShape(context.getPictogramElement()))
 			return false;
 		
+		TargetRuntime rt = TargetRuntime.getRuntime(context.getPictogramElement());
 		boolean doit = super.canResizeShape(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_RESIZE,
-				getFeatureProvider(), context, context.getPictogramElement());
+				getFeatureProvider(), context, context.getPictogramElement(), rt);
 		event.doit = doit;
 		LifecycleEvent.notify(event);
 		return event.doit;
 	}
 	
 	protected void preResizeShape(IResizeShapeContext context) {
+		TargetRuntime rt = TargetRuntime.getRuntime(context.getPictogramElement());
 		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
-				getFeatureProvider(), context, context.getPictogramElement()));
+				getFeatureProvider(), context, context.getPictogramElement(), rt));
 
 	}
 	
 	protected void postResizeShape(IResizeShapeContext context) {
+		TargetRuntime rt = TargetRuntime.getRuntime(context.getPictogramElement());
 		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_RESIZE,
-				getFeatureProvider(), context, context.getPictogramElement()));
+				getFeatureProvider(), context, context.getPictogramElement(), rt));
 	}
 	
 	/* (non-Javadoc)

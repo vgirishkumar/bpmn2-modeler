@@ -250,7 +250,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			// add all primitive data types defined by the default typeLanguage
 			String typeLanguage = definitions.getTypeLanguage();
 			if (typeLanguage!=null) {
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TargetRuntime rt = TargetRuntime.getRuntime(definitions);
 				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
 				if (tld!=null) {
 					for (TypeLanguageDescriptor.Type type : tld.getTypes()) {

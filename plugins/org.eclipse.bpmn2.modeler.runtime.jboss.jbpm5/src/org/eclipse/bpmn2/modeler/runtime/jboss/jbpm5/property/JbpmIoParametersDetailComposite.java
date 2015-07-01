@@ -93,6 +93,8 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 		if (activity==null || name==null || name.isEmpty())
 			return false;
 		
+		TargetRuntime rt = TargetRuntime.getRuntime(activity);
+		
 		List<Property> props = null;
 		CustomTaskDescriptor ctd = BaseRuntimeExtensionDescriptor.getDescriptor(activity, CustomTaskDescriptor.class);
 		if (ctd!=null) {
@@ -106,7 +108,7 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 				}
 			}
 		}
-		ModelExtensionDescriptor med = TargetRuntime.getCurrentRuntime().getModelExtensionDescriptor(activity);
+		ModelExtensionDescriptor med = rt.getModelExtensionDescriptor(activity);
 		if (med!=null) {
 			props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			if (props!=null) {

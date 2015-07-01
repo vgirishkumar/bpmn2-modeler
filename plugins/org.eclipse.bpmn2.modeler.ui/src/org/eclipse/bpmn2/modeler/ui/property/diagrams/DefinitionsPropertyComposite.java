@@ -31,6 +31,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.NamespacesEditingDialog;
@@ -376,7 +377,8 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
-			SchemaImportDialog dialog = new SchemaImportDialog(getShell());
+			TargetRuntime rt = TargetRuntime.getRuntime(object);
+			SchemaImportDialog dialog = new SchemaImportDialog(getShell(), rt);
 			if (dialog.open() == Window.OK) {
 				Object result[] = dialog.getResult();
 				if (result.length == 1) {

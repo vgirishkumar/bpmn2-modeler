@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -66,7 +67,6 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.internal.preferences.PropertyUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
  
 
@@ -540,24 +540,24 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					// to the ObjectEditingDialog and delegate construction of the Detail Composite to our clients.
 					IPropertiesCompositeFactory factory = new IPropertiesCompositeFactory() {
 						@Override
-						public AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section) {
+						public AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime) {
 							return null;
 						}
 						@Override
-						public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+						public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style) {
 							// this is the only one that's required!
 							return AbstractListComposite.this.createDetailComposite(eClass, parent, style);
 						}
 						@Override
-						public AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section) {
+						public AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime) {
 							return null;
 						}
 						@Override
-						public AbstractListComposite createListComposite(Class eClass, Composite parent, int style) {
+						public AbstractListComposite createListComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style) {
 							return null;
 						}
 						@Override
-						public AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, int style) {
+						public AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, TargetRuntime targetRuntime, int style) {
 							return null;
 						}
 					};

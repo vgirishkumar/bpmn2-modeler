@@ -184,12 +184,13 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		// IAddContext can also mean that a file is dragged, therefore we have
 		// to check if we are really dragging a customTask
 		if (context instanceof IAddContext) {
-			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 			Object newObject = ((IAddContext)context).getNewObject();
 			if (newObject instanceof EObject ) {
+				EObject eObject = (EObject) newObject;
+				TargetRuntime rt = TargetRuntime.getRuntime(eObject);
 				for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
 					// FIXME: {@see ICustomElementFeatureContainer#getId(EObject)}
-					id = ctd.getFeatureContainer().getId((EObject) newObject);
+					id = ctd.getFeatureContainer().getId(eObject);
 					if (ctd.getId().equals(id)) {
 						context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 						return (String)id;

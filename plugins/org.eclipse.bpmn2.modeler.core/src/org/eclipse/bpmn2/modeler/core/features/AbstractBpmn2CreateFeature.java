@@ -179,9 +179,9 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 //	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 //	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
 //		}
-		
+		TargetRuntime rt = TargetRuntime.getRuntime(getDiagramEditor());
 		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
-				getFeatureProvider(), context, businessObject));
+				getFeatureProvider(), context, businessObject, rt));
 	}
 	
 	public EClass getFeatureClass() {

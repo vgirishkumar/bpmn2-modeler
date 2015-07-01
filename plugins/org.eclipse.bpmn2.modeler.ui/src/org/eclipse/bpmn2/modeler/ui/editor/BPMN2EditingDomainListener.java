@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.editor;
 
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -26,9 +27,11 @@ import org.eclipse.emf.transaction.TransactionalEditingDomainListenerImpl;
 public class BPMN2EditingDomainListener extends TransactionalEditingDomainListenerImpl implements ExceptionHandler {
 	
 	protected BasicDiagnostic diagnostics;
+	private DefaultBPMN2Editor bpmn2Editor;
 
 	public BPMN2EditingDomainListener(DefaultBPMN2Editor bpmn2Editor) {
 		super();
+		this.bpmn2Editor = bpmn2Editor;
 		TransactionalCommandStack stack = (TransactionalCommandStack) bpmn2Editor.getEditingDomain().getCommandStack();
 		stack.setExceptionHandler(this);
 	}
@@ -37,7 +40,8 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	public void transactionStarting(TransactionalEditingDomainEvent event) {
 		diagnostics = null;
 		super.transactionStarting(event);
-		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_STARTING, event.getTransaction()));
+		TargetRuntime rt = TargetRuntime.getRuntime(bpmn2Editor);
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_STARTING, event.getTransaction(), rt));
 	}
 	
 	/**
@@ -46,13 +50,15 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	@Override
 	public void transactionClosed(TransactionalEditingDomainEvent event) {
 		super.transactionClosed(event);
-		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_CLOSED, event.getTransaction()));
+		TargetRuntime rt = TargetRuntime.getRuntime(bpmn2Editor);
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_CLOSED, event.getTransaction(), rt));
 	}
 	
 	@Override
 	public void transactionInterrupted(TransactionalEditingDomainEvent event) {
 		super.transactionInterrupted(event);
-		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_INTERRUPTED, event.getTransaction()));
+		TargetRuntime rt = TargetRuntime.getRuntime(bpmn2Editor);
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_INTERRUPTED, event.getTransaction(), rt));
 	}
 
 	@Override

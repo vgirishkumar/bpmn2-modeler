@@ -44,8 +44,10 @@ public class SchemaImportDialog {
 	 * Create a brand new shiny Schema Import Dialog.
 	 * 
 	 * @param parent
+	 * @param targetRuntime
+	 * @param allowedResourceTypes
 	 */
-	public SchemaImportDialog(Shell parent, int allowedResourceTypes) {
+	public SchemaImportDialog(Shell parent, TargetRuntime targetRuntime, int allowedResourceTypes) {
 		
 		// Get the SchemaImportDialog class for this Target Runtime from contributing plugins;
 		// if none found, use a default
@@ -56,8 +58,7 @@ public class SchemaImportDialog {
 				if (e.getName().equals("importDialog")) { //$NON-NLS-1$
 					String id = e.getAttribute("id"); //$NON-NLS-1$
 					String runtimeId = e.getAttribute("runtimeId"); //$NON-NLS-1$
-					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-					if (rt!=null && rt.getId().equals(runtimeId)) {
+					if (targetRuntime!=null && targetRuntime.getId().equals(runtimeId)) {
 						delegate = (SelectionStatusDialog)e.createExecutableExtension("class"); //$NON-NLS-1$
 						break;
 					}
@@ -71,8 +72,8 @@ public class SchemaImportDialog {
 			delegate = new DefaultSchemaImportDialog(parent,allowedResourceTypes);
 	}
 	
-	public SchemaImportDialog(Shell parent) {
-		this(parent, -1);
+	public SchemaImportDialog(Shell parent, TargetRuntime targetRuntime) {
+		this(parent, targetRuntime, -1);
 	}
 
 	public int open() {

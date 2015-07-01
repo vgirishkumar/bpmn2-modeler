@@ -75,7 +75,7 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 
 	public static Hashtable<String, Object> getChoiceOfValues(EObject object) {
 		Hashtable<String,Object> choices = new Hashtable<String,Object>();
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		TargetRuntime rt = TargetRuntime.getRuntime(object);
 		for (ServiceImplementationDescriptor eld : rt.getServiceImplementationDescriptors()) {
 			choices.put(eld.getName(), ModelUtil.createStringWrapper(eld.getUri()));
 		}

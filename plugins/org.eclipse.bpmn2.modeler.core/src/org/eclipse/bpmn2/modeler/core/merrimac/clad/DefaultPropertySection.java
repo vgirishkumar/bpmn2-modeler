@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -51,8 +52,9 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		if (appliesToClasses.size() == 1
 				&& replaceTab == null
 				&&  !ITabDescriptor.TOP.equals(afterTab)) {
+			TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramEditor());
 			composite = PropertiesCompositeFactory.INSTANCE
-					.createDetailComposite(appliesToClasses.get(0), this);
+					.createDetailComposite(appliesToClasses.get(0), this, targetRuntime);
 		} else {
 			composite = new DefaultDetailComposite(this);
 		}
@@ -68,7 +70,8 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		if (appliesToClasses.size() == 1
 				&& replaceTab == null
 				&&  !ITabDescriptor.TOP.equals(afterTab)) {
-			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), parent, style);
+			TargetRuntime targetRuntime = TargetRuntime.getRuntime(getDiagramEditor());
+			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), parent, targetRuntime, style);
 		}
 		else {
 			composite = new DefaultDetailComposite(parent, style);

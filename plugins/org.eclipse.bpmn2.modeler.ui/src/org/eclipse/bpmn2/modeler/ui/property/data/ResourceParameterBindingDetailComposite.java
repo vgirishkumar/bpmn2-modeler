@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
@@ -61,7 +62,8 @@ public class ResourceParameterBindingDetailComposite extends DefaultDetailCompos
 		if (be instanceof ResourceParameterBinding) {
 			
 			final ResourceParameterBinding rpb = (ResourceParameterBinding) be;
-			
+			TargetRuntime rt = TargetRuntime.getRuntime(be);
+
 			bindReference(this, be, PACKAGE.getResourceParameterBinding_ParameterRef());
 			
 			// an MultipleAssignments is not really valid without both a From and To
@@ -73,7 +75,7 @@ public class ResourceParameterBindingDetailComposite extends DefaultDetailCompos
 			
 			if (exprDetails==null) {
 				exprDetails = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-						Expression.class, this, SWT.NONE);
+						Expression.class, this, rt, SWT.NONE);
 			}
 			exprDetails.setBusinessObject(expr);
 			exprDetails.setTitle(Messages.ResourceParameterBindingDetailComposite_Expression_Label);

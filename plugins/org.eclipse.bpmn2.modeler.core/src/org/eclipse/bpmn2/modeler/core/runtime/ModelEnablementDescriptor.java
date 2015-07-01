@@ -50,7 +50,7 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 	
 	public ModelEnablementDescriptor(IConfigurationElement e) {
 		super(e);
-		TargetRuntime rt = TargetRuntime.getRuntime(e);
+		TargetRuntime rt = TargetRuntime.getRuntime(e, null);
 		profileName = e.getAttribute("profile"); //$NON-NLS-1$
 		description = e.getAttribute("description"); //$NON-NLS-1$
 		String ref = e.getAttribute("ref"); //$NON-NLS-1$

@@ -32,6 +32,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -228,8 +229,12 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T extends EObject> T createModelObject(Class clazz) {
-		T object = null;
-		object = getBusinessObjectDelegate().createObject(clazz);
+		EClass eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
+
+		EFactory factory = eClass.getEPackage().getEFactoryInstance();
+		ObjectPropertyProvider.adapt(factory, businessObject.eResource());
+		
+		T object = getBusinessObjectDelegate().createObject(clazz);
 		ModelUtil.setID(object, ObjectPropertyProvider.getResource(businessObject));
 		return object;
 	}

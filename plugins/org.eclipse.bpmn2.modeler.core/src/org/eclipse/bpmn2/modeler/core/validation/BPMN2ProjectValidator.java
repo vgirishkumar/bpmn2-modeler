@@ -22,10 +22,10 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.model.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -82,11 +82,6 @@ public class BPMN2ProjectValidator extends AbstractValidator {
             return new ValidationResult();
         }
 
-        // TODO: temporary hack until I can figure out how to associate
-        // a Bpmn2ModelerFactory instance with a Resource.
-        targetRuntime = null;
-        TargetRuntime currentRuntime = TargetRuntime.getCurrentRuntime();
-        
         ValidationResult result = null;
     	modelFile = (IFile) file;
     	try {
@@ -101,6 +96,8 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 	    	rs.setLoadOptions(options);
 	
 			Resource resource = rs.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+			TargetRuntimeAdapter.adapt(resource, targetRuntime);
+
             resource.load(null);
 	        result = new ValidationResult();
 	        if (resource.getContents().isEmpty()) {
@@ -116,11 +113,6 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         } catch (IOException e2) {
             e2.printStackTrace();
         }
-    	finally {
-    		// TODO: see to-do comment above
-    		TargetRuntime.setCurrentRuntime(currentRuntime);
-    	}
-	        
         return result;
     }
     
@@ -332,7 +324,6 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		if (targetRuntime==null) {
 			IEditorInput input = new FileEditorInput(modelFile);
 			targetRuntime = TargetRuntime.getRuntime(input);
-    		TargetRuntime.setCurrentRuntime(targetRuntime);
 		}
 		return targetRuntime;
 	}

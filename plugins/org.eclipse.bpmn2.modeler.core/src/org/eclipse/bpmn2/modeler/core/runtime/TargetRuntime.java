@@ -31,20 +31,25 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.platform.IDiagramBehavior;
+import org.eclipse.graphiti.platform.IDiagramContainer;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.part.FileEditorInput;
 
 
 /**
@@ -64,8 +69,6 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	
 	// our cached registry of target runtimes contributed by other plugins
 	private static List<TargetRuntime> targetRuntimes;
-	// the Target Runtime for the currently active BPMN2 Editor
-	private static TargetRuntime currentRuntime;
 	
 	// the Target Runtime properties
 	private String name;
@@ -321,41 +324,99 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return runtime;
 	}
 	
-	public static TargetRuntime getRuntime(EObject object) {
-		TargetRuntime runtime = null;
-		if (object!=null && object.eResource()!=null) {
-			URI uri = object.eResource().getURI();
-			IFile file = FileUtils.getFile(uri);
-			if (file!=null) {
-				IEditorInput input = new FileEditorInput(file);
-				runtime = getRuntime(input);
+	/**
+	 * return the target runtime according to the namespace and diagram type
+	 * 
+	 * @param targetNamespace
+	 * @param type may be null
+	 * @return
+	 */
+	public static TargetRuntime getRuntime(String targetNamespace, Bpmn2DiagramType type) {
+		if (targetNamespace!=null) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				String tns = rt.getRuntimeExtension().getTargetNamespace(type);
+				if (targetNamespace.equals(tns)) {
+					return rt;
+				}
 			}
 		}
-		if (runtime==null)
-			runtime = getDefaultRuntime();
+		return null;
+	}
+	
+	/**
+	 * return the target runtime according to a business model or diagram model object
+	 * 
+	 * @param object business model or diagram model object
+	 * @return
+	 */
+	public static TargetRuntime getRuntime(EObject object) {
+		if (object instanceof EClass) {
+			throw new IllegalArgumentException("can not retrieve target runtime from EClass");
+		}
+		if (object instanceof PictogramElement) {
+			object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement((PictogramElement) object);
+		}
+
+		TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(object);
+		if (runtime != null) {
+			return runtime;
+		}
+		
+		Resource resource = object.eResource();
+		return resource != null ? getRuntime(resource) : getDefaultRuntime();
+	}
+	
+	/**
+	 * return the target runtime according to a model resource 
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static TargetRuntime getRuntime(Resource resource) {
+		TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(resource);
+		if (runtime == null) {
+			throw new IllegalStateException("missing target runtime on resource");
+		}
 		return runtime;
 	}
 	
 	/**
-	 * Set the current TargetRuntime.
-	 * This is called by a BPMN2 Editor when it becomes the active editor.
+	 * return the target runtime according to a diagram behavior
 	 * 
-	 * @param rt
+	 * @param diagramBehavior
+	 * @return
 	 */
-	public static void setCurrentRuntime(TargetRuntime rt) {
-		currentRuntime = rt;
+	public static TargetRuntime getRuntime(IDiagramBehavior diagramBehavior) {
+		return getRuntime(diagramBehavior.getDiagramContainer());
 	}
 	
 	/**
-	 * Return the current TargetRuntime.
-	 * This can be used by any UI component that belongs to the currently active BPMN2 Editor
+	 * return the target runtime according to a diagram container
 	 * 
+	 * @param container
 	 * @return
 	 */
-	public static TargetRuntime getCurrentRuntime() {
-		if (currentRuntime==null)
-			return getDefaultRuntime();
-		return currentRuntime;
+	public static TargetRuntime getRuntime(IDiagramContainer container) {
+		if (container instanceof IAdaptable) {
+			TargetRuntime runtime = (TargetRuntime) ((IAdaptable) container).getAdapter(TargetRuntime.class);
+			if (runtime != null) {
+				return runtime;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * find the target runtime according to complete target namespace
+	 * 
+	 * @param targetNamespace namespace which may contain a {@link Bpmn2DiagramType}
+	 * @return
+	 */
+	public static TargetRuntime getRuntimeByNamespace(String targetNamespace) {
+		// figure out diagram type
+		int separator = targetNamespace.lastIndexOf("/"); //$NON-NLS-1$
+		Bpmn2DiagramType type = separator != -1 ? Bpmn2DiagramType.fromString(targetNamespace.substring(separator+1)) : null;
+		return TargetRuntime.getRuntime(targetNamespace, type);
 	}
 	
 	/**
@@ -432,7 +493,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return targetRuntimes;
 	}
 	
-	static TargetRuntime getRuntime(IConfigurationElement e) {
+	static TargetRuntime getRuntime(IConfigurationElement e, TargetRuntime currentRuntime) {
 		TargetRuntime rt = getRuntime( getRuntimeId(e) );
 		if (rt==null) {
 			if (currentRuntime!=null)
@@ -771,21 +832,13 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	 * Runtime Extension Descriptor handling
 	 */
 	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) throws TargetRuntimeConfigurationException {
+		ConfigurationElementSorter.sort(elements);
 
-		TargetRuntime oldCurrentRuntime = currentRuntime;
-		currentRuntime = targetRuntime;
-		try {
-			ConfigurationElementSorter.sort(elements);
-
-			unloadExtensions(file);
-			
-			for (IConfigurationElement e : elements) {
-				currentRuntime = getRuntime(e);
-				createRuntimeExtensionDescriptor(currentRuntime,e,file);
-			}
-		}
-		finally {
-			currentRuntime = oldCurrentRuntime;
+		unloadExtensions(file);
+		
+		for (IConfigurationElement e : elements) {
+			TargetRuntime currentRuntime = getRuntime(e, targetRuntime);
+			createRuntimeExtensionDescriptor(currentRuntime, e, file);
 		}
 	}
 

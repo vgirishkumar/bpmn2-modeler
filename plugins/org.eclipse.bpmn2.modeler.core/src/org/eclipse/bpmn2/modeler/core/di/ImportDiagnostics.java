@@ -45,7 +45,7 @@ public class ImportDiagnostics implements IStructuredContentProvider, ILabelProv
 	
 	public ImportDiagnostics(Resource resource) {
 		this.resource = resource;
-		runtime = TargetRuntime.getCurrentRuntime();
+		runtime = TargetRuntime.getRuntime(resource);
 	}
 	
 	public void add(int severity, EObject element, String message) {

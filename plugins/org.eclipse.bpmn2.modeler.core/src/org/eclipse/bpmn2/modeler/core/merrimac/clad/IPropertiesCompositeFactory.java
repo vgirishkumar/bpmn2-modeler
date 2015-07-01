@@ -10,16 +10,17 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.swt.widgets.Composite;
 
 public interface IPropertiesCompositeFactory {
-	AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section);
-	AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style);
+	AbstractDetailComposite createDetailComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime);
+	AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style);
 
-	AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section);
-	AbstractListComposite createListComposite(Class eClass, Composite parent, int style);
+	AbstractListComposite createListComposite(Class eClass, AbstractBpmn2PropertySection section, TargetRuntime targetRuntime);
+	AbstractListComposite createListComposite(Class eClass, Composite parent, TargetRuntime targetRuntime, int style);
 	
-	AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, int style);
+	AbstractDialogComposite createDialogComposite(EClass eClass, Composite parent, TargetRuntime targetRuntime, int style);
 	
 }

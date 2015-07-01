@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
@@ -335,8 +336,6 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 				targetRuntime = ((Bpmn2DiagramEditorInput)input).getRuntime();
 			if (targetRuntime==null)
 				targetRuntime = TargetRuntime.getRuntime(input);
-
-			TargetRuntime.setCurrentRuntime(targetRuntime);
 		}
 		return targetRuntime;
 	}
@@ -464,7 +463,7 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 	@Override
 	public void dispose() {
 		if (targetRuntime != null) {
-			targetRuntime.notify(new LifecycleEvent(EventType.EDITOR_SHUTDOWN,this));
+			targetRuntime.notify(new LifecycleEvent(EventType.EDITOR_SHUTDOWN, this, targetRuntime));
 		}
 		if (modelHandler!=null) {
 			modelHandler.dispose();
@@ -873,7 +872,7 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 		protected ResourceSet initializeResourceSet(IEditorInput input, DefaultBPMN2Editor editor) {
 			// Determine which Target Runtime to use for this input and initialize the ResourceSet
 			TargetRuntime targetRuntime = editor.getTargetRuntime(input);
-			editor.getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_STARTUP,editor));
+			targetRuntime.notify(new LifecycleEvent(EventType.EDITOR_STARTUP,editor, targetRuntime));
 
 			ResourceSet resourceSet = editor.getEditingDomain().getResourceSet();
 			resourceSet.setURIConverter(new ProxyURIConverterImplExtension(editor.modelUri));
@@ -886,7 +885,10 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 		}
 
 		protected Bpmn2ResourceImpl createBPMN2Resource(DefaultBPMN2Editor editor, ResourceSet resourceSet) {
-			return (Bpmn2ResourceImpl) resourceSet.createResource(editor.modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+			Bpmn2ResourceImpl resource = (Bpmn2ResourceImpl) resourceSet.createResource(editor.modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+			// make sure resource has target runtime adapter
+			TargetRuntimeAdapter.adapt(resource, getTargetRuntime());
+			return resource;
 		}
 
 		/**
@@ -905,7 +907,8 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 			editor.modelHandler = ModelHandlerLocator.createModelHandler(editor.modelUri, editor.bpmnResource);
 			ModelHandlerLocator.put(editor.diagramUri, editor.modelHandler);
 
-			editor.getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_INITIALIZED, editor));
+			TargetRuntime rt = editor.getTargetRuntime();
+			rt.notify(new LifecycleEvent(EventType.EDITOR_INITIALIZED, editor, rt));
 
 			importDiagram(input, editor);
 		}

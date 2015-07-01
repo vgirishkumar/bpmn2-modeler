@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -77,7 +78,8 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 		if (isModelObjectEnabled("SequenceFlow", "conditionExpression")) { //$NON-NLS-1$ //$NON-NLS-2$
 			
 			final SequenceFlow sequenceFlow = (SequenceFlow) be;
-			
+			TargetRuntime rt = TargetRuntime.getRuntime(be);
+
 			GridData data;
 
 			addRemoveConditionButton = getToolkit().createButton(this, "", SWT.PUSH); //$NON-NLS-1$
@@ -106,7 +108,7 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 			
 			if (exp != null) {
 				addRemoveConditionButton.setText(Messages.SequenceFlowDetailComposite_Remove_Button);
-				AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(Expression.class, this, SWT.BORDER);
+				AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(Expression.class, this, rt, SWT.BORDER);
 				composite.setBusinessObject(exp);
 				// force the property page to resize to adjust for new expression section
 				Point size = composite.computeSize(-1, -1);

@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
@@ -113,7 +114,8 @@ public class DefaultListComposite extends AbstractListComposite {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite#createDetailComposite(org.eclipse.swt.widgets.Composite, java.lang.Class)
 	 */
 	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
-		AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, SWT.NONE);
+		TargetRuntime rt = TargetRuntime.getRuntime(getDiagramEditor());
+		AbstractDetailComposite composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, rt, SWT.NONE);
 		return composite;
 	}
 

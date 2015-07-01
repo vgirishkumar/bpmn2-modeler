@@ -125,7 +125,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 	
 	public static Hashtable<String, Object> getChoiceOfValues(EObject object) {
 		Hashtable<String,Object> choices = new Hashtable<String, Object>();
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		TargetRuntime rt = TargetRuntime.getRuntime(object);
 		for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
 			choices.put(el.getName(), ModelUtil.createStringWrapper(el.getUri()));
 		}

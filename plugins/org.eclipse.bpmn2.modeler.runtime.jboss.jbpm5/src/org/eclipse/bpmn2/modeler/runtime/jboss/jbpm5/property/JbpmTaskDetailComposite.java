@@ -117,7 +117,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 			AddContext context = new AddContext(new AreaContext(), task);
 			String id = CustomElementFeatureContainer.getId(context);
 			if (id!=null) {
-		    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		    	TargetRuntime rt = TargetRuntime.getRuntime(task);
 		    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 		    	ctd.populateObject(task, task.eResource(), true);
 		    	adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);

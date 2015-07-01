@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -49,13 +50,13 @@ public class DataAssignmentDetailComposite extends DefaultDetailComposite {
 		toDetails = null;
 	}
 	
-	@SuppressWarnings("restriction")
 	@Override
 	public void createBindings(final EObject be) {
 		
 		if (be instanceof Assignment) {
 			
 			final Assignment assignment = (Assignment) be;
+			TargetRuntime rt = TargetRuntime.getRuntime(be);
 			
 			// an MultipleAssignments is not really valid without both a From and To
 			Expression toExp = assignment.getTo();
@@ -84,14 +85,14 @@ public class DataAssignmentDetailComposite extends DefaultDetailComposite {
 			
 			if (toDetails==null) {
 				toDetails = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-						Expression.class, this, SWT.NONE);
+						Expression.class, this, rt, SWT.NONE);
 			}
 			toDetails.setBusinessObject(toExp);
 			toDetails.setTitle(Messages.DataAssignmentDetailComposite_From_Title);
 	
 			if (fromDetails==null) {
 				fromDetails = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-						Expression.class, this, SWT.NONE);
+						Expression.class, this, rt, SWT.NONE);
 			}
 			fromDetails.setBusinessObject(fromExp);
 			fromDetails.setTitle(Messages.DataAssignmentDetailComposite_To_Title);

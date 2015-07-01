@@ -417,16 +417,20 @@ public class LifecycleEvent {
 	public IFeatureProvider featureProvider;
 	/** An override flag to force (or prevent) certain Pictogram Element actions */
 	public boolean doit = true;
+	/** current target runtime the event is fired on */
+	public TargetRuntime targetRuntime;
 	
 	/**
 	 * Constructor for a simple event type and event object.
 	 * 
 	 * @param eventType  one of the EventType enumerations.
 	 * @param target  object affected by the event.
+	 * @param targetRuntime  current target runtime the event is fired on 
 	 */
-	public LifecycleEvent(EventType eventType, Object target) {
+	public LifecycleEvent(EventType eventType, Object target, TargetRuntime targetRuntime) {
 		this.eventType = eventType;
 		this.target = target;
+		this.targetRuntime = targetRuntime;
 	}
 	
 	/**
@@ -436,17 +440,19 @@ public class LifecycleEvent {
 	 * @param featureProvider  the BPMN2 Feature Provider instance.
 	 * @param context  a Graphiti Context for the event.
 	 * @param target  object affected by the event.
+	 * @param targetRuntime  current target runtime the event is fired on 
 	 */
-	public LifecycleEvent(EventType eventType, IFeatureProvider featureProvider, IContext context, Object target) {
+	public LifecycleEvent(EventType eventType, IFeatureProvider featureProvider, IContext context, Object target, TargetRuntime targetRuntime) {
 		this.eventType = eventType;
 		this.featureProvider = featureProvider;
 		this.context = context;
 		this.target = target;
+		this.targetRuntime = targetRuntime;
 	}
 	
-	public static void notify(EventType eventType, Object target) {
+	public static void notify(EventType eventType, Object target, TargetRuntime targetRuntime) {
 		if (target!=null) {
-			notify(new LifecycleEvent(eventType, target));
+			notify(new LifecycleEvent(eventType, target, targetRuntime));
 		}
 	}
 
@@ -454,8 +460,11 @@ public class LifecycleEvent {
 	 * @param lifecycleEvent
 	 */
 	public static void notify(LifecycleEvent lifecycleEvent) {
-    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-    	rt.notify(lifecycleEvent);
+		TargetRuntime rt = lifecycleEvent.targetRuntime;
+		if (rt == null) {
+			throw new IllegalStateException("missing target runtime in LifecycleEvent");
+		}
+		rt.notify(lifecycleEvent);
 	}
 	
 	@Override
