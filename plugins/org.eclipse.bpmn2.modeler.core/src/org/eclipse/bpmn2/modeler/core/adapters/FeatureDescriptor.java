@@ -138,6 +138,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				}
 				else if (o instanceof FormalExpression) {
 					t = ModelUtil.getExpressionBody((FormalExpression)o);
+					if (t==null)
+						t = "";
 				}
 			}
 			if (t==null && o!=null) {

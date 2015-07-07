@@ -182,7 +182,7 @@ public class TextObjectEditor extends ObjectEditor {
 	 * @return string representation of the EObject feature's value.
 	 */
 	protected String getText() {
-		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		Object value = getBusinessObjectDelegate().getTextValue(object, feature);
 		if (multiLine && value instanceof String) {
 			value = toPlatformString((String) value);
 		}

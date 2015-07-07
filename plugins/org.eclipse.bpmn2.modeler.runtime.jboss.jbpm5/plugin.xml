@@ -643,6 +643,11 @@
 					</property>
 					<property name="dataInputs">
 						<value>
+							<property name="name" value="Description" type="EString"/>
+						</value>
+					</property>
+					<property name="dataInputs">
+						<value>
 							<property name="name" value="GroupId" type="EString"/>
 						</value>
 					</property>
@@ -677,6 +682,7 @@
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#5"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#6"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#7"/>
+							<property name="dataInputRefs" ref="ioSpecification/dataInputs#8"/>
 						</value>
 					</property>
 				</value>
@@ -763,7 +769,7 @@
 						<value>
 							<property name="from" type="FormalExpression">
 								<value>
-									<property name="body" value="true"/>
+									<property name="body" value=""/>
 								</value>
 							</property>
 							<property name="to" type="FormalExpression">
@@ -782,7 +788,7 @@
 						<value>
 							<property name="from" type="FormalExpression">
 								<value>
-									<property name="body" value=""/>
+									<property name="body" value="true"/>
 								</value>
 							</property>
 							<property name="to" type="FormalExpression">
@@ -801,7 +807,7 @@
 						<value>
 							<property name="from" type="FormalExpression">
 								<value>
-									<property name="body" value="en-UK"/>
+									<property name="body" value=""/>
 								</value>
 							</property>
 							<property name="to" type="FormalExpression">
@@ -820,7 +826,7 @@
 						<value>
 							<property name="from" type="FormalExpression">
 								<value>
-									<property name="body" value=""/>
+									<property name="body" value="en-UK"/>
 								</value>
 							</property>
 							<property name="to" type="FormalExpression">
@@ -831,6 +837,25 @@
 						</value>
 					</property>
 					<property name="targetRef" ref="ioSpecification/dataInputs#7"/>
+				</value>
+			</property>
+			<property name="dataInputAssociations">
+				<value>
+					<property name="assignment">
+						<value>
+							<property name="from" type="FormalExpression">
+								<value>
+									<property name="body" value=""/>
+								</value>
+							</property>
+							<property name="to" type="FormalExpression">
+								<value>
+									<property name="body" ref="ioSpecification/dataInputs#8"/>
+								</value>
+							</property>
+						</value>
+					</property>
+					<property name="targetRef" ref="ioSpecification/dataInputs#8"/>
 				</value>
 			</property>
 		</modelExtension>
