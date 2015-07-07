@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -264,7 +265,8 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				}
 				else {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
-					((TextObjectEditor)editor).setMultiLine(false);
+					boolean isCDATA = "CDATA".equals(dataType);
+					((TextObjectEditor)editor).setMultiLine(isCDATA);
 				}
 				editor.createControl(getAttributesParent(),ModelUtil.toCanonicalString(name));
 			}

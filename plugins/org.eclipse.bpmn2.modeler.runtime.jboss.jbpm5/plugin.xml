@@ -638,12 +638,12 @@
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Comment" type="EString"/>
+							<property name="name" value="Comment" type="CDATA"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Description" type="EString"/>
+							<property name="name" value="Description" type="CDATA"/>
 						</value>
 					</property>
 					<property name="dataInputs">

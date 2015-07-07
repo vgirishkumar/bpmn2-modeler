@@ -15,10 +15,13 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Documentation;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
 /**
  * @author Bob Brodt
@@ -40,7 +43,11 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
     			@Override
     	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {
     				String text = value==null ? "" : value.toString(); //$NON-NLS-1$
-					documentation.setText(text);
+    				Object b = DocumentationPropertiesAdapter.this.getProperty(feature, "CDATA");
+    				if (b !=null)
+    					setTextCDATA(documentation, text);
+    				else
+    					documentation.setText(text);
     			}
 
 				@Override
@@ -48,8 +55,18 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
 					// formal expression body is always a multiline text field
 					return true;
 				}
+				
+				private void setTextCDATA(Documentation documentation, String text) {
+					documentation.getMixed().clear();
+					FeatureMap.Entry cdata = FeatureMapUtil.createCDATAEntry(text);
+					documentation.getMixed().add(cdata);
+
+				}
 			}
     	);
+    	
+    	// By default, Documentation.text is serialized as CDATA instead of an XML attribute value.
+    	setProperty(feature, "CDATA", Boolean.TRUE);
 	}
 
 }

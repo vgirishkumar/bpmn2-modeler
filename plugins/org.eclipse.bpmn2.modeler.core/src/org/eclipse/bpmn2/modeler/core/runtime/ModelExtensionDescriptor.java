@@ -795,6 +795,11 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			
 			if (!(feature.getEType() instanceof EEnum)) // skip enum initialization
 				initializers.add(adapter,feature,value);
+
+			// Note that only FormalExpression.body and Documentation.text support CDATA serialization.
+			// @see FormalExpressionPropertiesAdapter and DocumentationPropertiesAdapter.
+			if ("CDATA".equals(property.type))
+				adapter.setProperty(feature, "CDATA", Boolean.TRUE);
 		}
 	}
 
