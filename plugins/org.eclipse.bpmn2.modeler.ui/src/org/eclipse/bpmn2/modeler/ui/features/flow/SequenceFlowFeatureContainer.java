@@ -192,6 +192,16 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			if (source==target)
 				return true;
 			
+			if (source instanceof SubProcess) {
+				if (((SubProcess)source).isTriggeredByEvent())
+					return false;
+			}
+			
+			if (target instanceof SubProcess) {
+				if (((SubProcess)target).isTriggeredByEvent())
+					return false;
+			}
+			
 			if (target instanceof StartEvent)
 				return false;
 			

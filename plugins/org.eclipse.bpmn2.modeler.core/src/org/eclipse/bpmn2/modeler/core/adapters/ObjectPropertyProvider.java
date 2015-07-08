@@ -110,7 +110,7 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 	 */
 	@Override
 	public void setResource(Resource resource) {
-		if (resource!=null)
+//		if (resource!=null)
 			setProperty(RESOURCE, resource);
 	}
 

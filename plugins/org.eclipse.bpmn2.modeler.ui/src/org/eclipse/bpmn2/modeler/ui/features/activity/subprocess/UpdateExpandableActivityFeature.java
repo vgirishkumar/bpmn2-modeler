@@ -12,7 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -22,13 +26,18 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
+import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -105,6 +114,23 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 		}else{
 			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), container, true);
 			ShapeDecoratorUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+		}
+		
+		if (subprocess.isTriggeredByEvent()) {
+			// Event SubProcesses may not have incoming or outgoing SequenceFlows
+			List<SequenceFlow> flows = new ArrayList<SequenceFlow>();
+			flows.addAll(subprocess.getIncoming());
+			flows.addAll(subprocess.getOutgoing());
+			for (SequenceFlow sf : flows) {
+				org.eclipse.graphiti.mm.pictograms.Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
+				for (Object o : Graphiti.getPeService().getLinkedPictogramElements(new EObject[] {sf}, diagram)) {
+					if (o instanceof Connection) {
+						IDeleteContext dc = new DeleteContext((Connection)o);
+						IDeleteFeature df = getFeatureProvider().getDeleteFeature(dc);
+						df.delete(dc);
+					}
+				}
+			}
 		}
 		
 		return true;
