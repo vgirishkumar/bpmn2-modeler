@@ -209,7 +209,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 				// if a detail composite needs to display additional information
 				// depending on what type of referencing object created the
 				// feature editing dialog.
-				dialogContent.setData("container", object);
+				dialogContent.setData("container", object); //$NON-NLS-1$
 				super.aboutToOpen();
 			}
 		};

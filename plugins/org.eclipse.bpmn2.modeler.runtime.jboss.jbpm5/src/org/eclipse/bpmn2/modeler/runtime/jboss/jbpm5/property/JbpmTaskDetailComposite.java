@@ -170,7 +170,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				if (parameter==null) {
                     ItemDefinition itemDef = createModelObject(ItemDefinition.class);
                     itemDef.setItemKind(ItemKind.INFORMATION);
-                    itemDef.setStructureRef( ModelUtil.createStringWrapper("Object") );
+                    itemDef.setStructureRef( ModelUtil.createStringWrapper("Object") ); //$NON-NLS-1$
                     InsertionAdapter.add(definitions,
                             PACKAGE.getDefinitions_RootElements(),
                             itemDef);
@@ -240,12 +240,12 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					editor = new BooleanObjectEditor(this,fromExpression,attribute) {
 						@Override
 						public Boolean getValue() {
-							if (task instanceof UserTask && "Skippable".equals(name)) {
+							if (task instanceof UserTask && "Skippable".equals(name)) { //$NON-NLS-1$
 								// Sheesh! All this just to set the default value of
 								// the User Task "Skippable" Data Input to true by default!
 								UserTask ut = (UserTask) task;
 								for (DataInput di : ut.getIoSpecification().getDataInputs()) {
-									if ("Skippable".equals(di.getName())) {
+									if ("Skippable".equals(di.getName())) { //$NON-NLS-1$
 										for (DataInputAssociation dia : ut.getDataInputAssociations()) {
 											if (dia.getTargetRef() == di) {
 												if (dia.getAssignment().size()==0) {
@@ -265,7 +265,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				}
 				else {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
-					boolean isCDATA = "CDATA".equals(dataType);
+					boolean isCDATA = "CDATA".equals(dataType); //$NON-NLS-1$
 					((TextObjectEditor)editor).setMultiLine(isCDATA);
 				}
 				editor.createControl(getAttributesParent(),ModelUtil.toCanonicalString(name));

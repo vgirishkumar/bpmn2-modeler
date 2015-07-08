@@ -235,12 +235,12 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 	}
 	
 	public String toString(NotificationType type) {
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		for (int i=0; i<size(); ++i) {
 			TaskNotification tn = get(i);
 			if (tn.getType().equals(type)) {
 				if (!result.isEmpty())
-					result += "^";
+					result += "^"; //$NON-NLS-1$
 				result += tn.toString();
 			}
 		}

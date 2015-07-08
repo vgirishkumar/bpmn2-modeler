@@ -1203,7 +1203,7 @@ public class ModelDecorator {
 			object = object.eContainer();
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
 		if (evf==null) {
-			Activator.logError(new Exception("Object type "+object.eClass().getName()+" is not a BaseElement"));
+			Activator.logError(new Exception("Object type "+object.eClass().getName()+" is not a BaseElement")); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);

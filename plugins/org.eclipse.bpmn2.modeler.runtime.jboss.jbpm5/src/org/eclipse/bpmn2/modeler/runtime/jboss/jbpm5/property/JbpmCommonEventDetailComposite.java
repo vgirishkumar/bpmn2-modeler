@@ -125,7 +125,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 				eventsTable.setTitle(Messages.JbpmCommonEventDetailComposite_Title);
 				return eventsTable;
 			}
-			else if ("dataInputs".equals(feature.getName()) || "dataOutputs".equals(feature.getName())) { //$NON-NLS-1$
+			else if ("dataInputs".equals(feature.getName()) || "dataOutputs".equals(feature.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
 				// only show Input/Output list if the event definition requires it
 				List<EventDefinition> eventDefinitions = null;
 				if (object instanceof ThrowEvent)

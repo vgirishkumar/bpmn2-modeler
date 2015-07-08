@@ -48,9 +48,9 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 		if (businessObject==null || businessObject.eResource()==null) {
 			if (businessObject==null)
-				System.err.println("PropertyTabDescriptorProvider#getTabDescriptors() businessObject is null");
+				System.err.println("PropertyTabDescriptorProvider#getTabDescriptors() businessObject is null"); //$NON-NLS-1$
 			else
-				System.err.println("PropertyTabDescriptorProvider#getTabDescriptors() businessObject '"+businessObject+"' is not contained in a Resource");
+				System.err.println("PropertyTabDescriptorProvider#getTabDescriptors() businessObject '"+businessObject+"' is not contained in a Resource"); //$NON-NLS-1$ //$NON-NLS-2$
 			return new ITabDescriptor[] {};
 		}
 		

@@ -235,12 +235,12 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 	}
 	
 	public String toString(ReassignmentType type) {
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		for (int i=0; i<size(); ++i) {
 			TaskReassignment tr = get(i);
 			if (tr.getType().equals(type)) {
 				if (!result.isEmpty())
-					result += "^";
+					result += "^"; //$NON-NLS-1$
 				result += tr.toString();
 			}
 		}

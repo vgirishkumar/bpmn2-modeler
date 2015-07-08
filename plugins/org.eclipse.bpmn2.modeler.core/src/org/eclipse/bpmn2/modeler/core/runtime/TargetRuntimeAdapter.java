@@ -80,7 +80,7 @@ public class TargetRuntimeAdapter extends AdapterImpl {
 						object.eAdapters().add(a);
 						return;
 					} else {
-						throw new IllegalStateException("not allowed to have differnt runtime on the object and it's resource");
+						throw new IllegalStateException("not allowed to have differnt runtime on the object and it's resource"); //$NON-NLS-1$
 					}
 				}
 			}

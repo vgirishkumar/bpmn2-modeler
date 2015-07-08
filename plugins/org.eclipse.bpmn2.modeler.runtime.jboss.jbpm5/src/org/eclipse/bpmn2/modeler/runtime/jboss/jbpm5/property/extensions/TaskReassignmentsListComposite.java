@@ -182,7 +182,7 @@ public class TaskReassignmentsListComposite extends DefaultListComposite {
 									for (String s : newText.split(",")) { //$NON-NLS-1$
 										s = s.trim();
 										if (!s.isEmpty() && !SyntaxCheckerUtils.isNCName(s)) {
-											return NLS.bind("User name {0} is invalid", s);
+											return NLS.bind(Messages.TaskReassignmentsListComposite_InvalidUserName, s);
 										}
 									}
 									return null;
@@ -242,7 +242,7 @@ public class TaskReassignmentsListComposite extends DefaultListComposite {
 									for (String s : newText.split(",")) { //$NON-NLS-1$
 										s = s.trim();
 										if (!s.isEmpty() && !SyntaxCheckerUtils.isNCName(s)) {
-											return NLS.bind("Group name {0} is invalid", s);
+											return NLS.bind(Messages.TaskReassignmentsListComposite_InvalidGroupName, s);
 										}
 									}
 									return null;

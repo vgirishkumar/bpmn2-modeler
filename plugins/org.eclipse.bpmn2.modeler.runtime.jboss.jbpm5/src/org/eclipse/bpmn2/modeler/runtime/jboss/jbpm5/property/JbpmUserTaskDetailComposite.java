@@ -27,8 +27,8 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class JbpmUserTaskDetailComposite extends JbpmTaskDetailComposite {
 
-	final static String NOT_STARTED_NOTIFY = "NotStartedNotify";
-	final static String NOT_COMPLETED_NOTIFY = "NotCompletedNotify";
+	final static String NOT_STARTED_NOTIFY = "NotStartedNotify"; //$NON-NLS-1$
+	final static String NOT_COMPLETED_NOTIFY = "NotCompletedNotify"; //$NON-NLS-1$
 
 	public JbpmUserTaskDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
@@ -45,10 +45,10 @@ public class JbpmUserTaskDetailComposite extends JbpmTaskDetailComposite {
 
 		TaskNotificationsListComposite notificationsList = new TaskNotificationsListComposite(this, (Task)be);
 		notificationsList.bindList(be, PACKAGE.getActivity_DataInputAssociations());
-		notificationsList.setTitle("Notifications");
+		notificationsList.setTitle("Notifications"); //$NON-NLS-1$
 
 		TaskReassignmentsListComposite reassignmentsList = new TaskReassignmentsListComposite(this, (Task)be);
 		reassignmentsList.bindList(be, PACKAGE.getActivity_DataInputAssociations());
-		reassignmentsList.setTitle("Reassignments");
+		reassignmentsList.setTitle("Reassignments"); //$NON-NLS-1$
 	}
 }

@@ -60,7 +60,7 @@ public class ItemAwareElementDetailComposite extends DefaultDetailComposite {
 	
 	@Override
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
-		if (reference.getName().equals("itemSubjectRef")) {
+		if (reference.getName().equals("itemSubjectRef")) { //$NON-NLS-1$
 			if (isModelObjectEnabled(object.eClass(), reference)) {
 				if (parent==null)
 					parent = getAttributesParent();

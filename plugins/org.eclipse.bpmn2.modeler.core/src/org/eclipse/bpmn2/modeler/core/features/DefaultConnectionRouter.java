@@ -277,7 +277,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				}
 			}
 		}
-		GraphicsUtil.dump("All Shapes: ", allShapes);
+		GraphicsUtil.dump("All Shapes: ", allShapes); //$NON-NLS-1$
 		return allShapes;
 	}
 

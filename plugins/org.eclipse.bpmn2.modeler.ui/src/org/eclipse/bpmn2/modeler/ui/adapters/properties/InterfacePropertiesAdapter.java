@@ -158,7 +158,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			Resource resource = ObjectPropertyProvider.getResource(object);
 			
 			if (value==null)
-				value = "";
+				value = ""; //$NON-NLS-1$
 			if (value instanceof PortType) {
 				PortType portType = (PortType)value;
 				value = NamespaceUtil.normalizeQName(resource, portType.getQName());;

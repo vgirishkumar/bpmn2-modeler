@@ -733,7 +733,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @param index the index
 	 */
 	public static void setRemovedBendpoint(Connection connection, Point p) {
-		AbstractConnectionRouter.setRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY());
+		AbstractConnectionRouter.setRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -747,7 +747,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	public static void setOldBendpointLocation(Connection connection, Point p) {
-		AbstractConnectionRouter.setRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY());
+		AbstractConnectionRouter.setRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -799,9 +799,9 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @return the removed bendpoint
 	 */
 	public static Point getRemovedBendpoint(Connection connection) {
-		String value = AbstractConnectionRouter.getRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT);
+		String value = AbstractConnectionRouter.getRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT); //$NON-NLS-1$
 		if (value!=null && !value.isEmpty()) {
-			String b[] = value.split("\\.");
+			String b[] = value.split("\\."); //$NON-NLS-1$
 			int x = Integer.parseInt(b[0]);
 			int y = Integer.parseInt(b[1]);
 			return GraphicsUtil.createPoint(x, y);
@@ -821,9 +821,9 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	public static Point getOldBendpointLocation(Connection connection) {
-		String value = AbstractConnectionRouter.getRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT);
+		String value = AbstractConnectionRouter.getRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT); //$NON-NLS-1$
 		if (value!=null && !value.isEmpty()) {
-			String b[] = value.split("\\.");
+			String b[] = value.split("\\."); //$NON-NLS-1$
 			int x = Integer.parseInt(b[0]);
 			int y = Integer.parseInt(b[1]);
 			return GraphicsUtil.createPoint(x, y);

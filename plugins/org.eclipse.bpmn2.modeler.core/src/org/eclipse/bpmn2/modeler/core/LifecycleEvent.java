@@ -462,7 +462,7 @@ public class LifecycleEvent {
 	public static void notify(LifecycleEvent lifecycleEvent) {
 		TargetRuntime rt = lifecycleEvent.targetRuntime;
 		if (rt == null) {
-			throw new IllegalStateException("missing target runtime in LifecycleEvent");
+			throw new IllegalStateException("missing target runtime in LifecycleEvent"); //$NON-NLS-1$
 		}
 		rt.notify(lifecycleEvent);
 	}

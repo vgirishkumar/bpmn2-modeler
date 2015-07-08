@@ -802,12 +802,12 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		@Override
 		protected String getText() {
 			String text = null;
-			EStructuralFeature f = object.eClass().getEStructuralFeature("name");
+			EStructuralFeature f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (f!=null) {
 				text = (String)object.eGet(f);
 			}
 			if (text==null)
-				return "";
+				return ""; //$NON-NLS-1$
 			return text;
 		}
 	};

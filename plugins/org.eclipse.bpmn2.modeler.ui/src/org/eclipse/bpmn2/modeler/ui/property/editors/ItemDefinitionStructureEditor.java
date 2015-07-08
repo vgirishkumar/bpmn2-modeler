@@ -78,7 +78,7 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 				if (newText==null || newText.isEmpty())
 					return Messages.ItemDefinitionStructureEditor_DataStructureEmpty_Error;
 				if (prefix!=null)
-					newText = prefix + ":" + newText;
+					newText = prefix + ":" + newText; //$NON-NLS-1$
 				// we support both QNames and parameterized Java typespecs
 				boolean valid = SyntaxCheckerUtils.isQName(newText) || SyntaxCheckerUtils.isJavaTypespec(newText);
 				if (!valid)

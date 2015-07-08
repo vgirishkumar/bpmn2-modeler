@@ -40,7 +40,7 @@ public class JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter extends Multi
 				EObject container = ModelUtil.getContainer(object);
 				if (container instanceof SubProcess) {
 					// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
-					for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) { 
+					for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
 						choices.put( getChoiceString(p), p);
 					}
 				}
@@ -54,7 +54,7 @@ public class JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter extends Multi
 				EObject container = ModelUtil.getContainer(object);
 				if (container instanceof SubProcess) {
 					// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
-					for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) { 
+					for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
 						choices.put( getChoiceString(p), p);
 					}
 				}

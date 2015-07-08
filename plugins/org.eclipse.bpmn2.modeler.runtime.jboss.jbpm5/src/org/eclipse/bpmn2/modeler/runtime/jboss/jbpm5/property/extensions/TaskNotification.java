@@ -33,13 +33,13 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 	
 	Task task;
 	NotificationType type = NotificationType.NOT_STARTED_NOTIFY;
-	String from = "";
+	String from = ""; //$NON-NLS-1$
 	EList<String> toUsers = new BasicEList<String>();
 	EList<String> toGroups = new BasicEList<String>();
-	String replyTo = "";
-	String subject = "";
-	String body = "";
-	String expiresAt = "";
+	String replyTo = ""; //$NON-NLS-1$
+	String subject = ""; //$NON-NLS-1$
+	String body = ""; //$NON-NLS-1$
+	String expiresAt = ""; //$NON-NLS-1$
 
 	static EStructuralFeature typeFeature;
 	static EStructuralFeature fromFeature;
@@ -159,11 +159,11 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 	}
 	
 	public String getToUsersAsString() {
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		for (int i=0; i<getToUsers().size(); ++i) {
 			text += getToUsers().get(i);
 			if (i+1<getToUsers().size())
-				text += ",";
+				text += ","; //$NON-NLS-1$
 		}
 		return text;
 
@@ -174,7 +174,7 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 		oldUsers.addAll(this.toUsers);
 		this.toUsers.clear();
 		if (users!=null && !users.isEmpty()) {
-			for (String s : users.split(",")) {
+			for (String s : users.split(",")) { //$NON-NLS-1$
 				s = s.trim();
 				if (!s.isEmpty())
 					this.toUsers.add(s);
@@ -190,11 +190,11 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 	}
 	
 	public String getToGroupsAsString() {
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		for (int i=0; i<getToGroups().size(); ++i) {
 			text += getToGroups().get(i);
 			if (i+1<getToGroups().size())
-				text += ",";
+				text += ","; //$NON-NLS-1$
 		}
 		return text;
 
@@ -205,7 +205,7 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 		oldGroups.addAll(this.toGroups);
 		this.toGroups.clear();
 		if (groups!=null && !groups.isEmpty()) {
-			for (String s : groups.split(",")) {
+			for (String s : groups.split(",")) { //$NON-NLS-1$
 				s = s.trim();
 				if (!s.isEmpty())
 					this.toGroups.add(s);
@@ -266,23 +266,23 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 
 	@Override
 	public String toString() {
-		String result = "[from:" + from;
-		result += "|tousers:";
+		String result = "[from:" + from; //$NON-NLS-1$
+		result += "|tousers:"; //$NON-NLS-1$
 		for (int i = 0; i < toUsers.size(); ++i) {
 			result += toUsers.get(i);
 			if (i + 1 < toUsers.size())
-				result += ",";
+				result += ","; //$NON-NLS-1$
 		}
-		result += "|togroups:";
+		result += "|togroups:"; //$NON-NLS-1$
 		for (int i = 0; i < toGroups.size(); ++i) {
 			result += toGroups.get(i);
 			if (i + 1 < toGroups.size())
-				result += ",";
+				result += ","; //$NON-NLS-1$
 		}
-		result += "|replyTo:" + replyTo;
-		result += "|subject:" + subject;
-		result += "|body:" + body.replaceAll("\r","").replaceAll("\n", "<br />");
-		result += "]@[" + expiresAt + "]";
+		result += "|replyTo:" + replyTo; //$NON-NLS-1$
+		result += "|subject:" + subject; //$NON-NLS-1$
+		result += "|body:" + body.replaceAll("\r","").replaceAll("\n", "<br />"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		result += "]@[" + expiresAt + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 
 		return result;
 	}
@@ -292,25 +292,25 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 	 */
 	public String fromString(String string) {
 		String tail = null;
-		from = "";
+		from = ""; //$NON-NLS-1$
 		toUsers.clear();
 		toGroups.clear();
-		replyTo = "";
-		subject = "";
-		body = "";
-		expiresAt = "";
+		replyTo = ""; //$NON-NLS-1$
+		subject = ""; //$NON-NLS-1$
+		body = ""; //$NON-NLS-1$
+		expiresAt = ""; //$NON-NLS-1$
 		EStructuralFeature currentFeature = null;
 		// append a newline to given string - this is used to collect
 		// the tail of the string if a "^" delimiter is found.
-		ExtendedStringTokenizer st = new ExtendedStringTokenizer(string + "\n", "[:,|]@^", true);
+		ExtendedStringTokenizer st = new ExtendedStringTokenizer(string + "\n", "[:,|]@^", true); //$NON-NLS-1$ //$NON-NLS-2$
 		while (st.hasMoreTokens()) {
 			String t = st.nextToken();
-			if ("|]".contains(t)) {
+			if ("|]".contains(t)) { //$NON-NLS-1$
 				currentFeature = null;
 				continue;
 			}
-			else if ("^".equals(t)) {
-				tail = st.nextToken("\n");
+			else if ("^".equals(t)) { //$NON-NLS-1$
+				tail = st.nextToken("\n"); //$NON-NLS-1$
 				break;
 			}
 			else if (currentFeature!=null) {
@@ -319,11 +319,11 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 					from += t.trim();
 				}
 				else if (currentFeature==toUsersFeature) {
-					if (!",".equals(t))
+					if (!",".equals(t)) //$NON-NLS-1$
 						getToUsers().add(t.trim());
 				}
 				else if (currentFeature==toGroupsFeature) {
-					if (!",".equals(t))
+					if (!",".equals(t)) //$NON-NLS-1$
 						getToGroups().add(t.trim());
 				}
 				else if (currentFeature==replyToFeature) {
@@ -336,11 +336,11 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 					body += t;
 					while (st.hasMoreTokens()) {
 						String t1 = st.nextToken();
-						if ("]".equals(t1)) {
+						if ("]".equals(t1)) { //$NON-NLS-1$
 							String t2 = st.nextToken();
-							if ("@".equals(t2)) {
+							if ("@".equals(t2)) { //$NON-NLS-1$
 								String t3 = st.nextToken();
-								if ("[".equals(t3)) {
+								if ("[".equals(t3)) { //$NON-NLS-1$
 									// body is complete, expect expiresAt feature next
 									currentFeature = expiresAtFeature;
 									break;
@@ -366,34 +366,34 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 					expiresAt += t;
 				}
 			}
-			else if ("from".equals(t)) {
+			else if ("from".equals(t)) { //$NON-NLS-1$
 				currentFeature = fromFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("tousers".equals(t)) {
+			else if ("tousers".equals(t)) { //$NON-NLS-1$
 				currentFeature = toUsersFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("togroups".equals(t)) {
+			else if ("togroups".equals(t)) { //$NON-NLS-1$
 				currentFeature = toGroupsFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("replyTo".equals(t)) {
+			else if ("replyTo".equals(t)) { //$NON-NLS-1$
 				currentFeature = replyToFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("subject".equals(t)) {
+			else if ("subject".equals(t)) { //$NON-NLS-1$
 				currentFeature = subjectFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("body".equals(t)) {
+			else if ("body".equals(t)) { //$NON-NLS-1$
 				currentFeature = bodyFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
 		}
 		
 		// post processing: convert HTML break tags (<br/>) to newlines in the message body
-		body = body.replaceAll("<br[ \t]*/>", "\n");
+		body = body.replaceAll("<br[ \t]*/>", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return tail;
 	}

@@ -58,14 +58,14 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 
 	@Override
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
-		if ("independent".equals(attribute.getName())) {
+		if ("independent".equals(attribute.getName())) { //$NON-NLS-1$
 			independentEditor = new BooleanObjectEditor(this,object,attribute);
 			independentCheckbox = (Button) independentEditor.createControl(parent,label);
 			if (waitForCompletionCheckbox!=null && waitForCompletionCheckbox.getSelection()==false) {
 				independentCheckbox.setEnabled(false);
 			}
 		}
-		else if ("waitForCompletion".equals(attribute.getName())) {
+		else if ("waitForCompletion".equals(attribute.getName())) { //$NON-NLS-1$
 			ObjectEditor editor = new BooleanObjectEditor(this,object,attribute);
 			waitForCompletionCheckbox = (Button) editor.createControl(parent,label);
 			waitForCompletionCheckbox.addSelectionListener( new SelectionListener() {

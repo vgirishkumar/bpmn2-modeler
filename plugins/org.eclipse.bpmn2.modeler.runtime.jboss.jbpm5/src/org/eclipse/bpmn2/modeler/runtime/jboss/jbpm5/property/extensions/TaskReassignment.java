@@ -35,7 +35,7 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 	ReassignmentType type = ReassignmentType.NOT_STARTED_REASSIGN;
 	EList<String> users = new BasicEList<String>();
 	EList<String> groups = new BasicEList<String>();
-	String expiresAt = "";
+	String expiresAt = ""; //$NON-NLS-1$
 
 	static EStructuralFeature typeFeature;
 	static EStructuralFeature usersFeature;
@@ -115,11 +115,11 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 	}
 	
 	public String getUsersAsString() {
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		for (int i=0; i<getUsers().size(); ++i) {
 			text += getUsers().get(i);
 			if (i+1<getUsers().size())
-				text += ",";
+				text += ","; //$NON-NLS-1$
 		}
 		return text;
 
@@ -130,7 +130,7 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 		oldUsers.addAll(this.users);
 		this.users.clear();
 		if (users!=null && !users.isEmpty()) {
-			for (String s : users.split(",")) {
+			for (String s : users.split(",")) { //$NON-NLS-1$
 				s = s.trim();
 				if (!s.isEmpty())
 					this.users.add(s);
@@ -146,11 +146,11 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 	}
 	
 	public String getGroupsAsString() {
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		for (int i=0; i<getGroups().size(); ++i) {
 			text += getGroups().get(i);
 			if (i+1<getGroups().size())
-				text += ",";
+				text += ","; //$NON-NLS-1$
 		}
 		return text;
 
@@ -161,7 +161,7 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 		oldGroups.addAll(this.groups);
 		this.groups.clear();
 		if (groups!=null && !groups.isEmpty()) {
-			for (String s : groups.split(",")) {
+			for (String s : groups.split(",")) { //$NON-NLS-1$
 				s = s.trim();
 				if (!s.isEmpty())
 					this.groups.add(s);
@@ -186,19 +186,19 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 
 	@Override
 	public String toString() {
-		String result = "[users:";
+		String result = "[users:"; //$NON-NLS-1$
 		for (int i = 0; i < users.size(); ++i) {
 			result += users.get(i);
 			if (i + 1 < users.size())
-				result += ",";
+				result += ","; //$NON-NLS-1$
 		}
-		result += "|groups:";
+		result += "|groups:"; //$NON-NLS-1$
 		for (int i = 0; i < groups.size(); ++i) {
 			result += groups.get(i);
 			if (i + 1 < groups.size())
-				result += ",";
+				result += ","; //$NON-NLS-1$
 		}
-		result += "]@[" + expiresAt + "]";
+		result += "]@[" + expiresAt + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 
 		return result;
 	}
@@ -210,22 +210,22 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 		String tail = null;
 		users.clear();
 		groups.clear();
-		expiresAt = "";
+		expiresAt = ""; //$NON-NLS-1$
 		EStructuralFeature currentFeature = null;
 		// append a newline to given string - this is used to collect
 		// the tail of the string if a "^" delimiter is found.
-		ExtendedStringTokenizer st = new ExtendedStringTokenizer(string + "\n", "[:,|]@^", true);
+		ExtendedStringTokenizer st = new ExtendedStringTokenizer(string + "\n", "[:,|]@^", true); //$NON-NLS-1$ //$NON-NLS-2$
 		while (st.hasMoreTokens()) {
 			String t = st.nextToken();
-			if ("|".equals(t)) {
+			if ("|".equals(t)) { //$NON-NLS-1$
 				currentFeature = null;
 				continue;
 			}
-			else if ("]".equals(t)) {
+			else if ("]".equals(t)) { //$NON-NLS-1$
 				String t2 = st.nextToken();
-				if ("@".equals(t2)) {
+				if ("@".equals(t2)) { //$NON-NLS-1$
 					String t3 = st.nextToken();
-					if ("[".equals(t3)) {
+					if ("[".equals(t3)) { //$NON-NLS-1$
 						// body is complete, expect expiresAt feature next
 						currentFeature = expiresAtFeature;
 					}
@@ -239,31 +239,31 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 					st.pushToken(t2);
 				}
 			}
-			else if ("^".equals(t)) {
-				tail = st.nextToken("\n");
+			else if ("^".equals(t)) { //$NON-NLS-1$
+				tail = st.nextToken("\n"); //$NON-NLS-1$
 				break;
 			}
 			else if (currentFeature!=null) {
 				// we're currently parsing a feature
 				if (currentFeature==usersFeature) {
-					if (!",".equals(t))
+					if (!",".equals(t)) //$NON-NLS-1$
 						getUsers().add(t.trim());
 				}
 				else if (currentFeature==groupsFeature) {
-					if (!",".equals(t))
+					if (!",".equals(t)) //$NON-NLS-1$
 						getGroups().add(t.trim());
 				}
 				else if (currentFeature==expiresAtFeature) {
 					expiresAt += t;
 				}
 			}
-			else if ("users".equals(t)) {
+			else if ("users".equals(t)) { //$NON-NLS-1$
 				currentFeature = usersFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
-			else if ("groups".equals(t)) {
+			else if ("groups".equals(t)) { //$NON-NLS-1$
 				currentFeature = groupsFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
+				Assert.isTrue(":".equals(st.nextToken())); //$NON-NLS-1$
 			}
 		}
 		

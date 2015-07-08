@@ -52,7 +52,7 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 			// try creating an instance of that class instead of the generic
 			// AnyTypeImpl. The implementation class name must have the
 			// EClass name followed by "Impl" and must extend AnyTypeImpl.
-			if ("AnyType".equals(eClass.getInstanceClass().getSimpleName()))
+			if ("AnyType".equals(eClass.getInstanceClass().getSimpleName())) //$NON-NLS-1$
 				object = super.create(eClass);
 			else
 				object = create(eClass, (Class<EObject>)eClass.getInstanceClass());

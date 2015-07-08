@@ -64,8 +64,8 @@ public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<Ite
 				if (container instanceof InputOutputSpecification) {
 					container = container.eContainer();
 				}
-				EStructuralFeature doaFeature = container.eClass().getEStructuralFeature("dataOutputAssociation");
-				EStructuralFeature diaFeature = container.eClass().getEStructuralFeature("dataInputAssociation");
+				EStructuralFeature doaFeature = container.eClass().getEStructuralFeature("dataOutputAssociation"); //$NON-NLS-1$
+				EStructuralFeature diaFeature = container.eClass().getEStructuralFeature("dataInputAssociation"); //$NON-NLS-1$
 				
 				if (object instanceof DataOutput) {
 					// if there's a DataOutputAssociation that references

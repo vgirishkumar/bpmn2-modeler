@@ -250,7 +250,7 @@ public class TextObjectEditor extends ObjectEditor {
 	public static String fromPlatformString(String s) {
 		if (s==null)
 			return null;
-		return s.replaceAll(Text.DELIMITER, "\n");
+		return s.replaceAll(Text.DELIMITER, "\n"); //$NON-NLS-1$
 	}
 	
 	/**
@@ -263,6 +263,6 @@ public class TextObjectEditor extends ObjectEditor {
 	public static String toPlatformString(String s) {
 		if (s==null)
 			return null;
-		return s.replaceAll("\n", Text.DELIMITER);
+		return s.replaceAll("\n", Text.DELIMITER); //$NON-NLS-1$
 	}
 }

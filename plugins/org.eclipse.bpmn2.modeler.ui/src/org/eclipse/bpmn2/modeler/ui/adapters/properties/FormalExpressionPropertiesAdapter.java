@@ -55,7 +55,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     	   		protected void internalSet(FormalExpression formalExpression, EStructuralFeature feature, Object value, int index) {
     				String body = value==null ? null : value.toString();
     				InsertionAdapter.executeIfNeeded(formalExpression);
-    				Object b = FormalExpressionPropertiesAdapter.this.getProperty(feature, "CDATA");
+    				Object b = FormalExpressionPropertiesAdapter.this.getProperty(feature, "CDATA"); //$NON-NLS-1$
     				if (b !=null)
     					setBodyCDATA(formalExpression, body);
     				else

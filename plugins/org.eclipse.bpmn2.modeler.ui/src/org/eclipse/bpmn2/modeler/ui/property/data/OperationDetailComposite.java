@@ -72,7 +72,7 @@ public class OperationDetailComposite extends DefaultDetailComposite {
 
 	@Override
 	public void createBindings(EObject be) {
-		Object data = getData("container");
+		Object data = getData("container"); //$NON-NLS-1$
 		if (data instanceof Activity) {
 			// If the container object is an Activity, we want to also display
 			// the Interface name and implementation.

@@ -20,8 +20,8 @@ import java.util.List;
 import org.eclipse.emf.common.util.Enumerator;
 
 public enum NotificationType implements Enumerator {
-	NOT_STARTED_NOTIFY(0, "NotStartedNotify", "NotStartedNotify"),
-    NOT_COMPLETED_NOTIFY(1, "NotCompletedNotify", "NotCompletedNotify");
+	NOT_STARTED_NOTIFY(0, "NotStartedNotify", "NotStartedNotify"), //$NON-NLS-1$ //$NON-NLS-2$
+    NOT_COMPLETED_NOTIFY(1, "NotCompletedNotify", "NotCompletedNotify"); //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final int NOT_STARTED_NOTIFY_VALUE = 0;
     public static final int NOT_COMPLETED_NOTIFY_VALUE = 1;

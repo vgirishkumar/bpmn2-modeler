@@ -20,8 +20,8 @@ import java.util.List;
 import org.eclipse.emf.common.util.Enumerator;
 
 public enum ReassignmentType implements Enumerator {
-	NOT_STARTED_REASSIGN(0, "NotStartedReassign", "NotStartedReassign"),
-    NOT_COMPLETED_REASSIGN(1, "NotCompletedReassign", "NotCompletedReassign");
+	NOT_STARTED_REASSIGN(0, "NotStartedReassign", "NotStartedReassign"), //$NON-NLS-1$ //$NON-NLS-2$
+    NOT_COMPLETED_REASSIGN(1, "NotCompletedReassign", "NotCompletedReassign"); //$NON-NLS-1$ //$NON-NLS-2$
 
     public static final int NOT_STARTED_REASSIGN_VALUE = 0;
     public static final int NOT_COMPLETED_REASSIGN_VALUE = 1;

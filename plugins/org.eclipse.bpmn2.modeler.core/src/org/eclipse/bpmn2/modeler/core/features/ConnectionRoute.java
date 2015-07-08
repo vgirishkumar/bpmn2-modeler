@@ -231,7 +231,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		String start = p0 == null ? "null" : p0.getX() + "," + p0.getY(); //$NON-NLS-1$ //$NON-NLS-2$
 		String end = p1 == null ? "null" : p1.getX() + "," + p1.getY(); //$NON-NLS-1$ //$NON-NLS-2$
 
-		text = String.format("%3d",getId()) + (valid ? " :" : "X:") + //$NON-NLS-1$ //$NON-NLS-2$
+		text = String.format("%3d",getId()) + (valid ? " :" : "X:") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				" rank=" + rank + //$NON-NLS-1$
 				" length=" + getLength() + //$NON-NLS-1$
 				" points=" + getPoints().size() + //$NON-NLS-1$ //$NON-NLS-2$

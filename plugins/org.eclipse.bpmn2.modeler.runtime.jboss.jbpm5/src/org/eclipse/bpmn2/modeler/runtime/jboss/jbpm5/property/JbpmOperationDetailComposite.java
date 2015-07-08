@@ -47,7 +47,7 @@ public class JbpmOperationDetailComposite extends DefaultDetailComposite {
 
 	@Override
 	public void createBindings(EObject be) {
-		Object data = getData("container");
+		Object data = getData("container"); //$NON-NLS-1$
 		if (data instanceof Activity) {
 			// If the container object is an Activity, we want to also display
 			// the Interface name and implementation.
@@ -58,7 +58,7 @@ public class JbpmOperationDetailComposite extends DefaultDetailComposite {
 				EReference implementationRef = PACKAGE.getInterface_ImplementationRef();
 				Composite parent = getAttributesParent();
 				
-				String displayName = "Interface"; ExtendedPropertiesProvider.getLabel(iface, name);
+				String displayName = "Interface"; ExtendedPropertiesProvider.getLabel(iface, name); //$NON-NLS-1$
 				ObjectEditor editor = new TextObjectEditor(this,iface,name);
 				editor.createControl(parent,displayName);
 	

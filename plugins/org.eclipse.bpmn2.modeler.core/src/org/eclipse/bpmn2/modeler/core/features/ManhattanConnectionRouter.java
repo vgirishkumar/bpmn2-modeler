@@ -190,7 +190,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			return super.calculateRoute();
 		
 		GraphicsUtil.debug = false;
-		GraphicsUtil.dump("\n===========================================\nRouting ", ffc);
+		GraphicsUtil.dump("\n===========================================\nRouting ", ffc); //$NON-NLS-1$
 		
 		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		if (initialUpdate) {

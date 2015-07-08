@@ -351,7 +351,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	 */
 	public static TargetRuntime getRuntime(EObject object) {
 		if (object instanceof EClass) {
-			throw new IllegalArgumentException("can not retrieve target runtime from EClass");
+			throw new IllegalArgumentException("can not retrieve target runtime from EClass"); //$NON-NLS-1$
 		}
 		if (object instanceof PictogramElement) {
 			object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement((PictogramElement) object);
@@ -375,7 +375,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	public static TargetRuntime getRuntime(Resource resource) {
 		TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(resource);
 		if (runtime == null) {
-			throw new IllegalStateException("missing target runtime on resource");
+			throw new IllegalStateException("missing target runtime on resource"); //$NON-NLS-1$
 		}
 		return runtime;
 	}

@@ -19,12 +19,12 @@ public class SyntaxCheckerUtils {
 	
 	public static final boolean isQName(String name) {
 		invalidChar = 0;
-		String parts[] = name.split(":");
-		if (parts.length==1 && !name.endsWith(":")) {
+		String parts[] = name.split(":"); //$NON-NLS-1$
+		if (parts.length==1 && !name.endsWith(":")) { //$NON-NLS-1$
 			return isNCName(parts[0]);
 		}
 		else if (parts.length==2) {
-			if (!name.endsWith(":"))
+			if (!name.endsWith(":")) //$NON-NLS-1$
 				return isNCName(parts[0]) && isNCName(parts[1]);
 		}
 		else
@@ -35,12 +35,12 @@ public class SyntaxCheckerUtils {
 	public static String toQName(String name) {
 		if (name==null || name.isEmpty())
 			return "_"; //$NON-NLS-1$
-		String parts[] = name.split(":");
+		String parts[] = name.split(":"); //$NON-NLS-1$
 		if (parts.length==1) {
 			return toNCName(parts[0]);
 		}
 		else if (parts.length>=2) {
-			return toNCName(parts[0]) + ":" + toNCName(parts[1]);
+			return toNCName(parts[0]) + ":" + toNCName(parts[1]); //$NON-NLS-1$
 		}
 		return toNCName(name);
 	}
@@ -166,7 +166,7 @@ public class SyntaxCheckerUtils {
 			if (!isJavaIdentifier(part))
 				return false;
 		}
-		if (name.endsWith(".")) {
+		if (name.endsWith(".")) { //$NON-NLS-1$
 			invalidChar = '.';
 			return false;
 		}
@@ -175,13 +175,13 @@ public class SyntaxCheckerUtils {
 
 	public static String toJavaPackageName(String name) {
 		if (name==null || name.isEmpty())
-			return "_";
+			return "_"; //$NON-NLS-1$
 		String result = null;
 		for (String part : name.split("\\.")) { //$NON-NLS-1$
 			if (result==null || result.isEmpty())
 				result = toJavaIdentifier(part);
 			else
-				result = result + "." + toJavaIdentifier(part);
+				result = result + "." + toJavaIdentifier(part); //$NON-NLS-1$
 		}
 		return result;
 	}
@@ -190,7 +190,7 @@ public class SyntaxCheckerUtils {
 		invalidChar = 0;
 		if (name==null || name.isEmpty())
 			return false;
-		String part = "";
+		String part = ""; //$NON-NLS-1$
 		int brackets = 0;
 		int parts = 0;
 		char last = 0;
@@ -200,7 +200,7 @@ public class SyntaxCheckerUtils {
 					if (!isJavaPackageName(part))
 						return false;
 					++parts;
-					part = "";
+					part = ""; //$NON-NLS-1$
 				}
 				continue;
 			}
@@ -209,7 +209,7 @@ public class SyntaxCheckerUtils {
 				if (last!='<' && last!=',' && !isJavaPackageName(part)) {
 					return false;
 				}
-				part = "";
+				part = ""; //$NON-NLS-1$
 				last = c;
 				continue;
 			}
@@ -221,7 +221,7 @@ public class SyntaxCheckerUtils {
 				if (last!='>' && !isJavaPackageName(part)) {
 					return false;
 				}
-				part = "";
+				part = ""; //$NON-NLS-1$
 				last = c;
 				continue;
 			}
@@ -233,7 +233,7 @@ public class SyntaxCheckerUtils {
 				if (last!='>' && !isJavaPackageName(part)) {
 					return false;
 				}
-				part = "";
+				part = ""; //$NON-NLS-1$
 				last = c;
 				continue;
 			}

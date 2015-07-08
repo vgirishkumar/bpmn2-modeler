@@ -44,6 +44,8 @@ public class Messages extends NLS {
 	public static String TaskReassignmentsListComposite_ExpiresAt_Header;
 	public static String TaskReassignmentsListComposite_Groups_Header;
 	public static String TaskReassignmentsListComposite_Groups_Label;
+	public static String TaskReassignmentsListComposite_InvalidGroupName;
+	public static String TaskReassignmentsListComposite_InvalidUserName;
 	public static String TaskReassignmentsListComposite_Type_Header;
 	public static String TaskReassignmentsListComposite_Users_Header;
 	public static String TaskReassignmentsListComposite_Users_Label;

@@ -100,7 +100,7 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 			if (router.canRoute(connection) && router.routingNeeded(connection)) {
 				hasDoneChanges |= router.route(connection);
 				if (router.routingNeeded(connection))
-					AbstractConnectionRouter.addRoutingInfo(connection, "failed");
+					AbstractConnectionRouter.addRoutingInfo(connection, "failed"); //$NON-NLS-1$
 				else
 					AbstractConnectionRouter.removeRoutingInfo(connection);
 			}

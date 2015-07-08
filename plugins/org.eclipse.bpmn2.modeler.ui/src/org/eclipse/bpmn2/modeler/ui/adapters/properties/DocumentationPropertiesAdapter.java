@@ -43,7 +43,7 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
     			@Override
     	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {
     				String text = value==null ? "" : value.toString(); //$NON-NLS-1$
-    				Object b = DocumentationPropertiesAdapter.this.getProperty(feature, "CDATA");
+    				Object b = DocumentationPropertiesAdapter.this.getProperty(feature, "CDATA"); //$NON-NLS-1$
     				if (b !=null)
     					setTextCDATA(documentation, text);
     				else
@@ -66,7 +66,7 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
     	);
     	
     	// By default, Documentation.text is serialized as CDATA instead of an XML attribute value.
-    	setProperty(feature, "CDATA", Boolean.TRUE);
+    	setProperty(feature, "CDATA", Boolean.TRUE); //$NON-NLS-1$
 	}
 
 }

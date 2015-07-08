@@ -30,21 +30,21 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 public class TaskExtensionsFactory {
 	
-	public final static String TASKREASSIGNMENT_CLASS_NAME = "TaskReassignment";
-	public final static String TASKREASSIGNMENT_TYPE_FEATURE_NAME = "type";
-	public final static String TASKREASSIGNMENT_USERS_FEATURE_NAME = "users";
-	public final static String TASKREASSIGNMENT_GROUPS_FEATURE_NAME = "groups";
-	public final static String TASKREASSIGNMENT_EXPIRES_AT_FEATURE_NAME = "expiresAt";
+	public final static String TASKREASSIGNMENT_CLASS_NAME = "TaskReassignment"; //$NON-NLS-1$
+	public final static String TASKREASSIGNMENT_TYPE_FEATURE_NAME = "type"; //$NON-NLS-1$
+	public final static String TASKREASSIGNMENT_USERS_FEATURE_NAME = "users"; //$NON-NLS-1$
+	public final static String TASKREASSIGNMENT_GROUPS_FEATURE_NAME = "groups"; //$NON-NLS-1$
+	public final static String TASKREASSIGNMENT_EXPIRES_AT_FEATURE_NAME = "expiresAt"; //$NON-NLS-1$
 
-	public final static String TASKNOTIFICATION_CLASS_NAME = "TaskNotification";
-	public final static String TASKNOTIFICATION_TYPE_FEATURE_NAME = "type";
-	public final static String TASKNOTIFICATION_FROM_FEATURE_NAME = "from";
-	public final static String TASKNOTIFICATION_TO_USERS_FEATURE_NAME = "tousers";
-	public final static String TASKNOTIFICATION_TO_GROUPS_FEATURE_NAME = "togroups";
-	public final static String TASKNOTIFICATION_REPLY_TO_FEATURE_NAME = "replyTo";
-	public final static String TASKNOTIFICATION_SUBJECT_FEATURE_NAME = "subject";
-	public final static String TASKNOTIFICATION_BODY_FEATURE_NAME = "body";
-	public final static String TASKNOTIFICATION_EXPIRES_AT_FEATURE_NAME = "expiresAt";
+	public final static String TASKNOTIFICATION_CLASS_NAME = "TaskNotification"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_TYPE_FEATURE_NAME = "type"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_FROM_FEATURE_NAME = "from"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_TO_USERS_FEATURE_NAME = "tousers"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_TO_GROUPS_FEATURE_NAME = "togroups"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_REPLY_TO_FEATURE_NAME = "replyTo"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_SUBJECT_FEATURE_NAME = "subject"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_BODY_FEATURE_NAME = "body"; //$NON-NLS-1$
+	public final static String TASKNOTIFICATION_EXPIRES_AT_FEATURE_NAME = "expiresAt"; //$NON-NLS-1$
 	
 	ModelDecorator modelDecorator = ModelDecoratorAdapter.getModelDecorator(DroolsPackage.eINSTANCE);
 	
@@ -53,42 +53,42 @@ public class TaskExtensionsFactory {
 	private TaskExtensionsFactory() {
 		modelDecorator.createEClass(TASKREASSIGNMENT_CLASS_NAME, TaskReassignment.class);
 		modelDecorator.createEAttribute(TASKREASSIGNMENT_TYPE_FEATURE_NAME,
-				"ReassignmentType:EEnum", TASKREASSIGNMENT_CLASS_NAME,
+				"ReassignmentType:EEnum", TASKREASSIGNMENT_CLASS_NAME, //$NON-NLS-1$
 				null, new Enumerator[] {
 					ReassignmentType.NOT_STARTED_REASSIGN,
 					ReassignmentType.NOT_COMPLETED_REASSIGN
 				}
 		);
-		modelDecorator.createEReference(TASKREASSIGNMENT_USERS_FEATURE_NAME, "EString",
+		modelDecorator.createEReference(TASKREASSIGNMENT_USERS_FEATURE_NAME, "EString", //$NON-NLS-1$
 				TASKREASSIGNMENT_CLASS_NAME, true, true);
-		modelDecorator.createEReference(TASKREASSIGNMENT_GROUPS_FEATURE_NAME, "EString",
+		modelDecorator.createEReference(TASKREASSIGNMENT_GROUPS_FEATURE_NAME, "EString", //$NON-NLS-1$
 				TASKREASSIGNMENT_CLASS_NAME, true, true);
-		modelDecorator.createEAttribute(TASKREASSIGNMENT_EXPIRES_AT_FEATURE_NAME, "EString",
-				TASKREASSIGNMENT_CLASS_NAME, "");
+		modelDecorator.createEAttribute(TASKREASSIGNMENT_EXPIRES_AT_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKREASSIGNMENT_CLASS_NAME, ""); //$NON-NLS-1$
 
 	
 		modelDecorator.createEClass(TASKNOTIFICATION_CLASS_NAME, TaskNotification.class);
 		modelDecorator.createEAttribute(TASKNOTIFICATION_TYPE_FEATURE_NAME,
-				"NotificationType:EEnum", TASKNOTIFICATION_CLASS_NAME,
+				"NotificationType:EEnum", TASKNOTIFICATION_CLASS_NAME, //$NON-NLS-1$
 				null, new Enumerator[] {
 					NotificationType.NOT_STARTED_NOTIFY,
 					NotificationType.NOT_COMPLETED_NOTIFY
 				}
 		);
-		modelDecorator.createEAttribute(TASKNOTIFICATION_FROM_FEATURE_NAME, "EString",
-				TASKNOTIFICATION_CLASS_NAME, "");
-		modelDecorator.createEReference(TASKNOTIFICATION_TO_USERS_FEATURE_NAME, "EString",
+		modelDecorator.createEAttribute(TASKNOTIFICATION_FROM_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKNOTIFICATION_CLASS_NAME, ""); //$NON-NLS-1$
+		modelDecorator.createEReference(TASKNOTIFICATION_TO_USERS_FEATURE_NAME, "EString", //$NON-NLS-1$
 				TASKNOTIFICATION_CLASS_NAME, true, true);
-		modelDecorator.createEReference(TASKNOTIFICATION_TO_GROUPS_FEATURE_NAME, "EString",
+		modelDecorator.createEReference(TASKNOTIFICATION_TO_GROUPS_FEATURE_NAME, "EString", //$NON-NLS-1$
 				TASKNOTIFICATION_CLASS_NAME, true, true);
-		modelDecorator.createEAttribute(TASKNOTIFICATION_REPLY_TO_FEATURE_NAME, "EString",
-				TASKNOTIFICATION_CLASS_NAME, "");
-		modelDecorator.createEAttribute(TASKNOTIFICATION_SUBJECT_FEATURE_NAME, "EString",
-				TASKNOTIFICATION_CLASS_NAME, "");
-		modelDecorator.createEAttribute(TASKNOTIFICATION_BODY_FEATURE_NAME, "EString",
-				TASKNOTIFICATION_CLASS_NAME, "");
-		modelDecorator.createEAttribute(TASKNOTIFICATION_EXPIRES_AT_FEATURE_NAME, "EString",
-				TASKNOTIFICATION_CLASS_NAME, "");
+		modelDecorator.createEAttribute(TASKNOTIFICATION_REPLY_TO_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKNOTIFICATION_CLASS_NAME, ""); //$NON-NLS-1$
+		modelDecorator.createEAttribute(TASKNOTIFICATION_SUBJECT_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKNOTIFICATION_CLASS_NAME, ""); //$NON-NLS-1$
+		modelDecorator.createEAttribute(TASKNOTIFICATION_BODY_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKNOTIFICATION_CLASS_NAME, ""); //$NON-NLS-1$
+		modelDecorator.createEAttribute(TASKNOTIFICATION_EXPIRES_AT_FEATURE_NAME, "EString", //$NON-NLS-1$
+				TASKNOTIFICATION_CLASS_NAME, ""); //$NON-NLS-1$
 	}
 	
 	/*
@@ -103,7 +103,7 @@ public class TaskExtensionsFactory {
 	}
 	
 	public EStructuralFeature getTaskReassignment_ExpiresAt() {
-		return getTaskReassignment().getEStructuralFeature("expiresAt");
+		return getTaskReassignment().getEStructuralFeature("expiresAt"); //$NON-NLS-1$
 	}
 	
 	public EStructuralFeature getTaskReassignment_Users() {

@@ -281,7 +281,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 							else if (event instanceof ThrowEvent) {
 								if (link.getTarget()!=null) {
 									text += getTextValue(link.eContainer());
-									text += " -> ";
+									text += " -> "; //$NON-NLS-1$
 									LinkEventDefinition target = link.getTarget();
 									text += getTextValue(target.eContainer());
 									return text;

@@ -628,8 +628,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private static String getShapeStylePreferenceName(String name) {
 		// stupid hack to map both DataInputAssociation and DataOutputAssociation
 		// to DataAssociation
-		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name))
-			return "DataAssociation";
+		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name)) //$NON-NLS-1$ //$NON-NLS-2$
+			return "DataAssociation"; //$NON-NLS-1$
 		return name;
 	}
 	

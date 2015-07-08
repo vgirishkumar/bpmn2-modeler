@@ -56,7 +56,7 @@ public class InterfaceValidator extends org.eclipse.bpmn2.modeler.core.validatio
 		super.validate(object);
 		String implementation = ModelUtil.getStringWrapperTextValue(object.getImplementationRef());
 		if (!SyntaxCheckerUtils.isJavaPackageName(implementation)) {
-			addStatus(object, "implementationRef", Status.ERROR, Messages.InterfaceValidator_Implementation_Invalid, getName(object));
+			addStatus(object, "implementationRef", Status.ERROR, Messages.InterfaceValidator_Implementation_Invalid, getName(object)); //$NON-NLS-1$
 		}
 		return getResult();
 	}

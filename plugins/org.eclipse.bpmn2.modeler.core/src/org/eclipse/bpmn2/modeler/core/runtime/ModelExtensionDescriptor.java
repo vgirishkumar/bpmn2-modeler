@@ -806,8 +806,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 			// Note that only FormalExpression.body and Documentation.text support CDATA serialization.
 			// @see FormalExpressionPropertiesAdapter and DocumentationPropertiesAdapter.
-			if ("CDATA".equals(property.type))
-				adapter.setProperty(feature, "CDATA", Boolean.TRUE);
+			if ("CDATA".equals(property.type)) //$NON-NLS-1$
+				adapter.setProperty(feature, "CDATA", Boolean.TRUE); //$NON-NLS-1$
 		}
 	}
 
