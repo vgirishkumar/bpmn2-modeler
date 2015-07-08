@@ -31,6 +31,8 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
 
 /**
  * @author Bob Brodt
@@ -53,6 +55,10 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     	   		protected void internalSet(FormalExpression formalExpression, EStructuralFeature feature, Object value, int index) {
     				String body = value==null ? null : value.toString();
     				InsertionAdapter.executeIfNeeded(formalExpression);
+    				Object b = FormalExpressionPropertiesAdapter.this.getProperty(feature, "CDATA");
+    				if (b !=null)
+    					setBodyCDATA(formalExpression, body);
+    				else
     				formalExpression.setBody(body);
     			}
     			
@@ -77,6 +83,13 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 				public boolean isMultiLine() {
 					// formal expression body is always a multiline text field
 					return true;
+				}
+				
+				private void setBodyCDATA(FormalExpression formalExpression, String body) {
+					formalExpression.getMixed().clear();
+					FeatureMap.Entry cdata = FeatureMapUtil.createCDATAEntry(body);
+					formalExpression.getMixed().add(cdata);
+
 				}
 			}
     	);
