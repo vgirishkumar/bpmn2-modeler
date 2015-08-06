@@ -21,7 +21,6 @@ public class Messages extends NLS {
 	public static String BPMN2DiagramWizardPage1_Description;
 	public static String BPMN2DiagramWizardPage1_Process_Diagram_Description;
 	public static String BPMN2DiagramWizardPage1_Title;
-	public static String BPMN2DiagramWizardPage2_BPMN_Extension;
 	public static String BPMN2DiagramWizardPage2_Browse_Button;
 	public static String BPMN2DiagramWizardPage2_Choreography_Diagram;
 	public static String BPMN2DiagramWizardPage2_Collaboration_Diagram;

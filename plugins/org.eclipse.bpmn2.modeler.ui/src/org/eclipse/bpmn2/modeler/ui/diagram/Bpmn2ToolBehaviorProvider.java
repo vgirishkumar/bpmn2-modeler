@@ -725,7 +725,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			if (i+2 == names.size())
 				description += Messages.BPMNToolBehaviorProvider_Click_Drag_Prompt_Last_Separator;
 			else if (i+1 < names.size())
-				description += Messages.BPMNToolBehaviorProvider_Click_Drag_Prompt_Separator;
+				description += ","; //$NON-NLS-1$
 		}
 		button.setDescription(description);
 

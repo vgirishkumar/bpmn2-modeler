@@ -16,7 +16,6 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.diagram.messages"; //$NON-NLS-1$
 	public static String BPMNToolBehaviorProvider_Click_Drag_Prompt;
 	public static String BPMNToolBehaviorProvider_Click_Drag_Prompt_Last_Separator;
-	public static String BPMNToolBehaviorProvider_Click_Drag_Prompt_Separator;
 	public static String BPMNToolBehaviorProvider_Connectors_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Custom_Tasks_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Data_Items_Drawer_Label;

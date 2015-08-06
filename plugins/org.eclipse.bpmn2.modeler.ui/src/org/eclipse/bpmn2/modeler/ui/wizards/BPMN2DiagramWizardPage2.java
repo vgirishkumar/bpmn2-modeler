@@ -158,7 +158,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	private void updateFilename() {
 		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1"); //$NON-NLS-1$
 		String fileType = "unknown"; //$NON-NLS-1$
-		String filename = fileType+Messages.BPMN2DiagramWizardPage2_BPMN_Extension;
+		String filename = fileType+".bpmn"; //$NON-NLS-1$
 		switch (page1.getDiagramType()) {
 		case PROCESS:
 			fileType = "process"; //$NON-NLS-1$
@@ -179,7 +179,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 			if (text!=null && !text.equals(getContainerName()))
 				containerText.setText(text);
 			for (int i=1; ; ++i) {
-				filename = fileType+"_" + i + Messages.BPMN2DiagramWizardPage2_BPMN_Extension; //$NON-NLS-1$
+				filename = fileType+"_" + i + ".bpmn"; //$NON-NLS-1$ //$NON-NLS-2$
 				IResource file = container.findMember(filename);
 				if (file==null) {
 					break;

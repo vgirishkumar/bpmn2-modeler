@@ -758,20 +758,20 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 				XSDSchema schema = (XSDSchema)fInput;
 				ns = schema.getTargetNamespace();
 				loc = schema.getSchemaLocation();
-				type = Messages.DefaultSchemaImportDialog_XSD_Type;
+				type = "XSD Schema"; //$NON-NLS-1$
 			}
 			else if (fInput instanceof Definition) {
 				Definition definition = (Definition)fInput;
 				ns = definition.getTargetNamespace();
 				loc = definition.getLocation();
-				type = Messages.DefaultSchemaImportDialog_WSDL_Type;
+				type = "WSDL"; //$NON-NLS-1$
 			}
 			else if (fInput instanceof org.eclipse.bpmn2.DocumentRoot) {
 				DocumentRoot root = (DocumentRoot)fInput;
 				org.eclipse.bpmn2.Definitions definitions = root.getDefinitions();
 				ns = definitions.getTargetNamespace();
 				loc = root.eResource().getURI().toString();
-				type = Messages.DefaultSchemaImportDialog_BPMN2_Type;
+				type = "BPMN2";//$NON-NLS-1$
 				fInput = definitions;
 			}
 			else if (fInput instanceof List) {

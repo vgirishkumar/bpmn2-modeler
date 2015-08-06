@@ -187,11 +187,11 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			}
 		}
 		String basename = Messages.NewJbpmProcessWizardPage1_Default_File_Name;
-		String filename = basename + Messages.NewJbpmProcessWizardPage1_BPMN_File_Extension;
+		String filename = basename + ".bpmn"; //$NON-NLS-1$
 		if (container!=null) {
 			int i = 1;
 			while (container.findMember(filename)!=null) {
-				filename = basename + "_" + i + Messages.NewJbpmProcessWizardPage1_BPMN_File_Extension; //$NON-NLS-1$
+				filename = basename + "_" + i + ".bpmn"; //$NON-NLS-1$ //$NON-NLS-2$
 				++i;
 			}
 		}

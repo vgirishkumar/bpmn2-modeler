@@ -111,16 +111,13 @@ public class Messages extends NLS {
 	public static String DefaultSchemaImportDialog_All;
 	public static String DefaultSchemaImportDialog_BPMN2_Filter_1;
 	public static String DefaultSchemaImportDialog_BPMN2_Filter_2;
-	public static String DefaultSchemaImportDialog_BPMN2_Type;
 	public static String DefaultSchemaImportDialog_Java_Filter_1;
 	public static String DefaultSchemaImportDialog_Java_Filter_2;
 	public static String DefaultSchemaImportDialog_Java_Filter_3;
 	public static String DefaultSchemaImportDialog_Missing_Namespace_Message;
 	public static String DefaultSchemaImportDialog_WSDL_Filter;
-	public static String DefaultSchemaImportDialog_WSDL_Type;
 	public static String DefaultSchemaImportDialog_XML_Filter;
 	public static String DefaultSchemaImportDialog_XSD_Filter;
-	public static String DefaultSchemaImportDialog_XSD_Type;
 	public static String UI_UnknownDiagram_description;
 	public static String UI_Process_description;
 	public static String UI_Choreography_description;

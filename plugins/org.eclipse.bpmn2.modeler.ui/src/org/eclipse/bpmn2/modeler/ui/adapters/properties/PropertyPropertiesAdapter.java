@@ -110,20 +110,20 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 	}
 
 	public static Property createProperty(List<Property> properties) {
-		String base = Messages.PropertyPropertiesAdapter_LocalVar_Prefix;
+		String base = "localVar"; //$NON-NLS-1$
 		
 		Resource resource = null;
 		if (properties instanceof EcoreEList) {
 			EObject owner = ((EcoreEList)properties).getEObject();
 			resource = owner.eResource();
 			if (owner instanceof Event) {
-				base = Messages.PropertyPropertiesAdapter_EventVar_Prefix;
+				base = "eventVar"; //$NON-NLS-1$
 			}
 			else if (owner instanceof Process) {
-				base = Messages.PropertyPropertiesAdapter_ProcessVar_Prefix;
+				base = "processVar"; //$NON-NLS-1$
 			}
 			else if (owner instanceof Task) {
-				base = Messages.PropertyPropertiesAdapter_TaskVar_Prefix;
+				base = "taskVar"; //$NON-NLS-1$
 			}
 		}
 		

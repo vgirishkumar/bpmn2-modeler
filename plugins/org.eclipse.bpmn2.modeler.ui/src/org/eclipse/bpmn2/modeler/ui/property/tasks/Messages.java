@@ -47,11 +47,7 @@ public class Messages extends NLS {
 	public static String IoParametersDetailComposite_Output_Sets_Title;
 	public static String IoParametersListComposite_From_Header;
 	public static String IoParametersListComposite_To_Header;
-	public static String IoSetsListComposite_0;
-	public static String IoSetsListComposite_1;
-	public static String IoSetsListComposite_2;
 	public static String IoSetsListComposite_Input_Data_Header;
-	public static String IoSetsListComposite_4;
 	public static String IoSetsListComposite_Optional_Inputs_Header;
 	public static String IoSetsListComposite_Evaluated_While_Executing_Header;
 	public static String IoSetsListComposite_Input_Sets_Reqd_Header;

@@ -69,22 +69,22 @@ public class IoSetsListComposite extends DefaultListComposite {
 		setListItemClass(listItemClass);
 		
 		EStructuralFeature f;
-		f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_0);
+		f = listItemClass.getEStructuralFeature("name"); //$NON-NLS-1$
 		TableColumn tc;
 		tc = new IoSetNameColumn(ioSpecification,f);
 		tc.setEditable(true);
 		columnProvider.add(tc);
 
-		isInput = (Messages.IoSetsListComposite_1.equals(ioFeature.getName()));
+		isInput = ("inputSets".equals(ioFeature.getName())); //$NON-NLS-1$
 		if (isInput) {
 			ioSet = ioSpecification.getInputSets();
 
-			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_2);
+			f = listItemClass.getEStructuralFeature("dataInputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
 			tc.setHeaderText(Messages.IoSetsListComposite_Input_Data_Header);
 			columnProvider.add(tc);
 			
-			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_4);
+			f = listItemClass.getEStructuralFeature("optionalInputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
 			tc.setHeaderText(Messages.IoSetsListComposite_Optional_Inputs_Header);
 			columnProvider.add(tc);

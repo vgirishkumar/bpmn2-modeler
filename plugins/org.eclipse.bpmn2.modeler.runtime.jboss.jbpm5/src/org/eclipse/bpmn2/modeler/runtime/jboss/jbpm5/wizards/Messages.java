@@ -19,7 +19,6 @@ public class Messages extends NLS {
 	public static String NewJbpmProcessWizard_Error_Title;
 	public static String NewJbpmProcessWizard_Monitor_Title;
 	public static String NewJbpmProcessWizard_Opening_File_Message;
-	public static String NewJbpmProcessWizardPage1_BPMN_File_Extension;
 	public static String NewJbpmProcessWizardPage1_Browse;
 	public static String NewJbpmProcessWizardPage1_Browse_Title;
 	public static String NewJbpmProcessWizardPage1_Container;
