@@ -39,7 +39,7 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
 		if (context.getTargetContainer() instanceof Diagram) {
 			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
 			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-			if (bpmnElement instanceof Collaboration || bpmnElement instanceof Process)
+			if (bpmnElement instanceof Collaboration || bpmnElement instanceof Process || bpmnElement==null)
 				return true;
 		}
 		return false;

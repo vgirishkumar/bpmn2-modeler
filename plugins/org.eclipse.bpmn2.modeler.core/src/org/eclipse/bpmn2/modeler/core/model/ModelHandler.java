@@ -800,6 +800,9 @@ public class ModelHandler {
 				try {
 					Process process = create(Process.class);
 					bpmnDiagram.getPlane().setBpmnElement(process);
+					Definitions definitions = ModelUtil.getDefinitions(bpmnDiagram);
+					if (!definitions.getRootElements().contains(process))
+						definitions.getRootElements().add(process);
 					return process;
 				}
 				catch (IllegalStateException e) {

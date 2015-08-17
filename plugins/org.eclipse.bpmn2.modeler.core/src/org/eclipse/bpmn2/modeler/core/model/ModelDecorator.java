@@ -58,6 +58,7 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.impl.EEnumLiteralImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
@@ -1172,8 +1173,13 @@ public class ModelDecorator {
 	 * @param feature - name of the new extension element.
 	 * @param value - value assigned to the new element.
 	 */
+	public static void addExtensionAttributeValue(Resource resource, EObject object, EStructuralFeature feature, Object value) {
+		addExtensionAttributeValue(resource, object, feature, value, -1, false);
+	}
+
+	@Deprecated
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
-		addExtensionAttributeValue(object, feature, value, -1, false);
+		addExtensionAttributeValue(object.eResource(), object, feature, value, -1, false);
 	}
 
 	/**
@@ -1184,8 +1190,13 @@ public class ModelDecorator {
 	 * @param value - value assigned to the new element.
 	 * @param delay - if true, use an InsertionAdapter to set the feature value, otherwise set it immediately.
 	 */
+	public static void addExtensionAttributeValue(Resource resource, EObject object, EStructuralFeature feature, Object value, boolean delay) {
+		addExtensionAttributeValue(resource, object, feature, value, -1, delay);
+	}
+	
+	@Deprecated
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, boolean delay) {
-		addExtensionAttributeValue(object, feature, value, -1, delay);
+		addExtensionAttributeValue(object.eResource(), object, feature, value, -1, delay);
 	}
 
 	/**
@@ -1198,7 +1209,7 @@ public class ModelDecorator {
 	 * @param delay - if true, use an InsertionAdapter to set the feature value, otherwise set it immediately.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, int index, boolean delay) {
+	public static void addExtensionAttributeValue(Resource resource, EObject object, EStructuralFeature feature, Object value, int index, boolean delay) {
 		if (object instanceof ExtensionAttributeValue)
 			object = object.eContainer();
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
@@ -1209,7 +1220,7 @@ public class ModelDecorator {
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
-			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(object.eResource(), ExtensionAttributeValue.class);
+			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(resource, ExtensionAttributeValue.class);
 			ModelUtil.setID(newItem);
 			FeatureMap map = newItem.getValue();
 			map.add(feature, value);

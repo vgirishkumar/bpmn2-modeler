@@ -221,7 +221,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		ObjectPropertyProvider.adapt(eClass.getEPackage().getEFactoryInstance(), resource);
 
 		EObject newObject = null;
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(resource, eClass);
 		if (adapter!=null) {
 			newObject = adapter.getObjectDescriptor().createObject(resource, eClass);
 		}

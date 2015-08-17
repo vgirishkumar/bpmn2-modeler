@@ -61,7 +61,7 @@ public class MyTaskDetailComposite extends DefaultDetailComposite {
 			// Add the newly constructed TaskConfig object to the Task's Extension Values list.
 			// Note that we will delay the actual insertion of the new object until some feature
 			// of the object changes (e.g. the Parameter.name)
-			ModelDecorator.addExtensionAttributeValue(myTask, feature, taskConfig, true);
+			ModelDecorator.addExtensionAttributeValue(myTask.eResource(), myTask, feature, taskConfig, true);
 		}
 		else {
 			// Else reuse the existing TaskConfig object.

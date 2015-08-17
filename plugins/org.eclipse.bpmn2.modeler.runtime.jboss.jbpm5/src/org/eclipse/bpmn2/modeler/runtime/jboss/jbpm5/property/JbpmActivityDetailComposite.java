@@ -110,7 +110,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 				f = DroolsPackage.eINSTANCE.getDocumentRoot_OnEntryScript();
 			else
 				f = DroolsPackage.eINSTANCE.getDocumentRoot_OnExitScript();
-			ModelDecorator.addExtensionAttributeValue(be, f, script, true);
+			ModelDecorator.addExtensionAttributeValue(be.eResource(), be, f, script, true);
 			result = script;
 		}
 		return result;

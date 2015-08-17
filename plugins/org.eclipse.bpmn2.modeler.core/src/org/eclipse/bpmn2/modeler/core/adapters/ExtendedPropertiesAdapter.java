@@ -144,6 +144,23 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	public static ExtendedPropertiesAdapter adapt(Object object) {
 		return adapt(object,null);
 	}
+
+	public static ExtendedPropertiesAdapter adapt(Resource resource, EClass eclass) {
+		if (resource!=null) {
+			ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(eclass.getEPackage().getEFactoryInstance());
+			if (factoryAdapter==null) {
+				ObjectPropertyProvider.adapt(eclass, resource);
+			}
+			else {
+				factoryAdapter.setResource(resource);
+			}
+		}
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+		if (adapter==null) {
+			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), eclass);
+		}
+		return adapter;
+	}
 	
 	/**
 	 * Convenience method for creating and adapting a feature of a model object
@@ -220,9 +237,15 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	public static EObject getDummyObject(EClass eclass) {
 		EObject object = dummyObjects.get(eclass);
 		if (object==null && eclass.eContainer() instanceof EPackage && !eclass.isAbstract()) {
+			Resource resource = null;
+    		ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(eclass.getEPackage().getEFactoryInstance());
+    		if (factoryAdapter!=null)
+    			resource = factoryAdapter.getResource();
 	    	EPackage pkg = (EPackage)eclass.eContainer();
 	    	object = pkg.getEFactoryInstance().create(eclass);
 			dummyObjects.put(eclass, object);
+			if (factoryAdapter!=null && resource!=null)
+				factoryAdapter.setResource(resource);
 		}
 		return object;
 	}

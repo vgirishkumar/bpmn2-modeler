@@ -136,7 +136,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	public T createBusinessObject(ICreateContext context) {
 		Resource resource = getResource(context);
 		EClass eclass = getBusinessObjectClass();
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(resource, eclass);
 		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
 		if (id!=null) {
 			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);

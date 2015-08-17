@@ -589,7 +589,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				// FIXME: access to ExtensionAttributeValues MUST go through the ModelExtensionDescriptor's
 				// modelDecorator so that we can properly find, and optionally create and initialize
 				// the EPackage that contains the extensions
-				ModelDecorator.addExtensionAttributeValue(object, feature, value, index, false);
+				ModelDecorator.addExtensionAttributeValue(getResource(), object, feature, value, index, false);
 			}
 		}
 	}

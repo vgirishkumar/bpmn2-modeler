@@ -212,7 +212,7 @@ public class JbpmModelUtil {
 				ImportHandler importer = new ImportHandler();
 				importer.setCreateVariables(createVariables);
 				
-				ModelDecorator.addExtensionAttributeValue(fProcess,
+				ModelDecorator.addExtensionAttributeValue(fProcess.eResource(), fProcess,
 						DroolsPackage.eINSTANCE.getDocumentRoot_ImportType(), newImport);
 				
 				if (recursive) {
@@ -439,7 +439,7 @@ public class JbpmModelUtil {
 		}
 		if (processAnalysisData==null) {
 			processAnalysisData = BpsimFactory.eINSTANCE.createBPSimDataType();
-			ModelDecorator.addExtensionAttributeValue(rel, BpsimPackage.eINSTANCE.getDocumentRoot_BPSimData(), processAnalysisData);
+			ModelDecorator.addExtensionAttributeValue(resource, rel, BpsimPackage.eINSTANCE.getDocumentRoot_BPSimData(), processAnalysisData);
 		}
 		
 		if (processAnalysisData.getScenario().size()==0) {

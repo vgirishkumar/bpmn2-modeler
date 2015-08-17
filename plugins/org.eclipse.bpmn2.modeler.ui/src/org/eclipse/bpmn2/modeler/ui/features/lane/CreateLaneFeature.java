@@ -47,7 +47,7 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 		if (context.getTargetContainer() instanceof Diagram) {
 			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
 			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-			if (bpmnElement instanceof Process)
+			if (bpmnElement instanceof Process || bpmnElement==null)
 				return true;
 			return false;
 		}

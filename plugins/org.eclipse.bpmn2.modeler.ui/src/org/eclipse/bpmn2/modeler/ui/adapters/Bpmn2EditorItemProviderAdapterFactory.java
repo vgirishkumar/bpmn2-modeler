@@ -237,7 +237,10 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 	        		// can handle this thing.
 	        	    adapter = getTargetRuntimeAdapter(eclass);
 	        	    if (adapter==null) {
-	        	    	// if none is found, create a dummy EObject and cache it
+	        	    	// If none is found, create a dummy EObject and cache it.
+	        	    	//
+	        	    	// These are abstract types that are supported by {@see Bpmn2ModelerFactory#create(EClass)}
+	        	    	// Additional abstract types can be added here:
 	        	    	if (eclass.getInstanceClass()==CatchEvent.class) {
 	        	    		object = new CatchEventImpl() {};
 	        	    		adapter = new CatchEventPropertiesAdapter(adapterFactory, (CatchEvent)object);
