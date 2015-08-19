@@ -114,9 +114,58 @@
 			</activation>
 			<properties>
 				<eclipse-site>http://download.eclipse.org/releases/mars</eclipse-site>
-				<platform-version>[4.4,5.0]</platform-version>
+				<platform-version>[4.5,5.0)</platform-version>
 				<platform-version-name>mars</platform-version-name>
 			</properties>
+		</profile>
+		<profile>
+			<id>sign</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200a-plugin</artifactId>
+						<version>${tycho-extras-version}</version>
+						<executions>
+							<execution>
+								<id>pack200-normalize</id>
+								<goals>
+									<goal>normalize</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+		
+					<plugin>
+						<groupId>org.eclipse.cbi.maven.plugins</groupId>
+						<artifactId>eclipse-jarsigner-plugin</artifactId>
+						<version>1.0.5</version>
+						<executions>
+							<execution>
+								<id>sign</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+		
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-pack200b-plugin</artifactId>
+						<version>${tycho-extras-version}</version>
+						<executions>
+							<execution>
+								<id>pack200-pack</id>
+								<goals>
+									<goal>pack</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
@@ -141,7 +190,7 @@
 
 		<repository>
 			<id>eclipse-bpel</id>
-			<url>http://download.eclipse.org/bpel/site/1.0.4</url>
+			<url>http://download.eclipse.org/bpel/site/1.0.5</url>
 			<layout>p2</layout>
 			<snapshots>
 				<enabled>true</enabled>
@@ -190,17 +239,24 @@
 	</repositories>
 
 	<pluginRepositories>
-
 		<pluginRepository>
 			<id>repo.eclipse.org.cbi-releases</id>
 			<url>https://repo.eclipse.org/content/repositories/cbi-releases/</url>
 		</pluginRepository>
-
+		
 		<pluginRepository>
-			<!-- need maven-findbugs-2.3.2-SNAPSHOT, see http://jira.codehaus.org/browse/MFINDBUGS-122 remove this when this version 
-				is released -->
-			<id>codehaus.snapshots</id>
-			<url>http://snapshots.repository.codehaus.org/</url>
+			<id>maven-central</id>
+			<url>http://repo1.maven.org/maven2/</url>
+		</pluginRepository>
+		
+		<pluginRepository>
+			<id>eclipse-nexus-central</id>
+			<url>http://maven.eclipse.org/nexus/content/groups/central/</url>
+		</pluginRepository>
+		
+		<pluginRepository>
+			<id>eclipse-nexus-public</id>
+			<url>http://maven.eclipse.org/nexus/content/groups/public/</url>
 		</pluginRepository>
 
 		<pluginRepository>
@@ -270,48 +326,6 @@
 					<resolver>p2</resolver>
 					<includePackedArtifacts>true</includePackedArtifacts>
 				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-pack200a-plugin</artifactId>
-				<version>${tycho-extras-version}</version>
-				<executions>
-					<execution>
-						<id>pack200-normalize</id>
-						<goals>
-							<goal>normalize</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.cbi.maven.plugins</groupId>
-				<artifactId>eclipse-jarsigner-plugin</artifactId>
-				<version>1.0.5</version>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-pack200b-plugin</artifactId>
-				<version>${tycho-extras-version}</version>
-				<executions>
-					<execution>
-						<id>pack200-pack</id>
-						<goals>
-							<goal>pack</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
