@@ -13,18 +13,21 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.IDiagramProfile;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ServletUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.validation.IValidationContext;
 
@@ -44,25 +47,44 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 
 	@Override
 	public IStatus validate(CallActivity object) {
-		if (object.getCalledElementRef() != null) {
-			String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
-			String packageName = packageAssetInfo[0];
-			List<String> allProcessesInPackage = ServletUtil.getAllProcessesInPackage(packageName, profile);
-			boolean foundCalledElementProcess = false;
-			for (String p : allProcessesInPackage) {
-				String processContent = ServletUtil.getProcessSourceContent(packageName, p, profile);
-				Pattern pattern = Pattern.compile("<\\S*process[\\s\\S]*id=\"" + object.getCalledElementRef() + "\"", //$NON-NLS-1$ //$NON-NLS-2$
-						Pattern.MULTILINE);
-				Matcher m = pattern.matcher(processContent);
-				if (m.find()) {
-					foundCalledElementProcess = true;
-					break;
+		Object ref = object.getCalledElementRef();
+		if (ref instanceof ExternalProcess) {
+			String calledProcessId = ((ExternalProcess)ref).getId();
+//			String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
+//			String packageName = packageAssetInfo[0];
+//			List<String> allProcessesInPackage = ServletUtil.getAllProcessesInPackage(packageName, profile);
+//			boolean foundCalledElementProcess = false;
+//			for (String p : allProcessesInPackage) {
+//				String processContent = ServletUtil.getProcessSourceContent(packageName, p, profile);
+//				Pattern pattern = Pattern.compile("<\\S*process[\\s\\S]*id=\"" + calledProcessId + "\"", //$NON-NLS-1$ //$NON-NLS-2$
+//						Pattern.MULTILINE);
+//				Matcher m = pattern.matcher(processContent);
+//				if (m.find()) {
+//					foundCalledElementProcess = true;
+//					break;
+//				}
+//			}
+//			foundCalledElementProcess = true; // TODO: remove this
+//			if (!foundCalledElementProcess) {
+//				addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Process_ID_Not_Found, calledProcessId);
+//			}
+
+			boolean isVariable = false;
+			String var = JbpmModelUtil.getVariableReference(calledProcessId);
+			if (var!=null) {
+				// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
+				for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
+					String id = ((Property)p).getId();
+					if (var.equals(id)) {
+						isVariable = true;
+						break;
+					}
 				}
+				if (!isVariable)
+					addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Not_A_Process_Variable, calledProcessId);
 			}
-			foundCalledElementProcess = true; // TODO: remove this
-			if (!foundCalledElementProcess) {
-				addStatus(object, Status.ERROR, Messages.CallActivityConstraint_No_Process, object.getCalledElementRef());
-			}
+			else if (!SyntaxCheckerUtils.isJavaPackageName(calledProcessId))
+				addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Not_A_Process_ID, calledProcessId);
 		}
 		EStructuralFeature feature;
 		feature = ModelDecorator.getAnyAttribute(object, "independent"); //$NON-NLS-1$

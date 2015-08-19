@@ -58,6 +58,10 @@ public class BaseElementValidator extends AbstractBpmn2ElementValidator<BaseElem
 	 */
 	@Override
 	public IStatus validate(BaseElement object) {
+		// don't validate IDs of objects that don't belong to the BPMN2 Package;
+		// these must be handled by the extension plugin that defines the object model.
+		if (object.eClass().getEPackage()!=Bpmn2Package.eINSTANCE)
+			return getResult();
 		if (!idOptional.contains(object.eClass())) {
 			// In the case of batch mode.
 			String id = object.getId();

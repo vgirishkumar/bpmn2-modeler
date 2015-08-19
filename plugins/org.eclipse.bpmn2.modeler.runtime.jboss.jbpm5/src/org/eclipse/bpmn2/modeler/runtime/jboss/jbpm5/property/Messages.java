@@ -19,6 +19,7 @@ public class Messages extends NLS {
 	public static String JbpmActivityDetailComposite_Script_Details;
 	public static String JbpmCallActivityDetailComposite_Error_Empty;
 	public static String JbpmCallActivityDetailComposite_Error_Invalid;
+	public static String JbpmCallActivityDetailComposite_Error_Invalid_Var_Ref;
 	public static String JbpmCallActivityDetailComposite_Message;
 	public static String JbpmCallActivityDetailComposite_Title;
 	public static String JbpmCommonEventDetailComposite_TimerScriptLanguage;

@@ -16,12 +16,15 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -72,19 +75,35 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 			addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Empty, object.eClass().getName());
 		}
 		else {
-			if (object instanceof Process || object instanceof ExternalProcess) {
-				if (!SyntaxCheckerUtils.isJavaPackageName(id)) {
-					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
-				}
+			boolean isVariableReference = false;
+			String var = JbpmModelUtil.getVariableReference(id);
+			if (var!=null) {
+				// we have an ExternalProcess object defined in drools model here
+				// which is not persisted, but is added to <definitions> root.
+//				// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
+//				for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
+//					String oid = ((Property)p).getId();
+//					if (var.equals(oid)) {
+						isVariableReference = true;
+//						break;
+//					}
+//				}
 			}
-			else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
-				if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
-					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+			if (!isVariableReference) {
+				if (object instanceof Process || object instanceof ExternalProcess) {
+					if (!SyntaxCheckerUtils.isJavaPackageName(id)) {
+						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+					}
 				}
-			}
-			else {
-				if (!SyntaxCheckerUtils.isNCName(id)) {
-					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+				else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
+					if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
+						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+					}
+				}
+				else {
+					if (!SyntaxCheckerUtils.isNCName(id)) {
+						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+					}
 				}
 			}
 		}

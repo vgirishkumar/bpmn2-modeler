@@ -568,4 +568,13 @@ public class JbpmModelUtil {
 //		timeParams.setTimeUnit(tu);
 		return timeParams;
 	}
+	
+	public static String getVariableReference(String text) {
+		if (text.startsWith("#{") && text.endsWith("}")) {
+			String var = text.substring(2, text.length()-1);
+			if (!var.isEmpty())
+				return var;
+		}
+		return null;
+	}
 }
