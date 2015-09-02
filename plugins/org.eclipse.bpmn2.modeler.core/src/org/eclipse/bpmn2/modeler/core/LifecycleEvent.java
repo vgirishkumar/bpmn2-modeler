@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core;
 
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
@@ -455,7 +456,8 @@ public class LifecycleEvent {
 	 */
 	public static void notify(LifecycleEvent lifecycleEvent) {
     	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-    	rt.notify(lifecycleEvent);
+    	if (rt instanceof Bpmn2Resource)
+    		rt.notify(lifecycleEvent);
 	}
 	
 	@Override

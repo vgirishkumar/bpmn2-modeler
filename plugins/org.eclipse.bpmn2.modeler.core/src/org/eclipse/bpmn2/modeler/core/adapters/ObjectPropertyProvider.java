@@ -49,9 +49,9 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 	 */
 	public static ObjectPropertyProvider adapt(EObject object, Resource resource) {
 		ObjectPropertyProvider adapter = getAdapter(object);
-		if (adapter!=null)
+		if (adapter!=null && resource != null)
 			adapter.setResource(resource);
-		else {
+		else if (adapter == null) {
 			adapter = new ObjectPropertyProvider(resource);
 			object.eAdapters().add(adapter);
 		}
@@ -110,7 +110,6 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 	 */
 	@Override
 	public void setResource(Resource resource) {
-//		if (resource!=null)
 			setProperty(RESOURCE, resource);
 	}
 
@@ -173,11 +172,11 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 				if (rs!=null) {
 					for (Resource r : rs.getResources()) {
 						if (r instanceof Bpmn2Resource) {
-							resource = r;
-							break;
+							return resource;
 						}
 					}
 				}
+				return null;
 			}
 		}
 		return resource;

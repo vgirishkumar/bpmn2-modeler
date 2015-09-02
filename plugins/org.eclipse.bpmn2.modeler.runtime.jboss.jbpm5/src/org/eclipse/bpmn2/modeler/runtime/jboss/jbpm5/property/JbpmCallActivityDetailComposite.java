@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -107,12 +108,26 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 
 					@Override
 					protected void buttonClicked(int buttonId) {
-						IInputValidator validator = new IInputValidator() {
+						final IInputValidator validator = new IInputValidator() {
 
 							@Override
 							public String isValid(String newText) {
 								if (newText==null ||newText.isEmpty())
 									return Messages.JbpmCallActivityDetailComposite_Error_Empty;
+								String var = JbpmModelUtil.getVariableReference(newText);
+								if (var!=null) {
+//									// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
+//									for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
+//										String id = ((Property)p).getId();
+//										if (var.equals(id))
+//											return null;
+//									}
+//									return NLS.bind(Messages.JbpmCallActivityDetailComposite_Error_Invalid_Var_Ref, var);
+									// we'll allow invalid process variable names;
+									// the error will be caught during batch validation
+									return null;
+								}
+										
 								if (!SyntaxCheckerUtils.isJavaPackageName(newText))
 									return Messages.JbpmCallActivityDetailComposite_Error_Invalid;
 								return null;

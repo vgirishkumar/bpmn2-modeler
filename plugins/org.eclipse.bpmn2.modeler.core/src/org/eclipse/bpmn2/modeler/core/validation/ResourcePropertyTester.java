@@ -27,8 +27,13 @@ public class ResourcePropertyTester extends PropertyTester {
 			EObject object = (EObject) receiver;
 			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(object);
 			TargetRuntime rt = null;
-			if (prefs != null)
-				rt = TargetRuntime.getCurrentRuntime();
+			if (prefs != null) {
+				try {
+					rt = TargetRuntime.getRuntime(object);
+				}
+				catch (Exception ex) {
+				}
+			}
 
 			if ("targetRuntimeId".equals(property)) { //$NON-NLS-1$
 				if (rt != null) {
