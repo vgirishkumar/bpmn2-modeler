@@ -29,9 +29,9 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
-import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -373,11 +373,14 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	 * @return
 	 */
 	public static TargetRuntime getRuntime(Resource resource) {
-		TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(resource);
-		if (runtime == null) {
-			throw new IllegalStateException("missing target runtime on resource"); //$NON-NLS-1$
+		if (resource instanceof Bpmn2Resource) {
+			TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(resource);
+			if (runtime == null) {
+				throw new IllegalStateException("missing target runtime on resource"); //$NON-NLS-1$
+			}
+			return runtime;
 		}
-		return runtime;
+		return null;
 	}
 	
 	/**

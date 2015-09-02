@@ -13,9 +13,12 @@
 
 package org.eclipse.bpmn2.modeler.core;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -462,6 +465,11 @@ public class LifecycleEvent {
 	public static void notify(LifecycleEvent lifecycleEvent) {
 		TargetRuntime rt = lifecycleEvent.targetRuntime;
 		if (rt == null) {
+			if (lifecycleEvent.target instanceof EObject) {
+				Resource resource = ObjectPropertyProvider.getResource((EObject)lifecycleEvent.target);
+				if (!(resource instanceof Bpmn2Resource))
+					return;
+			}
 			throw new IllegalStateException("missing target runtime in LifecycleEvent"); //$NON-NLS-1$
 		}
 		rt.notify(lifecycleEvent);

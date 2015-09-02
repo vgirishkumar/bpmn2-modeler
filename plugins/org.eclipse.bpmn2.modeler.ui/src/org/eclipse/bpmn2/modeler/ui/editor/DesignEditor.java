@@ -122,7 +122,7 @@ public class DesignEditor extends BPMN2Editor {
 	@Override
 	public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
 		// is the selected EObject in our resource?
-		if (!inSelectionChanged) {
+		if (!inSelectionChanged && part==multipageEditor) {
 			try {
 				inSelectionChanged = true;
 				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
