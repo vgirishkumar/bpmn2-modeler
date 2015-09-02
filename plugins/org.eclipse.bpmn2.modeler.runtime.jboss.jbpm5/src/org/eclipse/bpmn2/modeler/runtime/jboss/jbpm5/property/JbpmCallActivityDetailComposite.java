@@ -112,7 +112,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 
 					@Override
 					protected void buttonClicked(int buttonId) {
-						IInputValidator validator = new IInputValidator() {
+						final IInputValidator validator = new IInputValidator() {
 
 							@Override
 							public String isValid(String newText) {
