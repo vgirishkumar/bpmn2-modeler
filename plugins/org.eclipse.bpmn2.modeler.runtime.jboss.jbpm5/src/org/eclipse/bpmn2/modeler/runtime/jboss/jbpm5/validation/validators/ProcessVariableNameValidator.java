@@ -75,35 +75,19 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 			addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Empty, object.eClass().getName());
 		}
 		else {
-			boolean isVariableReference = false;
-			String var = JbpmModelUtil.getVariableReference(id);
-			if (var!=null) {
-				// we have an ExternalProcess object defined in drools model here
-				// which is not persisted, but is added to <definitions> root.
-//				// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
-//				for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
-//					String oid = ((Property)p).getId();
-//					if (var.equals(oid)) {
-						isVariableReference = true;
-//						break;
-//					}
-//				}
+			if (object instanceof Process || object instanceof ExternalProcess) {
+				if (!JbpmModelUtil.isProcessId(id)) {
+					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
+				}
 			}
-			if (!isVariableReference) {
-				if (object instanceof Process || object instanceof ExternalProcess) {
-					if (!SyntaxCheckerUtils.isJavaPackageName(id)) {
-						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
-					}
+			else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
+				if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
+					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
-				else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
-					if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
-						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
-					}
-				}
-				else {
-					if (!SyntaxCheckerUtils.isNCName(id)) {
-						addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
-					}
+			}
+			else {
+				if (!SyntaxCheckerUtils.isNCName(id)) {
+					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
 			}
 		}

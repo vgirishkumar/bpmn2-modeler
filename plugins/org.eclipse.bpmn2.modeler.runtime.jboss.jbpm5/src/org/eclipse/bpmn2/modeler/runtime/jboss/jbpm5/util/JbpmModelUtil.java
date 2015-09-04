@@ -577,4 +577,32 @@ public class JbpmModelUtil {
 		}
 		return null;
 	}
+
+	public static boolean isProcessId(String id) {
+		String var = JbpmModelUtil.getVariableReference(id);
+		if (var!=null) {
+			// It's a variable reference.
+			// Still need to validate if variable is actually defined;
+			// this is done in batch validation.
+			return true;
+		}
+
+		for (char c : id.toCharArray()) {
+			if (c!='_' && !Character.isLetterOrDigit(c) && c!='-' && c!=':' && c!='.') {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static String toProcessId(String text) {
+		String id = "";
+		for (char c : text.toCharArray()) {
+			if (c!='_' && !Character.isLetterOrDigit(c) && c!='-' && c!=':' && c!='.') {
+				c = '_';
+			}
+			id += c;
+		}
+		return id;
+	}
 }

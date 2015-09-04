@@ -14,6 +14,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -86,7 +87,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				fileText.setText(nameText.getText() + ".bpmn2"); //$NON-NLS-1$
 				String processid = packageText.getText() + "." + nameText.getText(); //$NON-NLS-1$
-				processid = SyntaxCheckerUtils.toNCName(processid.replaceAll(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$
+				processid = JbpmModelUtil.toProcessId(processid);
 				processIdText.setText(processid);
 				dialogChanged();
 			}
@@ -100,7 +101,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 		packageText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				String processid = packageText.getText() + "." + nameText.getText(); //$NON-NLS-1$
-				processid = SyntaxCheckerUtils.toNCName(processid.replaceAll(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$
+				processid = JbpmModelUtil.toProcessId(processid);
 				processIdText.setText(processid);
 				dialogChanged();
 			}
@@ -266,7 +267,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			return;
 		}
 		String processId = processIdText.getText();
-		if (!SyntaxCheckerUtils.isJavaPackageName(processId)) {
+		if (!JbpmModelUtil.isProcessId(processId)) {
 			updateStatus(Messages.NewJbpmProcessWizardPage1_Error_Process_ID_Invalid);
 			return;
 		}

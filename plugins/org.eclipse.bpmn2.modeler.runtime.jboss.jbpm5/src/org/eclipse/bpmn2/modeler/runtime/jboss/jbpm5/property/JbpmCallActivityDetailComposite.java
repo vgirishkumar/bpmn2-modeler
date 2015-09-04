@@ -114,21 +114,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 							public String isValid(String newText) {
 								if (newText==null ||newText.isEmpty())
 									return Messages.JbpmCallActivityDetailComposite_Error_Empty;
-								String var = JbpmModelUtil.getVariableReference(newText);
-								if (var!=null) {
-//									// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
-//									for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
-//										String id = ((Property)p).getId();
-//										if (var.equals(id))
-//											return null;
-//									}
-//									return NLS.bind(Messages.JbpmCallActivityDetailComposite_Error_Invalid_Var_Ref, var);
-									// we'll allow invalid process variable names;
-									// the error will be caught during batch validation
-									return null;
-								}
-										
-								if (!SyntaxCheckerUtils.isJavaPackageName(newText))
+								if (!JbpmModelUtil.isProcessId(newText))
 									return Messages.JbpmCallActivityDetailComposite_Error_Invalid;
 								return null;
 							}
