@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.model.ModelDecoratorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -265,6 +266,10 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			if (adapter!=null)
 				return adapter.getObjectDescriptor().getTextValue();
 			return ModelUtil.toCanonicalString( eObject.eClass().getName() );
+		}
+		else if (value instanceof Enumerator) {
+			Enumerator e = (Enumerator) value;
+			return e.getName();
 		}
 		return value.toString();
 	}
