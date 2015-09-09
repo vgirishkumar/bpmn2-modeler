@@ -15,10 +15,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
@@ -37,7 +34,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -63,14 +59,14 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 
 	@Override
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
-		if ("independent".equals(attribute.getName())) { //$NON-NLS-1$
+		if ("independent".equals(attribute.getName())) {
 			independentEditor = new BooleanObjectEditor(this,object,attribute);
 			independentCheckbox = (Button) independentEditor.createControl(parent,label);
 			if (waitForCompletionCheckbox!=null && waitForCompletionCheckbox.getSelection()==false) {
 				independentCheckbox.setEnabled(false);
 			}
 		}
-		else if ("waitForCompletion".equals(attribute.getName())) { //$NON-NLS-1$
+		else if ("waitForCompletion".equals(attribute.getName())) {
 			ObjectEditor editor = new BooleanObjectEditor(this,object,attribute);
 			waitForCompletionCheckbox = (Button) editor.createControl(parent,label);
 			waitForCompletionCheckbox.addSelectionListener( new SelectionListener() {
@@ -118,21 +114,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 							public String isValid(String newText) {
 								if (newText==null ||newText.isEmpty())
 									return Messages.JbpmCallActivityDetailComposite_Error_Empty;
-								String var = JbpmModelUtil.getVariableReference(newText);
-								if (var!=null) {
-//									// get the Property instances (a.k.a. "local variables") of the containing Process or SubProcess
-//									for (EObject p : ModelUtil.collectAncestorObjects(object, "properties", new Class[] {Process.class, SubProcess.class})) {  //$NON-NLS-1$
-//										String id = ((Property)p).getId();
-//										if (var.equals(id))
-//											return null;
-//									}
-//									return NLS.bind(Messages.JbpmCallActivityDetailComposite_Error_Invalid_Var_Ref, var);
-									// we'll allow invalid process variable names;
-									// the error will be caught during batch validation
-									return null;
-								}
-										
-								if (!SyntaxCheckerUtils.isJavaPackageName(newText))
+								if (!JbpmModelUtil.isProcessId(newText))
 									return Messages.JbpmCallActivityDetailComposite_Error_Invalid;
 								return null;
 							}

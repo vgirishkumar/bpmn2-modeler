@@ -83,7 +83,7 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 				if (!isVariable)
 					addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Not_A_Process_Variable, calledProcessId);
 			}
-			else if (!SyntaxCheckerUtils.isJavaPackageName(calledProcessId))
+			else if (!JbpmModelUtil.isProcessId(calledProcessId))
 				addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Not_A_Process_ID, calledProcessId);
 		}
 		EStructuralFeature feature;
