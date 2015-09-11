@@ -40,9 +40,9 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
 			// only show this property section if the selected Task is a "custom task"
-			// that is, it has a "displayName" extension attribute
+			// that is, it has a "taskName" extension attribute
 			EObject be = getBusinessObjectForSelection(selection);
-			return ModelDecorator.getAnyAttribute(be, "displayName") != null; //$NON-NLS-1$
+			return ModelDecorator.getAnyAttribute(be, "taskName") != null; //$NON-NLS-1$
 		}
 		return false;
 	}
