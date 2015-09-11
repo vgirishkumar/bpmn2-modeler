@@ -172,7 +172,7 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 				if (rs!=null) {
 					for (Resource r : rs.getResources()) {
 						if (r instanceof Bpmn2Resource) {
-							return resource;
+							return r;
 						}
 					}
 				}

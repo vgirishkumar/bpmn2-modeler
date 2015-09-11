@@ -75,6 +75,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
@@ -84,7 +85,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -1646,13 +1646,17 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				IViewPart[] parts = page.getViews();
 		
 				for (int i = 0; i < parts.length; i++) {
-					if (parts[i] instanceof ResourceNavigator) {
-						ResourceNavigator navigator = (ResourceNavigator) parts[i];
-						StructuredSelection sel = (StructuredSelection) navigator.getTreeViewer().getSelection();
-						IResource resource = (IResource) sel.getFirstElement();
-						if (resource!=null) {
-							activeProject = resource.getProject();
-							break;
+					if (parts[i].getViewSite().getSelectionProvider()!=null) {
+						ISelection s = parts[i].getViewSite().getSelectionProvider().getSelection();
+						if (s instanceof StructuredSelection) {
+							StructuredSelection ss = (StructuredSelection) s;
+							Object o = ss.getFirstElement();
+							if (o instanceof IResource) {
+								IResource r = (IResource) o;
+								activeProject = r.getProject();
+								if (activeProject!=null)
+									break;
+							}
 						}
 					}
 				}
