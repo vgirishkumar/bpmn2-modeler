@@ -192,7 +192,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 						java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 						while(widIterator.hasNext()) {
 							final WorkItemDefinition wid = widIterator.next();
-							final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
+							final CustomTaskDescriptor ctd = convertWIDtoCT(inputFile.getProject(), wid);
 							if (ctd != null) {
 								if (TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId())) {
 									Display.getDefault().asyncExec( new Runnable() {
@@ -238,7 +238,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 * @param wid
 	 * @return
 	 */
-	private CustomTaskDescriptor convertWIDtoCT ( WorkItemDefinition wid ) {
+	private CustomTaskDescriptor convertWIDtoCT(IProject project, WorkItemDefinition wid) {
 		if (wid != null) {
 			String id = wid.getName();
 			String name = wid.getDisplayName();
@@ -254,7 +254,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			setBasicProps ( ct, wid);
 			
 			// push the icon into the image registry
-			IProject project = Bpmn2Preferences.getActiveProject();
 			String iconPath = getWIDPropertyValue("icon", wid); //$NON-NLS-1$
 			if (iconPath != null) {
 				Path tempPath = new Path(iconPath);
@@ -269,10 +268,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 						ImageDescriptor image = ImageDescriptor.createFromURL(url);
 						CustomTaskImageProvider.registerImage(iconPath, image);
 					}
-				} catch (CoreException e1) {
+				} catch (Exception e1) {
 					e1.printStackTrace();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
 				}
 			}
 			
