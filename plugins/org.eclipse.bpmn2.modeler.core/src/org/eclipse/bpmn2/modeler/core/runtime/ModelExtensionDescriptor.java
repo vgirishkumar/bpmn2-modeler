@@ -404,7 +404,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
      */
     public EObject basicCreateObject(EClass eClass) {
         EPackage pkg = eClass.getEPackage();
-        return pkg.getEFactoryInstance().create(eClass);
+        EObject object = pkg.getEFactoryInstance().create(eClass);
+        TargetRuntimeAdapter.adapt(object, targetRuntime);
+        return object;
     }
     
 	/**

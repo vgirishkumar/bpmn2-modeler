@@ -95,8 +95,8 @@ import org.xml.sax.InputSource;
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	
 	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5"; //$NON-NLS-1$
-	
-	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools"; //$NON-NLS-1$
+	public final static String DROOLS_NAMESPACE = "http://www.jboss.org/drools"; //$NON-NLS-1$
+
 	private List<WorkItemDefinition> workItemDefinitions;
 	
 	/* (non-Javadoc)
@@ -194,7 +194,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 						java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 						while(widIterator.hasNext()) {
 							final WorkItemDefinition wid = widIterator.next();
-							final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
+							final CustomTaskDescriptor ctd = convertWIDtoCT(inputFile.getProject(),wid);
 							if (ctd != null) {
 								if (targetRuntime.customTaskExists(ctd.getId())) {
 									Display.getDefault().asyncExec( new Runnable() {
@@ -240,7 +240,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 * @param wid
 	 * @return
 	 */
-	private CustomTaskDescriptor convertWIDtoCT ( WorkItemDefinition wid ) {
+	private CustomTaskDescriptor convertWIDtoCT(IProject project, WorkItemDefinition wid) {
 		if (wid != null) {
 			String id = wid.getName();
 			String name = wid.getDisplayName();
@@ -256,7 +256,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			setBasicProps ( ct, wid);
 			
 			// push the icon into the image registry
-			IProject project = Bpmn2Preferences.getActiveProject();
 			String iconPath = getWIDPropertyValue("icon", wid); //$NON-NLS-1$
 			if (iconPath != null) {
 				Path tempPath = new Path(iconPath);
@@ -271,10 +270,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 						ImageDescriptor image = ImageDescriptor.createFromURL(url);
 						CustomTaskImageProvider.registerImage(iconPath, image);
 					}
-				} catch (CoreException e1) {
+				} catch (Exception e1) {
 					e1.printStackTrace();
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
 				}
 			}
 			
@@ -441,7 +438,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 		String[] basicProps = new String[] { "taskName", "displayName", "icon" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		for (int i = 0; i < basicProps.length; i++) {
 			Property prop = getPropertyFromWID(basicProps[i], wid);
-			ct.getProperties().add(prop);
+			if (prop!=null)
+				ct.getProperties().add(prop);
 		}
 	}
 

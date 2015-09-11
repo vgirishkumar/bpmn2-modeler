@@ -329,7 +329,10 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
         }
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EObject object) {
-        	TargetRuntime rt = TargetRuntime.getRuntime(object);
+    		ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(object.eClass().getEPackage().getEFactoryInstance());
+    		TargetRuntime rt = TargetRuntime.getRuntime(factoryAdapter.getResource());
+    		if (rt==null)
+    			rt = TargetRuntime.getRuntime(object);
 			PropertyExtensionDescriptor ped = rt.getPropertyExtension(object.getClass());
             if (ped==null && rt != TargetRuntime.getDefaultRuntime())
                 ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(object.getClass());

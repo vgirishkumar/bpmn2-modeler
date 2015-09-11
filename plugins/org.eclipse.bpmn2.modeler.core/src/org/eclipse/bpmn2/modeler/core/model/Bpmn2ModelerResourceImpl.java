@@ -437,25 +437,16 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	 */
 	protected static class Bpmn2ModelerXmlHandler extends BpmnXmlHandler {
 
-		Bpmn2Preferences preferences = null;
-		ImportUtil importHandler = new ImportUtil();
-		String targetNamespace = null;
+		protected Bpmn2Preferences preferences = null;
+		protected ImportUtil importHandler = new ImportUtil();
+		protected String targetNamespace = null;
 
 		public Bpmn2ModelerXmlHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 			super(xmiResource, helper, options);
 		}
-
-		@Override
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-			// read the targetNamespace as early as possible
-			if ("bpmn2:definitions".equals(qName)) { //$NON-NLS-1$
-				targetNamespace = attributes.getValue("targetNamespace"); //$NON-NLS-1$
-				if (targetNamespace != null) {
-					((Bpmn2ModelerXmlHelper)helper).initializeTargetRuntime(targetNamespace);
-				}
-			}
-
-			super.startElement(uri, localName, qName, attributes);
+		
+		protected String getTargetNamespace(Definitions defs) {
+			return defs.getTargetNamespace();
 		}
 		
 		@Override
@@ -758,7 +749,11 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
             else if (obj instanceof Definitions) {
             	// fetch the targetNamespace from Definitions object
-            	targetNamespace = ((Definitions)obj).getTargetNamespace();
+            	// NO! This is already handled in startElement()
+//            	targetNamespace = ((Definitions)obj).getTargetNamespace();
+				targetNamespace = getTargetNamespace((Definitions)obj);
+				((Bpmn2ModelerXmlHelper)helper).initializeTargetRuntime(targetNamespace);
+
             }
 
 		}
