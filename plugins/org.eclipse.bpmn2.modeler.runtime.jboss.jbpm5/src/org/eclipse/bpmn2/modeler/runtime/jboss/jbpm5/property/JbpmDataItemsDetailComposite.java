@@ -107,7 +107,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 								name = base + ++suffix;
 							}
 							
-							GlobalType newGlobal = (GlobalType)DroolsFactory.eINSTANCE.create(listItemClass);
+							GlobalType newGlobal = DroolsFactory.eINSTANCE.createGlobalType();
 							newGlobal.setIdentifier(name);
 							newGlobal.setId(name);
 							

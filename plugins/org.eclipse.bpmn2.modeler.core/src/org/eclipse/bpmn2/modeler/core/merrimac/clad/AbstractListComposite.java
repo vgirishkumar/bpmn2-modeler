@@ -703,7 +703,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 				for (int index=0; index<columnCount; ++index) {
 					org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
 					if (index==columnCount-1)
-						tc.setWidth(remainingWidth + 7);
+						tc.setWidth(remainingWidth);
 					else
 						tc.setWidth(size.x/columnCount);
 					remainingWidth -= tc.getWidth();

@@ -50,9 +50,9 @@ import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.KeyValue;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
@@ -86,7 +86,6 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -104,7 +103,6 @@ import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
-import org.eclipse.emf.ecore.xmi.impl.StringSegment;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
@@ -115,8 +113,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -276,6 +272,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         this.eAdapters().add(oppositeReferenceAdapter);
 	}
 
+	@Override
+	public void load(Map<?, ?> options) throws IOException {
+		try {
+			Bpmn2ModelerFactory.setEnableModelExtensions(false);
+			super.load(options);
+		}
+		finally {
+			Bpmn2ModelerFactory.setEnableModelExtensions(true);
+			Bpmn2ModelerFactory.setResource(null);
+		}
+	}
+
 	public void save(Map<?, ?> options) throws IOException {
 		uriHandler.setBaseURI(getURI());
 		xmlHelper.setResource(this);
@@ -294,7 +302,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	 */
 	@Override
 	protected XMLLoad createXMLLoad() {
-		return new XMLLoadImpl(createXMLHelper()) {
+		XMLLoad xmlLoad = new XMLLoadImpl(createXMLHelper()) {
 			Bpmn2ModelerXmlHandler handler;
 			
 			@Override
@@ -309,6 +317,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					super.load(resource, inputStream, options);
 				}
 				catch (Exception e) {
+					e.printStackTrace();
 					BPMNDiagnostic error = new BPMNDiagnostic(e.getMessage());
 					error.setLine(handler.getLineNumber());
 					error.setColumn(handler.getColumnNumber());
@@ -319,6 +328,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 		};
+		return xmlLoad;
 	}
 
 	static class BPMNDiagnostic implements Resource.Diagnostic {
@@ -428,7 +438,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		xmlHelper.setResource(this);
 		uriHandler.setBaseURI(uri);
 	}
-
+	
 	/**
 	 * We need to extend the standard SAXXMLHandler to hook into the handling of
 	 * attribute references which may be either simple ID Strings or QNames.
@@ -445,15 +455,21 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			super(xmiResource, helper, options);
 		}
 		
+		/**
+		 * Subclasses should override this to provide their own namespace URI.
+		 * Default is to use that "targetNamespace" attribute in the <definitions> element.
+		 * @param defs
+		 * @return
+		 */
 		protected String getTargetNamespace(Definitions defs) {
 			return defs.getTargetNamespace();
 		}
 		
 		@Override
 		public void startDocument() {
-			super.startDocument();
-			Bpmn2ModelerFactory.setEnableModelExtensions(false);
+			Bpmn2ModelerFactory.setResource(xmlResource);
 			preferences = Bpmn2Preferences.getInstance(xmlResource);
+			super.startDocument();
 		}
 
 		@Override
@@ -498,7 +514,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					epa.setProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION, epa.getDescription(d));
 				}
 			}
-			Bpmn2ModelerFactory.setEnableModelExtensions(true);
 		}
 		
 		@Override
@@ -598,8 +613,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			EPackage pkg = ModelDecorator.getEPackage(nsURI);
 			if (pkg!=null) {
 				EClassifier eType = feature.getEType();
-
-				ObjectPropertyProvider.adapt(eType.getEPackage().getEFactoryInstance(), peekObject.eResource());
 				
 				newObject = pkg.getEFactoryInstance().create((EClass)eType);
 				
@@ -622,17 +635,16 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					// if this is a CustomElement we need to discard this object and construct it
 					// properly such that all extension attributes and elements are created and
 					// initialized.
-					EFactory factory = newObject.eClass().getEPackage().getEFactoryInstance();
-					ObjectPropertyProvider adapter = ObjectPropertyProvider.adapt(factory, xmlResource);
+					EClass eClass = newObject.eClass();
 					try {
 						// remove all traces of the old object
 						objects.pop();
 						mixedTargets.pop();
 						types.pop();
 						EcoreUtil.delete(newObject);
-						// set up the BPMN2 object factory to construct this CustomElement
-						adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
-						newObject = super.createObjectFromFeatureType(peekObject, feature);
+						// then construct and initialize the object
+						newObject = Bpmn2ModelerFactory.create(xmlResource, eClass,
+								new KeyValue(GraphitiConstants.CUSTOM_ELEMENT_ID, id));
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -1654,13 +1666,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				runtime = TargetRuntime.getDefaultRuntime();
 			}
 			TargetRuntimeAdapter.adapt(resource, runtime);
-		}
-
-		@Override
-		public EObject createObject(EFactory eFactory, EClassifier type) {
-			ObjectPropertyProvider.adapt(eFactory, resource);
-
-			return super.createObject(eFactory, type);
 		}
 		
 		@Override

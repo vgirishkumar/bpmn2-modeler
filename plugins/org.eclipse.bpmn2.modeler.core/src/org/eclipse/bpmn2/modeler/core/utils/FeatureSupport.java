@@ -59,7 +59,7 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
@@ -844,7 +844,7 @@ public class FeatureSupport {
 	
 	public static void updateCategoryValues(IFeatureProvider fp, PictogramElement pe) {
 		
-		Resource resource = ObjectPropertyProvider.getResource(pe);
+		Resource resource = ExtendedPropertiesAdapter.getResource(pe);
 		if (Bpmn2Preferences.getInstance(resource).getPropagateGroupCategories()) {
 			// only do this if User Preference is enabled: assign the Group's CategoryValue
 			// to the FlowElement represented by the given PictogramElement

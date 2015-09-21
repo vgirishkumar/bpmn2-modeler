@@ -18,9 +18,9 @@ import java.util.List;
 import org.eclipse.bpel.wsil.model.inspection.Inspection;
 import org.eclipse.bpel.wsil.model.inspection.TypeOfAbstract;
 import org.eclipse.bpmn2.modeler.core.adapters.AbstractAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.ILabeledElement;
 import org.eclipse.bpmn2.modeler.wsil.Activator;
 import org.eclipse.bpmn2.modeler.wsil.IConstants;
-import org.eclipse.bpmn2.modeler.ui.adapters.ILabeledElement;
 import org.eclipse.swt.graphics.Image;
 
 /**

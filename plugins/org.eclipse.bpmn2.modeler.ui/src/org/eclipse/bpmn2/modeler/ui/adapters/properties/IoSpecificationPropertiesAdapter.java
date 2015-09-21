@@ -20,13 +20,11 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
-import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -55,7 +53,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			public EObject createFeature(Resource resource, EClass eclass) {
 				List<InputSet> inputSets = object.getInputSets();
 				if (inputSets.size()==0) {
-					inputSets.add(Bpmn2ModelerFactory.create(resource, InputSet.class));
+					inputSets.add(Bpmn2ModelerFactory.createObject(resource, InputSet.class));
 				}
 				InputSet inputSet = inputSets.get(0);
 				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, object.getDataInputs());
@@ -72,7 +70,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			public EObject createFeature(Resource resource, EClass eclass) {
 				List<OutputSet> outputSets = object.getOutputSets();
 				if (outputSets.size()==0) {
-					outputSets.add(Bpmn2ModelerFactory.create(resource, OutputSet.class));
+					outputSets.add(Bpmn2ModelerFactory.createObject(resource, OutputSet.class));
 				}
 				OutputSet outputSet = outputSets.get(0);
 				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, object.getDataOutputs());
@@ -86,13 +84,10 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			
 			@Override
 			public InputOutputSpecification createObject(Resource resource, EClass eclass) {
-				InputOutputSpecification ioSpec = Bpmn2ModelerFactory.eINSTANCE.createInputOutputSpecification();
-				ModelUtil.setID(ioSpec, resource);
-				InputSet is = Bpmn2ModelerFactory.eINSTANCE.createInputSet();
-				ModelUtil.setID(is, resource);
+				InputOutputSpecification ioSpec = Bpmn2ModelerFactory.createObject(resource, InputOutputSpecification.class);
+				InputSet is = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 				ioSpec.getInputSets().add(is);
-				OutputSet os = Bpmn2ModelerFactory.eINSTANCE.createOutputSet();
-				ModelUtil.setID(os, resource);
+				OutputSet os = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
 				ioSpec.getOutputSets().add(os);
 				return ioSpec;
 			}

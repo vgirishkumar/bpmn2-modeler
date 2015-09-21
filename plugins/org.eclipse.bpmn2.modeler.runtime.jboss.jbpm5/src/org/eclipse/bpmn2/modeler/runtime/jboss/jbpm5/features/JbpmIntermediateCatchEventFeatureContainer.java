@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.modeler.ui.features.event.IntermediateCatchEventFeature
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class JbpmIntermediateCatchEventFeatureContainer extends IntermediateCatchEventFeatureContainer {

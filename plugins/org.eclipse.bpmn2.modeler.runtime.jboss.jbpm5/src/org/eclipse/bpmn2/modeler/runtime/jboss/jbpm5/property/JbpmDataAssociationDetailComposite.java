@@ -14,14 +14,9 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.ReceiveTask;
-import org.eclipse.bpmn2.SendTask;
-import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;

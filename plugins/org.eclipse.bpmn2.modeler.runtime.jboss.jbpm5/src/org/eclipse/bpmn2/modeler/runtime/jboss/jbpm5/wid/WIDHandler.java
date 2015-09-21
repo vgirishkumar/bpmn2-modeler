@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeFactory;

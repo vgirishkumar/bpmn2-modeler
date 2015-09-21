@@ -28,8 +28,8 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
@@ -112,7 +112,8 @@ public class JbpmModelUtil {
 									}
 								}
 							} while (!done);
-							Property var = (Property) Bpmn2ModelerFactory.createFeature(processes.get(0), "properties"); //$NON-NLS-1$
+							Resource resource = ExtendedPropertiesAdapter.getResource(definitions);
+							Property var = Bpmn2ModelerFactory.createFeature(resource, processes.get(0), "properties", Property.class); //$NON-NLS-1$
 							var.setName(varName);
 							var.setId(varName);
 							var.setItemSubjectRef(itemDef);
@@ -201,7 +202,7 @@ public class JbpmModelUtil {
 		}
 		
 		final Process fProcess = process;
-		final ImportType newImport = (ImportType)DroolsFactory.eINSTANCE.create(DroolsPackage.eINSTANCE.getImportType());
+		final ImportType newImport = DroolsFactory.eINSTANCE.createImportType();
 		newImport.setName(className);
 
 		TransactionalEditingDomain domain = ModelUtil.getEditor(object).getEditingDomain();
@@ -237,7 +238,7 @@ public class JbpmModelUtil {
 
 	public static void removeImport(ImportType importType) {
 		Definitions definitions = ModelUtil.getDefinitions(importType);
-		Import imp = Bpmn2ModelerFactory.create(definitions.eResource(), Import.class);
+		Import imp = Bpmn2ModelerFactory.createObject(definitions.eResource(), Import.class);
 		imp.setImportType(ImportUtil.IMPORT_TYPE_JAVA);
 		imp.setLocation(importType.getName());
 		definitions.getImports().add(imp);
@@ -390,7 +391,7 @@ public class JbpmModelUtil {
 	
 	public static ItemDefinition findOrCreateItemDefinition(EObject context, String structureRef) {
 		ItemDefinition itemDef = null;
-		Resource resource = ObjectPropertyProvider.getResource(context);
+		Resource resource = ExtendedPropertiesAdapter.getResource(context);
 		Definitions definitions = ModelUtil.getDefinitions(resource);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
@@ -402,7 +403,7 @@ public class JbpmModelUtil {
 		}
 		if (itemDef==null)
 		{
-			itemDef = Bpmn2ModelerFactory.create(resource, ItemDefinition.class);
+			itemDef = Bpmn2ModelerFactory.createObject(resource, ItemDefinition.class);
 			itemDef.setStructureRef(ModelUtil.createStringWrapper(structureRef));
 			itemDef.setItemKind(ItemKind.INFORMATION);
 
@@ -414,11 +415,11 @@ public class JbpmModelUtil {
 	public static BPSimDataType getBPSimData(EObject object) {
 		BPSimDataType processAnalysisData = null;
 		Relationship rel = null;
-		Resource resource = ObjectPropertyProvider.getResource(object);
+		Resource resource = ExtendedPropertiesAdapter.getResource(object);
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {
-			rel = Bpmn2ModelerFactory.create(resource, Relationship.class);
+			rel = Bpmn2ModelerFactory.createObject(resource, Relationship.class);
 			definitions.getRelationships().add(rel);
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);

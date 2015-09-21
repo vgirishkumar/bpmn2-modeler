@@ -3,10 +3,8 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import org.eclipse.bpmn2.impl.CallableElementImpl;
-
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
-
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.emf.ecore.EClass;
 
 /**

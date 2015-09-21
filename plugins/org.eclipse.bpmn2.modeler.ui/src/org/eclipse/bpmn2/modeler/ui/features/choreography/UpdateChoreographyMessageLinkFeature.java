@@ -336,7 +336,7 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		MessageFlow flow = getMessageFlow(messageFlows, bands);
 		if (flow!=null) {
 			if (flow.getMessageRef()==null && create) {
-				Message msg = Bpmn2ModelerFactory.create(flow.eResource(), Message.class);
+				Message msg = Bpmn2ModelerFactory.createObject(flow.eResource(), Message.class);
 				msg.setName(Messages.ChoreographyUtil_Undefined_Message);
 				ModelUtil.getDefinitions(flow).getRootElements().add(msg);
 				flow.setMessageRef(msg);

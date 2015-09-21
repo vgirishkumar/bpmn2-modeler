@@ -17,10 +17,10 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;

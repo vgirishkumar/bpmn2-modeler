@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
-import org.eclipse.bpmn2.di.BPMNShape;
 
 public class BPMNEdgeTreeEditPart extends AbstractGraphicsTreeEditPart {
 

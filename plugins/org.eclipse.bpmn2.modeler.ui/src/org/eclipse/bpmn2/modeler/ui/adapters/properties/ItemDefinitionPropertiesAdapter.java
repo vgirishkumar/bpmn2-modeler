@@ -24,7 +24,6 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
@@ -187,7 +186,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	}
 	
 	public static String getStructureName(ItemDefinition itemDefinition) {
-		Resource resource = ObjectPropertyProvider.getResource(itemDefinition);
+		Resource resource = ExtendedPropertiesAdapter.getResource(itemDefinition);
 		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();

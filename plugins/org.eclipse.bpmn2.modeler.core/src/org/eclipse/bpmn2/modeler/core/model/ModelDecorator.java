@@ -193,6 +193,9 @@ public class ModelDecorator {
 	 * @return the dynamic EPackage or null if not found.
 	 */
 	public static EPackage getEPackage(String nsURI) {
+		if (nsURI==null)
+			return null;
+		
 		EPackage pkg = (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
 		if (pkg!=null)
 			return pkg;
@@ -1279,7 +1282,7 @@ public class ModelDecorator {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								Process process = Bpmn2ModelerFactory.create(participant.eResource(), Process.class);
+								Process process = Bpmn2ModelerFactory.createObject(participant.eResource(), Process.class);
 								participant.setProcessRef(process);
 								definitions.getRootElements().add(process);
 								ModelUtil.setID(process);

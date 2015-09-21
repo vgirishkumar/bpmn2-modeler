@@ -47,29 +47,25 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -163,7 +159,7 @@ public class ModelUtil {
 	}
 	
 	private static Object getKey(EObject obj) {
-		Resource resource = ObjectPropertyProvider.getResource(obj);
+		Resource resource = ExtendedPropertiesAdapter.getResource(obj);
 		if (resource==null) {
 //			System.out.println("The object type "+obj.getClass().getName()+" is not contained in a Resource");
 			return null;
@@ -221,7 +217,7 @@ public class ModelUtil {
 
 	public static String generateID(EObject obj, Resource res, String name) {
 		if (res==null)
-			res = ObjectPropertyProvider.getResource(obj);
+			res = ExtendedPropertiesAdapter.getResource(obj);
 		Object key = (res==null ? getKey(obj) : getKey(res));
 		if (key!=null) {
 			Hashtable<String, EObject> tab = ids.get(key);
@@ -327,7 +323,7 @@ public class ModelUtil {
 	 * @param obj - the BPMN2 object
 	 */
 	public static String setID(EObject obj) {
-		return setID(obj,ObjectPropertyProvider.getResource(obj));
+		return setID(obj,ExtendedPropertiesAdapter.getResource(obj));
 	}
 
 	/**
@@ -596,7 +592,7 @@ public class ModelUtil {
 	}
 
 	public static DiagramEditor getDiagramEditor(EObject object) {
-		DiagramEditor ed = getDiagramEditor(ObjectPropertyProvider.getResource(object));
+		DiagramEditor ed = getDiagramEditor(ExtendedPropertiesAdapter.getResource(object));
 		return ed;
 	}
 	
@@ -634,7 +630,7 @@ public class ModelUtil {
 	}
 	
 	public static Bpmn2DiagramType getDiagramType(BPMNDiagram diagram) {
-		if (diagram!=null && ObjectPropertyProvider.getResource(diagram)!=null) {
+		if (diagram!=null && ExtendedPropertiesAdapter.getResource(diagram)!=null) {
 			BPMNPlane plane = diagram.getPlane();
 			if (plane!=null) {
 				BaseElement be = plane.getBpmnElement();
@@ -751,7 +747,7 @@ public class ModelUtil {
 			object = ((Diagram)object).eResource();
 		}
 		if (object instanceof EObject) {
-			object = ObjectPropertyProvider.getResource((EObject)object);
+			object = ExtendedPropertiesAdapter.getResource((EObject)object);
 		}
 		if (object instanceof Resource) {
 			Resource resource = (Resource) object;
@@ -782,7 +778,7 @@ public class ModelUtil {
 	}
 
 	public static DocumentRoot getDocumentRoot(EObject object) {
-		Resource resource = ObjectPropertyProvider.getResource(object);
+		Resource resource = ExtendedPropertiesAdapter.getResource(object);
 		if (resource!=null) {
 			for (EObject c : resource.getContents()) {
 				if (c instanceof DocumentRoot) {
@@ -796,7 +792,7 @@ public class ModelUtil {
 	public static List<EObject> getAllReachableObjects(EObject object, EStructuralFeature feature) {
 		ArrayList<EObject> list = null;
 		if (object!=null && feature.getEType() instanceof EClass) {
-			Resource resource = ObjectPropertyProvider.getResource(object);
+			Resource resource = ExtendedPropertiesAdapter.getResource(object);
 			if (resource!=null) {
 				EClass eClass = (EClass)feature.getEType();
 				if (eClass != EcorePackage.eINSTANCE.getEObject()) {
@@ -816,7 +812,7 @@ public class ModelUtil {
 	
 	public static List<EObject> getAllReachableObjects(EObject object, EClass eClass) {
 		ArrayList<EObject> list = null;
-		Resource resource = ObjectPropertyProvider.getResource(object);
+		Resource resource = ExtendedPropertiesAdapter.getResource(object);
 		if (resource!=null) {
 			list = new ArrayList<EObject>();
 			if (eClass != EcorePackage.eINSTANCE.getEObject()) {
@@ -1084,7 +1080,7 @@ public class ModelUtil {
 	}
 	
 	public static boolean isParticipantBand(Participant participant) {
-		Resource resource = ObjectPropertyProvider.getResource(participant);
+		Resource resource = ExtendedPropertiesAdapter.getResource(participant);
 		for (ChoreographyActivity ca : ModelUtil.getAllObjectsOfType(resource, ChoreographyActivity.class)) {
 			if (ca.getParticipantRefs().contains(participant)) {
 				return true;
@@ -1137,7 +1133,7 @@ public class ModelUtil {
 
 	@Deprecated
 	public static Resource getResource(EObject object) {
-		return ObjectPropertyProvider.getResource(object);
+		return ExtendedPropertiesAdapter.getResource(object);
 	}
 
 	public static boolean equals(Object object1, Object object2) {
