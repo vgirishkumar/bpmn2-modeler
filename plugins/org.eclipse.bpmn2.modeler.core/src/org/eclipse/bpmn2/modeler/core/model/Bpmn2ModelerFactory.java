@@ -187,7 +187,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		Map<String, Object> map = new Hashtable<String, Object>();
 		if (args!=null) {
 			for (KeyValue kv : args) {
-				map.put(kv.getKey(), kv.getValue());
+				if (kv.getValue()!=null) 
+					map.put(kv.getKey(), kv.getValue());
 			}
 		}
 		return create(resource, eClass, map);
@@ -319,7 +320,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		Map<String, Object> map = new Hashtable<String, Object>();
 		if (args!=null) {
 			for (KeyValue kv : args) {
-				map.put(kv.getKey(), kv.getValue());
+				if (kv.getValue()!=null) 
+					map.put(kv.getKey(), kv.getValue());
 			}
 		}
 		return createObject(resource, eClass, map);

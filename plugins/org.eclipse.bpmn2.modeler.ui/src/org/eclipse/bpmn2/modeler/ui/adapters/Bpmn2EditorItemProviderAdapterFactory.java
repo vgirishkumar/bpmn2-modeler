@@ -213,85 +213,28 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 		public ExtendedPropertiesAdapter defaultCase(EObject object) {
         	ExtendedPropertiesAdapter adapter = null;
         	try {
-	        	if (object instanceof EClass) {
-	        		EClass eclass = (EClass)object;
-	        		// this is an EClass: search the current target runtime for an adapter that
-	        		// can handle this thing.
-//	        	    adapter = getTargetRuntimeAdapter(eclass);
-//	        	    if (adapter==null) {
-//	        	    	// If none is found, create a dummy EObject and cache it.
-//	        	    	//
-//	        	    	// These are abstract types that are supported by {@see Bpmn2ModelerFactory#create(EClass)}
-//	        	    	// Additional abstract types can be added here:
-//	        	    	if (eclass.getInstanceClass()==CatchEvent.class) {
-//	        	    		object = new CatchEventImpl() {};
-//	        	    		adapter = new CatchEventPropertiesAdapter(adapterFactory, (CatchEvent)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==Event.class) {
-//	        	    		object = new EventImpl() {};
-//	        	    		adapter = new EventPropertiesAdapter(adapterFactory, (Event)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==ThrowEvent.class) {
-//	        	    		object = new ThrowEventImpl() {};
-//	        	    		adapter = new ThrowEventPropertiesAdapter(adapterFactory, (ThrowEvent)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==FlowElement.class) {
-//	        	    		object = new FlowElementImpl() {};
-//	        	    		adapter = new FlowElementPropertiesAdapter(adapterFactory, (FlowElement)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==ChoreographyActivity.class) {
-//	        	    		object = new ChoreographyActivityImpl() {};
-//	        	    		adapter = new ExtendedPropertiesAdapter<ChoreographyActivity> (adapterFactory, (ChoreographyActivity)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==FlowElementsContainer.class) {
-//	        	    		object = new FlowElementsContainerImpl() {};
-//	        	    		adapter = new ExtendedPropertiesAdapter<FlowElementsContainer> (adapterFactory, (FlowElementsContainer)null);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==FlowNode.class) {
-//	        	    		object = new FlowNodeImpl() {};
-//	        	    		adapter = new ExtendedPropertiesAdapter<FlowNode> (adapterFactory, (FlowNode)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==Gateway.class) {
-//	        	    		object = new GatewayImpl() {};
-//	        	    		adapter = new ExtendedPropertiesAdapter<Gateway> (adapterFactory, (Gateway)object);
-//	        	    	}
-//	        	    	else if (eclass.getInstanceClass()==LoopCharacteristics.class) {
-//	        	    		object = new LoopCharacteristicsImpl() {};
-//	        	    		adapter = new ExtendedPropertiesAdapter<LoopCharacteristics> (adapterFactory, (LoopCharacteristics)object);
-//	        	    	}
-//	        	    	else {
-//	        	    		object = ExtendedPropertiesAdapter.getDummyObject(eclass);
-//	        	    		
-//	        	    		ObjectPropertyProvider factoryAdapter = ObjectPropertyProvider.getAdapter(eclass.getEPackage().getEFactoryInstance());
-//	        	    		TargetRuntime rt = TargetRuntime.getRuntime(factoryAdapter.getResource());
-//	        	    		TargetRuntimeAdapter.adapt(object, rt);
-//
-//		   		    		adapter = doSwitch(object);
-//	        	    	}
-//	        	    }
-	        	}
-	        	else
+	        	if (!(object instanceof EClass)) {
 	        		adapter = getTargetRuntimeAdapter(object);
-	        	
-	        	if (adapter==null) {
-		        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
-		        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter,object) {
-						@Override
-						public String getLabel() {
-							if (ModelUtil.isStringWrapper(object)) {
-								return Messages.CommonLabels_Data_Type;
+		        	if (adapter==null) {
+			        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
+			        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter,object) {
+							@Override
+							public String getLabel() {
+								if (ModelUtil.isStringWrapper(object)) {
+									return Messages.CommonLabels_Data_Type;
+								}
+								return super.getLabel();
 							}
-							return super.getLabel();
-						}
-		
-						@Override
-						public String getTextValue() {
-							if (ModelUtil.isStringWrapper(object)) {
-								return ModelUtil.getStringWrapperTextValue(object);
+			
+							@Override
+							public String getTextValue() {
+								if (ModelUtil.isStringWrapper(object)) {
+									return ModelUtil.getStringWrapperTextValue(object);
+								}
+								return super.getTextValue();
 							}
-							return super.getTextValue();
-						}
-		        	});
+			        	});
+		        	}
 	        	}
         	}
         	catch (Exception e) {}

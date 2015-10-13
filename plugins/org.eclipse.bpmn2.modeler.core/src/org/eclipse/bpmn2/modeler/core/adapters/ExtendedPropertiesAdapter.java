@@ -18,7 +18,35 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.ConversationNode;
+import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.InteractionNode;
+import org.eclipse.bpmn2.LoopCharacteristics;
+import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.impl.ActivityImpl;
+import org.eclipse.bpmn2.impl.CallableElementImpl;
+import org.eclipse.bpmn2.impl.CatchEventImpl;
+import org.eclipse.bpmn2.impl.ChoreographyActivityImpl;
+import org.eclipse.bpmn2.impl.ConversationNodeImpl;
+import org.eclipse.bpmn2.impl.EventDefinitionImpl;
+import org.eclipse.bpmn2.impl.EventImpl;
+import org.eclipse.bpmn2.impl.FlowElementImpl;
+import org.eclipse.bpmn2.impl.FlowElementsContainerImpl;
+import org.eclipse.bpmn2.impl.FlowNodeImpl;
+import org.eclipse.bpmn2.impl.GatewayImpl;
+import org.eclipse.bpmn2.impl.InteractionNodeImpl;
+import org.eclipse.bpmn2.impl.LoopCharacteristicsImpl;
+import org.eclipse.bpmn2.impl.ThrowEventImpl;
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ITargetRuntimeProvider;
@@ -239,17 +267,61 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 	public static EObject getDummyObject(EClass eClass) {
 		EObject object = null;
 		EFactory factory = eClass.getEPackage().getEFactoryInstance();
-		if (factory instanceof Bpmn2ModelerFactory)
-			object = ((Bpmn2ModelerFactory)factory).createInternal(eClass);
+		if (factory instanceof Bpmn2ModelerFactory) {
+			if (eClass.isAbstract()) {
+    	    	// These are abstract types that are supported by {@see Bpmn2ModelerFactory#create(EClass)}
+    	    	// Additional abstract types can be added here:
+    	    	if (eClass.getInstanceClass()==Activity.class) {
+    	    		object = new ActivityImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==CallableElement.class) {
+    	    		object = new CallableElementImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==CatchEvent.class) {
+    	    		object = new CatchEventImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==ChoreographyActivity.class) {
+    	    		object = new ChoreographyActivityImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==ConversationNode.class) {
+    	    		object = new ConversationNodeImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==Event.class) {
+    	    		object = new EventImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==EventDefinition.class) {
+    	    		object = new EventDefinitionImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==FlowElement.class) {
+    	    		object = new FlowElementImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==FlowElementsContainer.class) {
+    	    		object = new FlowElementsContainerImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==FlowNode.class) {
+    	    		object = new FlowNodeImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==Gateway.class) {
+    	    		object = new GatewayImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==InteractionNode.class) {
+    	    		object = new InteractionNodeImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==LoopCharacteristics.class) {
+    	    		object = new LoopCharacteristicsImpl() {};
+    	    	}
+    	    	else if (eClass.getInstanceClass()==ThrowEvent.class) {
+    	    		object = new ThrowEventImpl() {};
+    	    	}
+    	    	else {
+    	    		System.err.println("The abstract BPMN2 type "+eClass.getName()+" can not be constructed");
+    	    	}
+			}
+			else
+				object = ((Bpmn2ModelerFactory)factory).createInternal(eClass);
+		}
 		else
 			object = factory.create(eClass);
-
-//		EObject object = dummyObjects.get(eclass);
-//		if (object==null && eclass.eContainer() instanceof EPackage && !eclass.isAbstract()) {
-//	    	EPackage pkg = (EPackage)eclass.eContainer();
-//	    	object = pkg.getEFactoryInstance().create(eclass);
-//			dummyObjects.put(eclass, object);
-//		}
 		return object;
 	}
 
