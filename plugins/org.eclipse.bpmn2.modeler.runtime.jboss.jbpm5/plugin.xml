@@ -882,6 +882,7 @@
 			<enable object="Association" feature="extensionValues"/>
 			<enable object="Association" feature="id"/>
 			<enable object="BaseElement" feature="extensionValues"/>
+			<enable object="BaseElement" feature="documentation"/>
 			<enable object="BPSimDataType"/>
 			<enable object="BoundaryEvent" feature="attachedToRef"/>
 			<enable object="BoundaryEvent" feature="cancelActivity"/>
@@ -1169,6 +1170,8 @@
 				runtimeId="org.jboss.runtime.jbpm5"
 				id="org.jboss.runtime.jbpm5.RuleFlow"
 				profile="RuleFlow">
+			<enable object="BaseElement" feature="extensionValues"/>
+			<enable object="BaseElement" feature="documentation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<enable object="CallActivity" feature="calledElementRef"/>

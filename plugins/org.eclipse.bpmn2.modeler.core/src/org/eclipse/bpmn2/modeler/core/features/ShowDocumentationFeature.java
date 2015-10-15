@@ -12,14 +12,13 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.List;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.modeler.core.IConstants;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.AbstractObjectEditingDialog;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.emf.ecore.EClass;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -141,10 +140,11 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 			if (documentation==null) {
 				if (text.isEmpty())
 					return;
-				documentation = Bpmn2Factory.eINSTANCE.createDocumentation();
+				documentation = (Documentation) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDocumentation());
 				docList.add(documentation);
 			}
 			documentation.setText(text);
+			changesDone = true;
 		}
 	}
 
