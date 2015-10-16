@@ -313,11 +313,13 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	private BaseElement createNewObject(BaseElement oldObject, BaseElement targetContainerObject) {
 		BaseElement newObject = null;
 		try {
+			Bpmn2ModelerFactory.lock();
 			Bpmn2ModelerFactory.setEnableModelExtensions(false);
 			newObject = copyEObject(oldObject);
 		}
 		finally {
 			Bpmn2ModelerFactory.setEnableModelExtensions(true);
+			Bpmn2ModelerFactory.unlock();
 		}
 		
 		if (targetContainerObject instanceof Participant) {

@@ -275,12 +275,14 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	@Override
 	public void load(Map<?, ?> options) throws IOException {
 		try {
+			Bpmn2ModelerFactory.lock();
 			Bpmn2ModelerFactory.setEnableModelExtensions(false);
 			super.load(options);
 		}
 		finally {
 			Bpmn2ModelerFactory.setEnableModelExtensions(true);
 			Bpmn2ModelerFactory.setResource(null);
+			Bpmn2ModelerFactory.unlock();
 		}
 	}
 

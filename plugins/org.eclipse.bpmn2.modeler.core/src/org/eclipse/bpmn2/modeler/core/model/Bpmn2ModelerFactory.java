@@ -16,8 +16,8 @@ package org.eclipse.bpmn2.modeler.core.model;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
@@ -154,6 +154,15 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	// ModelExtensionDescriptor.populateObject() every time a file is loaded.
 	protected static boolean enableModelExtensions = true;
 	protected static Resource resource;
+	private static ReentrantLock lock = new ReentrantLock();
+	
+	public static void lock() {
+		lock.lock();
+	}
+	
+	public static void unlock() {
+		lock.unlock();
+	}
 
 	public static Bpmn2ModelerFactory getInstance() {
 		return (Bpmn2ModelerFactory) Bpmn2ModelerFactory.eINSTANCE;
@@ -194,12 +203,12 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		return create(resource, eClass, map);
 	}
 	
-	public static synchronized EObject create(Resource resource, EClass eClass, Map<String,Object> args) {
+	public static EObject create(Resource resource, EClass eClass, Map<String,Object> args) {
 		Assert.isTrue(eClass!=null);
 		Assert.isTrue(resource!=null);
 		
 		EObject object = null;
-		
+		lock();
 		try {
     		String customElementId = null;
 			TargetRuntime rt = null;
@@ -261,20 +270,21 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     		}
     		
     		// TODO: should we set a default ID and "name" here?
-    		
-    		// if the object has an "id", assign it now.
-    		String id = ModelUtil.setID(object,resource);
-    		// also set a default name
-    		EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-    		if (feature!=null && !object.eIsSet(feature)) {
-    			if (id!=null)
-    				object.eSet(feature, ModelUtil.toCanonicalString(id));
-    			else {
-    				String name = ModelUtil.toCanonicalString(object.eClass().getName());
-    				object.eSet(feature, NLS.bind(Messages.Bpmn2ModelerFactory_New_Name, name));
-    			}
-    		}
 
+    		if (initializeObject) {
+	    		String id = ModelUtil.setID(object,resource);
+	    		// also set a default name
+	    		EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+	    		if (feature!=null && !object.eIsSet(feature)) {
+	    			if (id!=null)
+	    				object.eSet(feature, ModelUtil.toCanonicalString(id));
+	    			else {
+	    				String name = ModelUtil.toCanonicalString(object.eClass().getName());
+	    				object.eSet(feature, NLS.bind(Messages.Bpmn2ModelerFactory_New_Name, name));
+	    			}
+	    		}
+    		}
+    		
     		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
     		if (adapter!=null)
     			adapter.setResource(resource);
@@ -282,10 +292,10 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object, rt));
 		}
 		catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 		finally {
-			
+			unlock();
 		}
     	return object;
 	}
