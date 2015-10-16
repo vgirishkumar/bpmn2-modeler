@@ -53,6 +53,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
+import org.eclipse.bpmn2.provider.Bpmn2EditPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -915,6 +916,21 @@ public class ModelUtil {
 			ancestor = ModelUtil.findNearestAncestor(ancestor, ancestorTypes);
 		}
 		return values;
+	}
+	
+	/**
+	 * returns the display label for the passed type
+	 * 
+	 * @param classifier 
+	 * @return
+	 */
+	public static String getTypeLabel(EClass classifier) {
+	    String type = classifier.getName();
+	    String label = Bpmn2EditPlugin.INSTANCE.getString("_UI_" + type + "_type");  //$NON-NLS-1$ //$NON-NLS-2$
+	    if (label == null || label.isEmpty()) {
+	    	label = ModelUtil.toCanonicalString(type);
+	    }
+		return label;
 	}
 	
 	/*

@@ -23,10 +23,10 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.provider.Bpmn2EditPlugin;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -71,8 +71,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 
 	@Override
 	public String getCreateName() {
-		// TODO: get name from Messages by generating a field name using the business object class
-		return ModelUtil.toCanonicalString(getFeatureClass().getName());
+	    return ModelUtil.getTypeLabel(getFeatureClass());
 	}
 
 	/* (non-Javadoc)
@@ -86,7 +85,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		String description = ToolTipProvider.INSTANCE.getToolTip(this, getFeatureClass());
 		if (!description.isEmpty())
 			return description;
-		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toCanonicalString(getFeatureClass().getName()));
+		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, getCreateName());
 	}
 
 	@Override
