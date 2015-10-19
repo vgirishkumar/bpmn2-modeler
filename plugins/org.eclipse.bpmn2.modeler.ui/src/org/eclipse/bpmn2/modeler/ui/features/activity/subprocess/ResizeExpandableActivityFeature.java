@@ -224,5 +224,13 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 			else if (context.getHeight()<minHeight + minChildY - MARGIN)
 				context.setHeight(minHeight + minChildY - MARGIN);
 		}
+		
+		public int getWidth() {
+			return minWidth;
+		}
+		
+		public int getHeight() {
+			return minHeight;
+		}
 	}
 }
