@@ -89,6 +89,8 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
+		// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work. Until then, always show these as expanded
+		/*
 		ICustomFeature[] thisFeatures = new ICustomFeature[4 + superFeatures.length];
 		thisFeatures[0] = new ExpandFlowNodeFeature(fp);
 		thisFeatures[1] = new CollapseFlowNodeFeature(fp);
@@ -97,5 +99,7 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 		for (int i=0; i<superFeatures.length; ++i)
 			thisFeatures[4+i] = superFeatures[i];
 		return thisFeatures;
+		*/
+		return superFeatures;
 	}
 }
