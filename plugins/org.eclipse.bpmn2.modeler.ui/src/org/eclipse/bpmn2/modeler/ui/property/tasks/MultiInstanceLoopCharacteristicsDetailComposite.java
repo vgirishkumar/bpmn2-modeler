@@ -397,7 +397,8 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							getBO().setCompletionCondition(null);
+							getBusinessObjectDelegate().setValue(getBO(),
+									Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_CompletionCondition(), null);
 						}
 					});
 				}
@@ -432,8 +433,10 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							getBO().setLoopDataInputRef(null);
-							getBO().setInputDataItem(null);
+							getBusinessObjectDelegate().setValue(getBO(),
+									Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_InputDataItem(), null);
+							getBusinessObjectDelegate().setValue(getBO(),
+									Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataInputRef(), null);
 						}
 					});
 				}
@@ -468,7 +471,8 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							getBO().setLoopCardinality(null);
+							getBusinessObjectDelegate().setValue(getBO(),
+									Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopCardinality(), null);
 						}
 					});
 				}
@@ -497,8 +501,10 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							getBO().setLoopDataOutputRef(null);
-							getBO().setOutputDataItem(null);
+							getBusinessObjectDelegate().setValue(getBO(),
+									Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_OutputDataItem(), null);
+							getBusinessObjectDelegate().setValue(getBO(),
+								Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataOutputRef(), null);
 						}
 					});
 				}

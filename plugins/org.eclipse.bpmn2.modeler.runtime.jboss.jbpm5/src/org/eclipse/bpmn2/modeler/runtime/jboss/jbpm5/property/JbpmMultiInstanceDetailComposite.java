@@ -16,25 +16,27 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.MultiInstanceLoopCharacterist
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
-public class JbpmMultiInstanceDetailComposite extends
-		MultiInstanceLoopCharacteristicsDetailComposite {
+public class JbpmMultiInstanceDetailComposite extends MultiInstanceLoopCharacteristicsDetailComposite {
 
 	public JbpmMultiInstanceDetailComposite(Composite parent, int style) {
 		super(parent, style);
-		// TODO Auto-generated constructor stub
 	}
 
 	public JbpmMultiInstanceDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
-	
+
 	@Override
 	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
+						"isSequential", //$NON-NLS-1$
 						"inputDataItem", //$NON-NLS-1$
+						"outputDataItem", //$NON-NLS-1$
 						"loopDataInputRef", //$NON-NLS-1$
+						"loopDataOutputRef", //$NON-NLS-1$
+						"completionCondition", //$NON-NLS-1$
 						"loopCardinality", //$NON-NLS-1$
 				};
 				
@@ -46,5 +48,4 @@ public class JbpmMultiInstanceDetailComposite extends
 		}
 		return propertiesProvider;
 	}
-
 }

@@ -177,8 +177,11 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								if (activity.getLoopCharacteristics() !=null)
-									activity.setLoopCharacteristics(null);
+								LoopCharacteristics lc = activity.getLoopCharacteristics();
+								if (lc !=null) {
+									getBusinessObjectDelegate().setValue(activity,
+											Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), null);
+								}
 								setBusinessObject(activity);
 							}
 						});
@@ -198,7 +201,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 							@Override
 							protected void doExecute() {
 								StandardLoopCharacteristics loopChar = createModelObject(StandardLoopCharacteristics.class);
-								activity.setLoopCharacteristics(loopChar);
+								getBusinessObjectDelegate().setValue(activity,
+										Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), loopChar);
 								setBusinessObject(activity);
 							}
 						});
@@ -218,7 +222,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 							@Override
 							protected void doExecute() {
 								MultiInstanceLoopCharacteristics loopChar = createModelObject(MultiInstanceLoopCharacteristics.class);
-								activity.setLoopCharacteristics(loopChar);
+								getBusinessObjectDelegate().setValue(activity,
+										Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), loopChar);
 								setBusinessObject(activity);
 							}
 						});
