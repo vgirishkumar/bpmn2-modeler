@@ -470,7 +470,16 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			targetRuntimes = new ArrayList<TargetRuntime>();
 			
 			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(RUNTIME_EXTENSION_ID);
-			
+			for (IConfigurationElement e : elements) {
+				if (EXTENSION_NAME.equals(e.getName())) {
+					String id = e.getAttribute("id"); //$NON-NLS-1$
+					if (getRuntime(id)==null) {
+						TargetRuntime rt = new TargetRuntime(e);
+						targetRuntimes.add(rt);
+					}
+				}
+			}
+
 			try {
 				loadExtensions(null, elements, null);
 			}
@@ -840,8 +849,10 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		unloadExtensions(file);
 		
 		for (IConfigurationElement e : elements) {
-			TargetRuntime currentRuntime = getRuntime(e, targetRuntime);
-			createRuntimeExtensionDescriptor(currentRuntime, e, file);
+			if (!EXTENSION_NAME.equals(e.getName())) {
+				TargetRuntime currentRuntime = getRuntime(e, targetRuntime);
+				createRuntimeExtensionDescriptor(currentRuntime, e, file);
+			}
 		}
 	}
 

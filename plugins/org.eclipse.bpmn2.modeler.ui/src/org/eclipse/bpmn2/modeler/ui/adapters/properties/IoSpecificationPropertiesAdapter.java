@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
@@ -83,7 +84,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		setObjectDescriptor(new ObjectDescriptor<InputOutputSpecification>(this,object) {
 			
 			@Override
-			public InputOutputSpecification createObject(Resource resource, EClass eclass) {
+			public InputOutputSpecification createObject(Resource resource, EClass eclass, Map<String, Object> args) {
 				InputOutputSpecification ioSpec = Bpmn2ModelerFactory.createObject(resource, InputOutputSpecification.class);
 				InputSet is = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 				ioSpec.getInputSets().add(is);

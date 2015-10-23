@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Collaboration;
@@ -52,8 +53,8 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		setObjectDescriptor(new ObjectDescriptor<Participant>(this,object) {
 			
 			@Override
-			public Participant createObject(Resource resource, EClass eclass) {
-				Participant participant = super.createObject(resource, eclass);
+			public Participant createObject(Resource resource, EClass eclass, Map<String, Object> args) {
+				Participant participant = super.createObject(resource, eclass, args);
 				
 				Definitions definitions = null;
 				if (resource!=null)

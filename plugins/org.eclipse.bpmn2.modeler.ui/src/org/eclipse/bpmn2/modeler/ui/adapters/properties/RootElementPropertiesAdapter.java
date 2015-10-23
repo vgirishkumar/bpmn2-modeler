@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Collaboration;
@@ -75,8 +76,8 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 		}
 		
 		@Override
-		public T createObject(Resource resource, EClass eclass) {
-			T rootElement = super.createObject(resource, eclass);
+		public T createObject(Resource resource, EClass eclass, Map<String, Object> args) {
+			T rootElement = super.createObject(resource, eclass, args);
 			
 			Definitions definitions = null;
 			if (resource!=null)

@@ -127,7 +127,7 @@ public class ExtendedPropertiesProvider {
 		if (feature == null)
 			return getTextValue(object);
 
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(null, object, feature);
 		if (adapter != null)
 			return adapter.getFeatureDescriptor(feature).getTextValue();
 		try {
@@ -149,7 +149,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link FeatureDescriptor#getValueList()}
 	 */
 	public static List<Object> getValueList(EObject object, EStructuralFeature feature) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(null, object, feature);
 		return adapter.getFeatureDescriptor(feature).getValueList();
 	}
 	
@@ -224,7 +224,7 @@ public class ExtendedPropertiesProvider {
 		if (feature == null)
 			return null;
 
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(null, object, feature);
 		return getChoiceOfValues(adapter, feature);
 	}
 	

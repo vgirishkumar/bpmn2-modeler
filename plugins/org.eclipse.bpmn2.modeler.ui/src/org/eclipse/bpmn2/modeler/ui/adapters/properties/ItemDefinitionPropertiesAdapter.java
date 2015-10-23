@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
@@ -128,7 +129,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			}
 			
 			@Override
-			public ItemDefinition createObject(Resource resource, EClass eclass) {
+			public ItemDefinition createObject(Resource resource, EClass eclass, Map<String, Object> args) {
 				ItemDefinition itemDefinition = ItemDefinitionPropertiesAdapter.createItemDefinition(resource);
 				return itemDefinition;
 			}

@@ -55,6 +55,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntimeAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notifier;
@@ -176,7 +177,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 //			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
 		}
 		if (object instanceof EObject)
-			return adapt((EObject)object, (EStructuralFeature)null);
+			return adapt((EObject)object);
 		return null;
 	}
 
@@ -206,7 +207,38 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 	 * @return the {@code ExtendedPropertiesAdapter}
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
+	public static ExtendedPropertiesAdapter adapt(Resource resource, EObject object, EStructuralFeature feature) {
+		Assert.isTrue(feature!=null);
+		if (object instanceof EClass) {
+			object = getDummyObject((EClass)object);
+//			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
+		}
+		else if (resource==null)
+			resource = getResource(object);
+		
+		Object value = object.eGet(feature);
+		if (value instanceof EObject) {
+			return adapt((EObject)value);
+		}
+		
+		ExtendedPropertiesAdapter adapter = null;
+		EClass eClass = getFeatureClass(object,feature);
+		if (eClass!=null && resource!=null)
+			adapter = adapt(resource, eClass);
+
+		if (adapter==null)
+			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
+
+		if (adapter!=null) {
+			adapter.setTarget(object);
+			adapter.getObjectDescriptor().setObject(object);
+			adapter.getFeatureDescriptor(feature).setObject(object);
+		}
+		
+		return adapter;
+	}
+	
+	public static ExtendedPropertiesAdapter adapt(EObject object) {
 		if (object instanceof EClass) {
 			object = getDummyObject((EClass)object);
 //			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
@@ -222,32 +254,27 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 		// for the given feature.
 		ExtendedPropertiesAdapter genericAdapter = null;
 		for (Adapter a : object.eAdapters()) {
-			if (a instanceof ExtendedPropertiesAdapter && ((ExtendedPropertiesAdapter)a).canAdapt(object, feature)) {
+			if (a instanceof ExtendedPropertiesAdapter && ((ExtendedPropertiesAdapter)a).canAdapt(object, null)) {
 				if (a.getClass() == ExtendedPropertiesAdapter.class)
 					genericAdapter = (ExtendedPropertiesAdapter) a;
 				else
 					adapter = (ExtendedPropertiesAdapter) a;
 			}
 		}
+
 		// if no "best" adapter is found, use the generic adapter if one has been created for this EObject
 		if (adapter==null && genericAdapter!=null)
 			adapter = genericAdapter;
 		
-		if (adapter==null) {
-			EClass eClass = getFeatureClass(object,feature);
-			Resource resource = getResource(object);
-			if (eClass!=null && resource!=null) {
-				adapter = adapt(resource, eClass);
-			}
-			if (adapter==null)
-				adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
-		}
+		if (adapter==null)
+			adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+
+		if (adapter==null)
+			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
 		
 		if (adapter!=null) {
 			adapter.setTarget(object);
 			adapter.getObjectDescriptor().setObject(object);
-			if (feature!=null)
-				adapter.getFeatureDescriptor(feature).setObject(object);
 		}
 		return adapter;
 	}

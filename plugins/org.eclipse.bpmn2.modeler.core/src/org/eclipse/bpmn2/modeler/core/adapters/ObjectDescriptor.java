@@ -310,21 +310,6 @@ public class ObjectDescriptor<T extends EObject> {
 	}
 	
 	/**
-	 * Convenience method for {@code ObjectDescriptor#createObject(Resource, EClass, Map<String,Object>)}
-	 * without additional object construction information.
-	 * 
-	 * This method should ONLY be called by subclasses of ObjectDescriptor or
-	 * its parent ExtendedPropertiesAdapter
-	 * 
-	 * @param resource
-	 * @param eclass
-	 * @return
-	 */
-	public T createObject(Resource resource, EClass eclass) {
-		return createObject(resource, eclass, null);
-	}
-	
-	/**
 	 * Create a new instance of the object that is managed by this
 	 * ObjectDescriptor.
 	 * 
