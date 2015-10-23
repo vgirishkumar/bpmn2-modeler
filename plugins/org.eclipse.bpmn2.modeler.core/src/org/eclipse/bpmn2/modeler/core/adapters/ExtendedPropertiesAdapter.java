@@ -238,10 +238,17 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 		return adapter;
 	}
 	
+	@Deprecated
+	public static ExtendedPropertiesAdapter adapt(EClass object) {
+		throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
+	}
+	
 	public static ExtendedPropertiesAdapter adapt(EObject object) {
+		if (object==null)
+			return null;
+		
 		if (object instanceof EClass) {
-			object = getDummyObject((EClass)object);
-//			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
+			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
 		}
 		ExtendedPropertiesAdapter adapter = null;
 		if (object instanceof ExtensionAttributeValue) {

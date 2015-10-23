@@ -334,11 +334,12 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		if (eclass==null)
 			eclass = (EClass)getEType();
 		
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
+		if (resource==null) {
+			resource = getResource();
+		}
+		
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(resource, eclass);
 		if (adapter!=null) {
-			if (resource==null) {
-				resource = getResource();
-			}
 			newFeature = adapter.getObjectDescriptor().createObject(resource, eclass, null);
 			// can we set the new object into the parent object?
 			if (newFeature.eContainer()!=null || // the new object is contained somewhere

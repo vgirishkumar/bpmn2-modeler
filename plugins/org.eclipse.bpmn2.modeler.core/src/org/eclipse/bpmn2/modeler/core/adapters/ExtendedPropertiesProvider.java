@@ -82,6 +82,17 @@ public class ExtendedPropertiesProvider {
 		label = label.replaceAll(" Ref$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		return label;
 	}
+	
+	public static String getLabel(Resource resource, EClass eClass, EStructuralFeature feature) {
+		String label = ""; //$NON-NLS-1$
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(resource, eClass, feature);
+		if (adapter != null)
+			label = adapter.getFeatureDescriptor(feature).getLabel();
+		else
+			label = ModelUtil.toCanonicalString(feature.getName());
+		label = label.replaceAll(" Ref$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return label;
+	}
 
 	/**
 	 * See {@link FeatureDescriptor#setLabel()}

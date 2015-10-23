@@ -226,7 +226,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			}
 			// FIXME:
 			// add the extension attributes and elements
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(listItemClass);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object.eResource(), listItemClass);
 			if (adapter!=null) {
 				List<EStructuralFeature> features = adapter.getFeatures();
 				for (EStructuralFeature f : features) {

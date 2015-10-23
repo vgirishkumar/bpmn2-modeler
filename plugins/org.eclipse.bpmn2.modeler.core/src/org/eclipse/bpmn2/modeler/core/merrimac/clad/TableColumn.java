@@ -91,7 +91,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		if (feature!=null) {
 			if (feature.eContainer() instanceof EClass) {
 				EClass eclass = this.listComposite.getListItemClass();
-				text = ExtendedPropertiesProvider.getLabel(eclass, feature);
+				text = ExtendedPropertiesProvider.getLabel(object.eResource(), eclass, feature);
 			}
 			else
 				text = ModelUtil.toCanonicalString(feature.getName());
@@ -162,7 +162,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			else if (ec instanceof EEnum) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
-			else if (ExtendedPropertiesProvider.isMultiChoice(feature.eContainer(), feature)) {
+			else if (ExtendedPropertiesProvider.isMultiChoice(object.eResource(), (EClass)feature.eContainer(), feature)) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
 			else if (ec instanceof EDataType) {
