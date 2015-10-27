@@ -231,7 +231,6 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	
 	public BPMN2FeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
-		updateFeatureLists();
 	}
 	
 	private void initializeFeatureContainers() {
@@ -306,6 +305,10 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			customTaskContainers = new LinkedHashMap<String,ICustomElementFeatureContainer>();
 		}
 		customTaskContainers.put(id,fc);
+		updateFeatureLists();
+	}
+	
+	public void init() {
 		updateFeatureLists();
 	}
 	

@@ -25,9 +25,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.notification.DefaultNotificationService;
 import org.eclipse.graphiti.notification.INotificationService;
+import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
@@ -40,6 +42,13 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 		setFeatureProvider(new BPMN2FeatureProvider(this));
 	}
 
+	@Override
+	public void init(Diagram diagram, IDiagramBehavior diagramBehavior) {
+		super.init(diagram, diagramBehavior);
+		BPMN2FeatureProvider fp = (BPMN2FeatureProvider) getFeatureProvider();
+		fp.init();
+	}
+	
 	@Override
 	public IToolBehaviorProvider[] getAvailableToolBehaviorProviders() {
 		if (toolBehaviorProviders == null) {
@@ -84,8 +93,7 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramEditor();
 		return editor.getTargetRuntime();
 	}
-
-
+	
 	public INotificationService getNotificationService() {
 		if (this.notificationService == null) {
 			this.notificationService = new BPMNNotificationService(this);
