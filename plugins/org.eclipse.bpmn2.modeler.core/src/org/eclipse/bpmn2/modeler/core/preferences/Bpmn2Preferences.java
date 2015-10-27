@@ -524,7 +524,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			simplifyLists = getBoolean(PREF_SIMPLIFY_LISTS, true);
 			usePopupDialogForLists = getBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
-			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
+			// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work. Until then, always show these as expanded
+//			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
+			isExpanded = BPMNDIAttributeDefault.ALWAYS_TRUE;
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMarkerVisible = getBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			saveBPMNLabels = getBoolean(PREF_SAVE_BPMNLABELS, true);
@@ -628,8 +630,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private static String getShapeStylePreferenceName(String name) {
 		// stupid hack to map both DataInputAssociation and DataOutputAssociation
 		// to DataAssociation
-		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name)) //$NON-NLS-1$ //$NON-NLS-2$
-			return "DataAssociation"; //$NON-NLS-1$
+		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name))
+			return "DataAssociation";
 		return name;
 	}
 	

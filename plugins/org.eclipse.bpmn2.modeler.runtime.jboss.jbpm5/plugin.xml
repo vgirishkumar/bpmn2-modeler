@@ -390,6 +390,13 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter">
 		</propertyExtension>
 		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.SubProcess"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.SubProcess"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmSubProcessPropertiesAdapter">
+		</propertyExtension>
+		
 <!-- Graphiti Feature Container Overrides -->
 		
 		<featureContainer
@@ -882,6 +889,7 @@
 			<enable object="Association" feature="extensionValues"/>
 			<enable object="Association" feature="id"/>
 			<enable object="BaseElement" feature="extensionValues"/>
+			<enable object="BaseElement" feature="documentation"/>
 			<enable object="BPSimDataType"/>
 			<enable object="BoundaryEvent" feature="attachedToRef"/>
 			<enable object="BoundaryEvent" feature="cancelActivity"/>
@@ -1017,8 +1025,13 @@
 			<enable object="MessageEventDefinition" feature="messageRef"/>
 			<enable object="MetaDataType" feature="name"/>
 			<enable object="MetaValueType" feature="value"/>
+			<enable object="MultiInstanceLoopCharacteristics" feature="isSequential"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="inputDataItem"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataInputRef"/>
+			<enable object="MultiInstanceLoopCharacteristics" feature="outputDataItem"/>
+			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataOutputRef"/>
+			<enable object="MultiInstanceLoopCharacteristics" feature="completionCondition"/>
+			<enable object="MultiInstanceLoopCharacteristics" feature="loopCardinality"/>
 			<enable object="OnEntryScriptType"/>
 			<enable object="OnExitScriptType"/>
 			<enable object="Operation" feature="documentation"/>
@@ -1169,6 +1182,8 @@
 				runtimeId="org.jboss.runtime.jbpm5"
 				id="org.jboss.runtime.jbpm5.RuleFlow"
 				profile="RuleFlow">
+			<enable object="BaseElement" feature="extensionValues"/>
+			<enable object="BaseElement" feature="documentation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<enable object="CallActivity" feature="calledElementRef"/>

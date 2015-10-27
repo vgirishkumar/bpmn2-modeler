@@ -111,20 +111,21 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 
 						bpmnShape.setIsExpanded(true);
 
+						// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work.
 						GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
 						ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
 						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
+						resizeContext.setX(ga.getX());
+						resizeContext.setY(ga.getY());
 						IDimension oldSize = FeatureSupport.getExpandedSize(containerShape);
-						int oldWidth = ga.getWidth();
-						int oldHeight = ga.getHeight();
+						int oldWidth = oldSize.getWidth();
+						int oldHeight = oldSize.getHeight();
+						resizeContext.setWidth(oldWidth);
+						resizeContext.setHeight(oldHeight);
 						FeatureSupport.setCollapsedSize(containerShape, oldWidth, oldHeight);
-						ResizeExpandableActivityFeature.SizeCalculator newSize = new ResizeExpandableActivityFeature.SizeCalculator(containerShape);
-						if (newSize.getWidth() > oldSize.getWidth())
-							oldSize.setWidth(newSize.getWidth());
-						if (newSize.getHeight() > oldSize.getHeight())
-							oldSize.setHeight(newSize.getHeight());
-						int newWidth = oldSize.getWidth();
-						int newHeight = oldSize.getHeight();
+						ResizeExpandableActivityFeature.SizeCalculator calculator = new ResizeExpandableActivityFeature.SizeCalculator(resizeContext);
+						int newWidth = calculator.getWidth();
+						int newHeight = calculator.getHeight();
 						resizeContext.setX(ga.getX() + oldWidth/2 - newWidth/2);
 						resizeContext.setY(ga.getY() + oldHeight/2 - newHeight/2);
 						resizeContext.setWidth(newWidth);
