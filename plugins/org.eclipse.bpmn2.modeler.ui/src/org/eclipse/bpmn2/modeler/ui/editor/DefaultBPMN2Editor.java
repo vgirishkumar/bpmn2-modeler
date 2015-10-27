@@ -456,6 +456,9 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 		if (required==GraphicalViewer.class) {
 			return getGraphicalViewer();
 		}
+		if (required==Resource.class) {
+			return getResource();
+		}
 
 		return super.getAdapter(required);
 	}

@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.ui.provider.PropertyDescriptor.EDataTypeCellEditor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -82,6 +83,10 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		headerText = text;
 	}
 	
+	public Resource getResource() {
+		return (Resource) listComposite.getDiagramEditor().getAdapter(Resource.class);
+	}
+	
 	@Override
 	public String getHeaderText() {
 		if (headerText!=null)
@@ -91,7 +96,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		if (feature!=null) {
 			if (feature.eContainer() instanceof EClass) {
 				EClass eclass = this.listComposite.getListItemClass();
-				text = ExtendedPropertiesProvider.getLabel(object.eResource(), eclass, feature);
+				text = ExtendedPropertiesProvider.getLabel(getResource(), eclass, feature);
 			}
 			else
 				text = ModelUtil.toCanonicalString(feature.getName());
@@ -162,7 +167,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			else if (ec instanceof EEnum) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
-			else if (ExtendedPropertiesProvider.isMultiChoice(object.eResource(), (EClass)feature.eContainer(), feature)) {
+			else if (ExtendedPropertiesProvider.isMultiChoice(getResource(), (EClass)feature.eContainer(), feature)) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
 			else if (ec instanceof EDataType) {
