@@ -913,6 +913,21 @@ public class ModelUtil {
 		return values;
 	}
 	
+	/**
+	 * returns the display label for the passed type
+	 * 
+	 * @param classifier 
+	 * @return
+	 */
+	public static String getTypeLabel(EClass classifier) {
+	    String type = classifier.getName();
+	    String label = Bpmn2EditPlugin.INSTANCE.getString("_UI_" + type + "_type");  //$NON-NLS-1$ //$NON-NLS-2$
+	    if (label == null || label.isEmpty()) {
+	    	label = ModelUtil.toCanonicalString(type);
+	    }
+		return label;
+	}
+	
 	/*
 	 * Various model object and feature UI property methods
 	 */

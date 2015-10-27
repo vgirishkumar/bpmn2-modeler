@@ -90,9 +90,9 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		super(fp, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	@Override
 	public String getCreateName() {
-		// TODO: get name from Messages by generating a field name using the business object class
-		return ModelUtil.toCanonicalString(getFeatureClass().getName());
+		return ModelUtil.getTypeLabel(getFeatureClass());
 	}
 
 	/* (non-Javadoc)
@@ -101,8 +101,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 */
 	@Override
 	public String getCreateDescription() {
-		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
-				ModelUtil.toCanonicalString( getFeatureClass().getName()));
+		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create, getCreateName());
 	}
 
 	@Override

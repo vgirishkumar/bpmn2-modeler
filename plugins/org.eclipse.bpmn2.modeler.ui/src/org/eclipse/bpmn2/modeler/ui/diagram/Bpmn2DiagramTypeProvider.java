@@ -43,8 +43,7 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 	@Override
 	public IToolBehaviorProvider[] getAvailableToolBehaviorProviders() {
 		if (toolBehaviorProviders == null) {
-			DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramEditor();
-			TargetRuntime rt = editor.getTargetRuntime();
+			TargetRuntime rt = getTargetRuntime();
 			IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
 					Activator.UI_EXTENSION_ID);
 			Bpmn2ToolBehaviorProvider provider = null;
@@ -74,6 +73,16 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 			toolBehaviorProviders = new IToolBehaviorProvider[] { provider };
 		}
 		return toolBehaviorProviders;
+	}
+
+	/**
+	 * returns the target runtime for the current editor
+	 * 
+	 * @return
+	 */
+	protected TargetRuntime getTargetRuntime() {
+		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramEditor();
+		return editor.getTargetRuntime();
 	}
 
 

@@ -675,7 +675,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		for (ICustomFeature cf : fp.getCustomFeatures(cc)) {
 			if (cf.isAvailable(cc) && cf.canExecute(cc)) {
 				ContextButtonEntry button = new ContextButtonEntry(cf, cc);
-				button.setText(cf.getName()); //$NON-NLS-1$
+				button.setText(cf.getName());
 				button.setIconId(cf.getImageId());
 				button.setDescription(cf.getDescription());
 				
@@ -700,7 +700,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		// 3.b. create context button and add "Create Connections" feature
 		ContextButtonEntry button = new ContextButtonEntry(null, context);
-		button.setText("Create Connection"); //$NON-NLS-1$
+		button.setText(Messages.Bpmn2ToolBehaviorProvider_Create_Connection);
 		String description = null;
 		ArrayList<String> names = new ArrayList<String>();
 		button.setIconId(ImageProvider.IMG_16_SEQUENCE_FLOW);
