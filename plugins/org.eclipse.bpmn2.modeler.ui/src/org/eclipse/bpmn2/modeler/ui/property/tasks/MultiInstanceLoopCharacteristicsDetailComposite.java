@@ -657,6 +657,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 							DataInput input = lc.getInputDataItem();
 							if (input==null) {
 								input = createModelObject(DataInput.class);
+								input.setName("");
 								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem(), input);
 							}
 							editor = new DataInputOutputObjectEditor(this, input, PACKAGE.getDataInput_Name());
@@ -687,6 +688,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 							DataOutput output = lc.getOutputDataItem();
 							if (output==null) {
 								output = createModelObject(DataOutput.class);
+								output.setName("");
 								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_OutputDataItem(), output);
 							}
 							editor = new DataInputOutputObjectEditor(this, output, PACKAGE.getDataOutput_Name());
