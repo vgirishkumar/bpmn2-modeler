@@ -174,7 +174,6 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 	public static ExtendedPropertiesAdapter adapt(Object object) {
 		if (object instanceof EClass) {
 			object = getDummyObject((EClass)object);
-//			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
 		}
 		if (object instanceof EObject)
 			return adapt((EObject)object);
@@ -211,21 +210,16 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 		Assert.isTrue(feature!=null);
 		if (object instanceof EClass) {
 			object = getDummyObject((EClass)object);
-//			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
 		}
 		else if (resource==null)
 			resource = getResource(object);
 		
-		Object value = object.eGet(feature);
-		if (value instanceof EObject) {
-			return adapt((EObject)value);
-		}
-		
 		ExtendedPropertiesAdapter adapter = null;
-		EClass eClass = getFeatureClass(object,feature);
-		if (eClass!=null && resource!=null)
-			adapter = adapt(resource, eClass);
-
+		TargetRuntime rt = TargetRuntimeAdapter.getTargetRuntime(resource);
+		if (rt!=null)
+			TargetRuntimeAdapter.adapt(object, rt);
+		adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		
 		if (adapter==null)
 			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
 
@@ -250,35 +244,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 		if (object instanceof EClass) {
 			throw new IllegalArgumentException("ExtendedPropertiesAdapter: Can't adapt "+((EClass)object).getName());
 		}
-		ExtendedPropertiesAdapter adapter = null;
 		if (object instanceof ExtensionAttributeValue) {
 			if (object.eContainer()!=null)
 				object = object.eContainer();
 		}
-		
-		// If the EObject already has one of these adapters, find the "best" one for
-		// the given feature. The "best" means the adapter will have defined a FeatureDescriptor
-		// for the given feature.
-		ExtendedPropertiesAdapter genericAdapter = null;
-		for (Adapter a : object.eAdapters()) {
-			if (a instanceof ExtendedPropertiesAdapter && ((ExtendedPropertiesAdapter)a).canAdapt(object, null)) {
-				if (a.getClass() == ExtendedPropertiesAdapter.class)
-					genericAdapter = (ExtendedPropertiesAdapter) a;
-				else
-					adapter = (ExtendedPropertiesAdapter) a;
-			}
-		}
 
-		// if no "best" adapter is found, use the generic adapter if one has been created for this EObject
-		if (adapter==null && genericAdapter!=null)
-			adapter = genericAdapter;
-		
-		if (adapter==null)
-			adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
-
-		if (adapter==null)
-			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
-		
+		ExtendedPropertiesAdapter adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
 		if (adapter!=null) {
 			adapter.setTarget(object);
 			adapter.getObjectDescriptor().setObject(object);
@@ -378,25 +349,6 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 	public void setObjectDescriptor(ObjectDescriptor<T> od) {
 		setProperty(OBJECT_DESCRIPTOR,od);
 		od.setOwner(this);
-	}
-
-	/**
-	 * Returns the EClass of the given object's feature. If the EClass is
-	 * abstract, returns null.
-	 * 
-	 * @param object an EClass
-	 * @param feature an EStructuralFeature of the object
-	 * @return a feature EClass, or the object if the feature is abstract.
-	 */
-	private static EClass getFeatureClass(EObject object, EStructuralFeature feature) {
-		EClass eclass = null;
-		if (feature!=null && feature.eContainer() instanceof EClass) {
-			eclass = (EClass)feature.eContainer();
-		}
-		if (eclass==null || eclass.isAbstract()) {
-			return null;
-		}
-		return eclass;
 	}
 
 	/**
@@ -643,28 +595,6 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 			object.eAdapters().add(this);
 			setResource(getResource(object));
 		}
-	}
-
-	/**
-	 * Check if the given object feature can be adapted.
-	 *
-	 * @param object the object
-	 * @param feature the feature
-	 * @return true, if the object has a Feature Descriptor for the given feature.
-	 */
-	public boolean canAdapt(EObject object, EStructuralFeature feature) {
-		if (object!=null) {
-			if (getObjectDescriptor().object.eClass() == object.eClass()) {
-				if (feature==null)
-					return true;
-				// only TRUE if this adapter already has a FeatureDescriptor for this feature 
-				Hashtable<String,Object> props = featureProperties.get(feature);
-				if (props!=null) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	public String getDescription(EObject object) {

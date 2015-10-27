@@ -235,7 +235,7 @@ public class ExtendedPropertiesProvider {
 		if (feature == null)
 			return null;
 
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(null, object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		return getChoiceOfValues(adapter, feature);
 	}
 	

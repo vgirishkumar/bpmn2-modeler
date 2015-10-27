@@ -69,6 +69,7 @@ import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
 import org.eclipse.emf.ecore.xml.type.AnyType;
+import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -925,7 +926,8 @@ public class ModelDecorator {
 	 * 3. the BPMN2 packages, including BPMNDI, DI and DC
 	 * 
 	 * @param pkg - an optional EPackage to search.
-	 * @param type - name of the EClassifier to search for.
+	 * @param type - simple name of the EClassifier to search for. This must
+	 *               match the EClassifier's instance class name.
 	 * @return - an EClassifier if found or null if not found.
 	 */
 	public static EClassifier findEClassifier(EPackage pkg, String type) {
@@ -937,10 +939,13 @@ public class ModelDecorator {
 		if (pkg!=null) {
 			eClassifier = pkg.getEClassifier(type);
 			if (eClassifier!=null)
-				return eClassifier;
+				if (eClassifier.getInstanceClass().getSimpleName().equals(type))
+					return eClassifier;
+
 			eClassifier = findEClassifierInDocumentRoot(pkg,type);
 			if (eClassifier!=null)
-				return eClassifier;
+				if (eClassifier.getInstanceClass().getSimpleName().equals(type))
+					return eClassifier;
 		}
 		
 		eClassifier = EcorePackage.eINSTANCE.getEClassifier(type);
