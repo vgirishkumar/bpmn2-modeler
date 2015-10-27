@@ -249,7 +249,9 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 				object = object.eContainer();
 		}
 
-		ExtendedPropertiesAdapter adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		if (adapter==null)
+			adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), object);
 		if (adapter!=null) {
 			adapter.setTarget(object);
 			adapter.getObjectDescriptor().setObject(object);
