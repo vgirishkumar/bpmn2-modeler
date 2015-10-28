@@ -346,7 +346,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				updateFeature.update(updateContext);
 		}
 		
-		businessObjects.add(result);
+		businessObjects.addAll(result);
 	}
 	
 	private void addPictogramElementToContext(IContext context, PictogramElement pe) {
