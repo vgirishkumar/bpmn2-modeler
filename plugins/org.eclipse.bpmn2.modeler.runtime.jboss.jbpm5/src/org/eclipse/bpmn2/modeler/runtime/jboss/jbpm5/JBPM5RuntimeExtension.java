@@ -436,7 +436,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 		String[] basicProps = new String[] { "taskName", "displayName", "icon" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		for (int i = 0; i < basicProps.length; i++) {
 			Property prop = getPropertyFromWID(basicProps[i], wid);
-			ct.getProperties().add(prop);
+			if (prop!=null)
+				ct.getProperties().add(prop);
 		}
 	}
 
