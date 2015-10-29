@@ -20,7 +20,6 @@ import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2Element
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.validation.IValidationContext;
 
 public class BusinessRuleTaskValidator extends AbstractBpmn2ElementValidator<BusinessRuleTask> {

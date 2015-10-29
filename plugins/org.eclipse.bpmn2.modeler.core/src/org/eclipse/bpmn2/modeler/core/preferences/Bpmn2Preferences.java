@@ -45,7 +45,7 @@ import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IProject;
@@ -253,7 +253,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	 * @return project preferences
 	 */
 	public static Bpmn2Preferences getInstance(EObject object) {
-		return getInstance(ObjectPropertyProvider.getResource(object));
+		return getInstance(ExtendedPropertiesAdapter.getResource(object));
 	}
 	
 	public static Bpmn2Preferences getInstance(Resource resource) {
@@ -524,7 +524,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			simplifyLists = getBoolean(PREF_SIMPLIFY_LISTS, true);
 			usePopupDialogForLists = getBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
-			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
+			// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work. Until then, always show these as expanded
+//			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
+			isExpanded = BPMNDIAttributeDefault.ALWAYS_TRUE;
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMarkerVisible = getBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			saveBPMNLabels = getBoolean(PREF_SAVE_BPMNLABELS, true);
@@ -628,8 +630,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private static String getShapeStylePreferenceName(String name) {
 		// stupid hack to map both DataInputAssociation and DataOutputAssociation
 		// to DataAssociation
-		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name)) //$NON-NLS-1$ //$NON-NLS-2$
-			return "DataAssociation"; //$NON-NLS-1$
+		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name))
+			return "DataAssociation";
 		return name;
 	}
 	

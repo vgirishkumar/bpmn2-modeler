@@ -52,14 +52,13 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Messages;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
-import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.core.runtime.IStatus;
@@ -923,10 +922,10 @@ public class ModelHandler {
 	// static versions of the above, for convenience
 	
 	public static EObject create(Resource resource, EClass eClass) {
-		return Bpmn2ModelerFactory.create(resource, eClass);
+		return Bpmn2ModelerFactory.createObject(resource, eClass);
 	}
 
 	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
-		return (T) Bpmn2ModelerFactory.create(resource, clazz);
+		return (T) Bpmn2ModelerFactory.createObject(resource, clazz);
 	}
 }

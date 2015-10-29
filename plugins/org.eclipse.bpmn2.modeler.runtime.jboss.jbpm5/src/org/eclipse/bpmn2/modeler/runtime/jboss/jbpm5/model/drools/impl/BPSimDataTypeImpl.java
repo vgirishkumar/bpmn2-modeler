@@ -4,7 +4,6 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
-
 import org.eclipse.emf.ecore.EClass;
 
 /**

@@ -14,31 +14,20 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Choreography;
-import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNPlane;
-import org.eclipse.bpmn2.di.BpmnDiFactory;
-import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -64,8 +53,8 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		setObjectDescriptor(new ObjectDescriptor<Participant>(this,object) {
 			
 			@Override
-			public Participant createObject(Resource resource, EClass eclass) {
-				Participant participant = super.createObject(resource, eclass);
+			public Participant createObject(Resource resource, EClass eclass, Map<String, Object> args) {
+				Participant participant = super.createObject(resource, eclass, args);
 				
 				Definitions definitions = null;
 				if (resource!=null)
@@ -93,7 +82,7 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 					}
 			        if (participant.eContainer()==null) {
 			        	// no Collaboration element found - create one
-			        	Collaboration collaboration = Bpmn2ModelerFactory.create(resource, Collaboration.class);
+			        	Collaboration collaboration = Bpmn2ModelerFactory.createObject(resource, Collaboration.class);
 			        	collaboration.getParticipants().add(participant);
 			        }
 				}

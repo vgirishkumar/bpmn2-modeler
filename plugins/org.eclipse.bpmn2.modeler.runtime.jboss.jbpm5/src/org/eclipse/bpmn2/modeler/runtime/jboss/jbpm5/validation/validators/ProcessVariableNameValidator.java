@@ -16,11 +16,10 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Property;
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
+import org.eclipse.bpmn2.modeler.core.validation.validators.BaseElementValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -72,7 +71,7 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 		}
 
 		if (isEmpty(id)) {
-			addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Empty, object.eClass().getName());
+			IStatus status = new BaseElementValidator(this).validate(object);
 		}
 		else {
 			if (object instanceof Process || object instanceof ExternalProcess) {
@@ -90,26 +89,26 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
 			}
-		}
 
-		Definitions definitions = ModelUtil.getDefinitions(object);
-		TreeIterator<EObject> iter = definitions.eAllContents();
-		while (iter.hasNext()) {
-			EObject o2 = iter.next();
-			if (o2 instanceof BaseElement && object!=o2) {
-				String id2;
-				if (o2 instanceof GlobalType)
-					id2 = ((GlobalType) o2).getIdentifier();
-				else
-					id2 = ((BaseElement) o2).getId();
-				if (id != null && id2 != null) {
-					if (id.equals(id2)) {
-						addStatus(object, featureName, Status.ERROR,
-								Messages.ProcessVariableNameConstraint_Duplicate_ID,
-								getLabel(object)
-										+ " " + getName(object), //$NON-NLS-1$
-								getLabel(o2)
-										+ " " + getName(o2)); //$NON-NLS-1$
+			Definitions definitions = ModelUtil.getDefinitions(object);
+			TreeIterator<EObject> iter = definitions.eAllContents();
+			while (iter.hasNext()) {
+				EObject o2 = iter.next();
+				if (o2 instanceof BaseElement && object!=o2) {
+					String id2;
+					if (o2 instanceof GlobalType)
+						id2 = ((GlobalType) o2).getIdentifier();
+					else
+						id2 = ((BaseElement) o2).getId();
+					if (id != null && id2 != null) {
+						if (id.equals(id2)) {
+							addStatus(object, featureName, Status.ERROR,
+									Messages.ProcessVariableNameConstraint_Duplicate_ID,
+									getLabel(object)
+											+ " " + getName(object), //$NON-NLS-1$
+									getLabel(o2)
+											+ " " + getName(o2)); //$NON-NLS-1$
+						}
 					}
 				}
 			}

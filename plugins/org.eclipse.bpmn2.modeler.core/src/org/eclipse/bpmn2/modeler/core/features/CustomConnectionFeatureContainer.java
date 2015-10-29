@@ -12,7 +12,6 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.core.features.Messages;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -248,7 +247,6 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		@Override
 		public BaseElement createBusinessObject(ICreateConnectionContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
-			customTaskDescriptor.populateObject(businessObject, true);
 			return businessObject;
 		}
 

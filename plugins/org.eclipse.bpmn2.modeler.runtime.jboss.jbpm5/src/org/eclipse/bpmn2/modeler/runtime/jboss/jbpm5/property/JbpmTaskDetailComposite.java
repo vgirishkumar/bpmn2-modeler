@@ -50,7 +50,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -113,7 +112,8 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 		// this may no longer be required since populateObject() is now called
 		// in Bpmn2ModelerFactory.create(). See https://issues.jboss.org/browse/SWITCHYARD-2484
 		// for details.
-		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
+		ModelExtensionDescriptor med = null;
+		ExtendedPropertiesAdapter<?> adapter = ExtendedPropertiesAdapter.adapt(task);
 		if (adapter==null) {
 			AddContext context = new AddContext(new AreaContext(), task);
 			String id = CustomElementFeatureContainer.getId(context);
@@ -121,20 +121,23 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 		    	TargetRuntime rt = TargetRuntime.getRuntime(task);
 		    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 		    	ctd.populateObject(task, task.eResource(), true);
-		    	adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
+		    	adapter = ExtendedPropertiesAdapter.adapt(task);
 			}
 		}
 		
-		if (adapter != null) {
-//		ModelExtensionDescriptor med = BaseRuntimeExtensionDescriptor.getDescriptor(task, ModelExtensionDescriptor.class);
-//		if (med != null) {
+		if (adapter!=null) {
+			med = adapter.getProperty(ModelExtensionDescriptor.class);
+		}
+		
+		if (med!=null) {
 			// This Task object has <modelExtension> properties defined in the plugin.xml
 			// check if any of the <property> elements extend the DataInputs or DataOutputs
 			// (i.e. the I/O Parameter mappings) and create Object Editors for them.
 			// If the Task does not define these parameter mappings, create temporary objects
 			// for the editors (these will go away if they are not touched by the user)
 //			List<Property> props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
-			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+			
+			List<Property> props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			InputOutputSpecification ioSpec = task.getIoSpecification();
 			if (ioSpec==null) {
 				ioSpec = createModelObject(InputOutputSpecification.class);

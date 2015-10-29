@@ -16,8 +16,8 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.TaskReassignmentsListComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.TaskNotificationsListComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.TaskReassignmentsListComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 

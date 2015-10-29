@@ -28,6 +28,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 
 /*
  *
@@ -130,6 +131,7 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 		 *   </bpmn2:assignment>
 		 * </bpmn2:dataInputAssociation>
 		 */
+		Resource resource = task.eResource();
 		InputOutputSpecification iospec = task.getIoSpecification();
 		DataInputAssociation notStarted = null;
 		DataInputAssociation notCompleted = null;
@@ -161,14 +163,14 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 		else {
 			if (notStarted==null) {
 				// create the NotStartedNotify data input and association
-				input = (DataInput) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInput());
+				input = (DataInput) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getDataInput());
 				input.setName(NotificationType.NOT_STARTED_NOTIFY.getLiteral());
 				iospec.getDataInputs().add(input);
 				iospec.getInputSets().get(0).getDataInputRefs().add(input);
-				notStarted = (DataInputAssociation) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInputAssociation());
+				notStarted = (DataInputAssociation) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getDataInputAssociation());
 				notStarted.setTargetRef(input);
-				assignment = (Assignment) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getAssignment());
-				expression = (FormalExpression) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getFormalExpression());
+				assignment = (Assignment) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getAssignment());
+				expression = (FormalExpression) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getFormalExpression());
 				// make sure this DataInput has an ID
 				ModelUtil.setID(input);
 				expression.setBody(input.getId());
@@ -184,7 +186,7 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 			assignment = (Assignment) notStarted.getAssignment().get(0);
 			expression = (FormalExpression)assignment.getFrom();
 			if (expression==null) {
-				expression = (FormalExpression) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getFormalExpression());
+				expression = (FormalExpression) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getFormalExpression());
 				assignment.setFrom(expression);
 				ModelUtil.setID(expression);
 			}
@@ -203,14 +205,14 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 		else {
 			if (notCompleted==null) {
 				// create the NotStartedNotify data input and association
-				input = (DataInput) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInput());
+				input = (DataInput) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getDataInput());
 				input.setName(NotificationType.NOT_COMPLETED_NOTIFY.getLiteral());
 				iospec.getDataInputs().add(input);
 				iospec.getInputSets().get(0).getDataInputRefs().add(input);
-				notCompleted = (DataInputAssociation) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInputAssociation());
+				notCompleted = (DataInputAssociation) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getDataInputAssociation());
 				notCompleted.setTargetRef(input);
-				assignment = (Assignment) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getAssignment());
-				expression = (FormalExpression) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getFormalExpression());
+				assignment = (Assignment) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getAssignment());
+				expression = (FormalExpression) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getFormalExpression());
 				// make sure this DataInput has an ID
 				ModelUtil.setID(input);
 				expression.setBody(input.getId());
@@ -226,7 +228,7 @@ public class TaskNotificationList extends BasicEList<EObject> implements Adapter
 			assignment = (Assignment) notCompleted.getAssignment().get(0);
 			expression = (FormalExpression)assignment.getFrom();
 			if (expression==null) {
-				expression = (FormalExpression) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getFormalExpression());
+				expression = (FormalExpression) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getFormalExpression());
 				assignment.setFrom(expression);
 				ModelUtil.setID(expression);
 			}

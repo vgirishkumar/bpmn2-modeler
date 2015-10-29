@@ -4,10 +4,11 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import java.math.BigInteger;
 
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;

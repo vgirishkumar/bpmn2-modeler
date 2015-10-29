@@ -30,7 +30,6 @@ import org.eclipse.bpmn2.modeler.ui.features.choreography.BlackboxFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyMessageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyParticipantFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.UpdateChoreographyMessageLinkFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.WhiteboxFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;

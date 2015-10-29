@@ -15,9 +15,9 @@ package org.eclipse.bpmn2.modeler.wsil.ui.adapter;
 
 import org.eclipse.bpel.wsil.model.inspection.Link;
 import org.eclipse.bpmn2.modeler.core.adapters.AbstractAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.ILabeledElement;
 import org.eclipse.bpmn2.modeler.wsil.Activator;
 import org.eclipse.bpmn2.modeler.wsil.IConstants;
-import org.eclipse.bpmn2.modeler.ui.adapters.ILabeledElement;
 import org.eclipse.swt.graphics.Image;
 
 /**

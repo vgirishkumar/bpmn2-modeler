@@ -14,7 +14,6 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -560,7 +559,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				Object v = getBusinessObjectDelegate().getValue(object,reference);
 				EObject value = (EObject)v;
 				if (value==null) {
-					value = getBusinessObjectDelegate().createFeature(object,reference);
+					value = getBusinessObjectDelegate().createFeature(object,reference,(EClass)null);
 					InsertionAdapter.add(object, reference, value);
 				}
 				AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass.getInstanceClass(), this, getTargetRuntime(), SWT.NONE);

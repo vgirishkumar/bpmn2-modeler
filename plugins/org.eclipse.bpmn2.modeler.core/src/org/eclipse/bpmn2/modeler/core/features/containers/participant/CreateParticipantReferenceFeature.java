@@ -13,9 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.core.features.containers.participant;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Participant;

@@ -25,6 +25,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
@@ -353,16 +354,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		if (object instanceof EClass) {
 			throw new IllegalArgumentException("can not retrieve target runtime from EClass"); //$NON-NLS-1$
 		}
-		if (object instanceof PictogramElement) {
-			object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement((PictogramElement) object);
-		}
-
-		TargetRuntime runtime = TargetRuntimeAdapter.getTargetRuntime(object);
-		if (runtime != null) {
-			return runtime;
-		}
-		
-		Resource resource = object.eResource();
+		Resource resource = ExtendedPropertiesAdapter.getResource(object);
 		return resource != null ? getRuntime(resource) : getDefaultRuntime();
 	}
 	
@@ -470,7 +462,16 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			targetRuntimes = new ArrayList<TargetRuntime>();
 			
 			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(RUNTIME_EXTENSION_ID);
-			
+			for (IConfigurationElement e : elements) {
+				if (EXTENSION_NAME.equals(e.getName())) {
+					String id = e.getAttribute("id"); //$NON-NLS-1$
+					if (getRuntime(id)==null) {
+						TargetRuntime rt = new TargetRuntime(e);
+						targetRuntimes.add(rt);
+					}
+				}
+			}
+
 			try {
 				loadExtensions(null, elements, null);
 			}
@@ -840,8 +841,10 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		unloadExtensions(file);
 		
 		for (IConfigurationElement e : elements) {
-			TargetRuntime currentRuntime = getRuntime(e, targetRuntime);
-			createRuntimeExtensionDescriptor(currentRuntime, e, file);
+			if (!EXTENSION_NAME.equals(e.getName())) {
+				TargetRuntime currentRuntime = getRuntime(e, targetRuntime);
+				createRuntimeExtensionDescriptor(currentRuntime, e, file);
+			}
 		}
 	}
 

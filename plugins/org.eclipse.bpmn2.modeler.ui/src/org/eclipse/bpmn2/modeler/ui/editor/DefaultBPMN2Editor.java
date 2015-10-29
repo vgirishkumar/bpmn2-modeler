@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.IBpmn2FeatureProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
@@ -456,6 +457,9 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 		if (required==GraphicalViewer.class) {
 			return getGraphicalViewer();
 		}
+		if (required==Resource.class) {
+			return getResource();
+		}
 
 		return super.getAdapter(required);
 	}
@@ -585,7 +589,7 @@ public class DefaultBPMN2Editor extends DiagramEditor implements IPreferenceChan
 		EditPart ep = viewer.getRootEditPart().getContents();
 		if (ep instanceof AbstractGraphicalEditPart) {
 			IFigure fig = ((AbstractGraphicalEditPart)ep).getFigure();
-			fig.setBorder(new MarginBorder(50));
+			fig.setBorder(new MarginBorder(0,0,50,50));
 		}
 
 		ConnectionLayerClippingStrategy.applyTo(viewer);

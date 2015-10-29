@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -26,7 +27,6 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -48,7 +48,6 @@ import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
@@ -347,7 +346,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				updateFeature.update(updateContext);
 		}
 		
-		businessObjects.add(result);
+		businessObjects.addAll(result);
 	}
 	
 	private void addPictogramElementToContext(IContext context, PictogramElement pe) {
@@ -369,8 +368,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 					if (value.startsWith("$")) { //$NON-NLS-1$
 						String name = value.substring(1);
 						EClassifier eClass = md.getClassifier(name);
-						EFactory factory = eClass.getEPackage().getEFactoryInstance();
-						EObject object = factory.create((EClass)eClass);
+						EObject object = Bpmn2ModelerFactory.create(be.eResource(), (EClass)eClass);
 						adapter.getFeatureDescriptor(feature).setValue(object);
 					}
 					else {

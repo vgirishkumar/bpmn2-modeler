@@ -14,7 +14,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.core.features.Messages;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.IExecutionInfo;
@@ -202,7 +201,6 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		@Override
 		public BaseElement createBusinessObject(ICreateContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
-			customTaskDescriptor.populateObject(businessObject, true);
 			return businessObject;
 		}
 

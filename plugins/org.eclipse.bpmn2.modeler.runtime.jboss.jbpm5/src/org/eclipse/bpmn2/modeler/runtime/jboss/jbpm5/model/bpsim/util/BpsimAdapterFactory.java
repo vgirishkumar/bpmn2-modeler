@@ -2,7 +2,6 @@
  */
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.util;
 
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BetaDistributionType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BinomialDistributionType;

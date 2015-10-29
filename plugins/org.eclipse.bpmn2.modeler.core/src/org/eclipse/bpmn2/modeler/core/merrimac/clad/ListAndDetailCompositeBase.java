@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
@@ -32,12 +31,10 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.transaction.NotificationFilter;
@@ -228,16 +225,15 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return (ModelEnablements)getDiagramEditor().getAdapter(ModelEnablements.class);
 	}
 
+	/**
+	 * Convenience method for creating and initializing new objects.
+	 * 
+	 * @param clazz
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T extends EObject> T createModelObject(Class clazz) {
-		EClass eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
-
-		Resource resource = ObjectPropertyProvider.getResource(businessObject);
-		EFactory factory = eClass.getEPackage().getEFactoryInstance();
-		ObjectPropertyProvider.adapt(factory, resource);
-		
 		T object = getBusinessObjectDelegate().createObject(clazz);
-		ModelUtil.setID(object, resource);
 		return object;
 	}
 	
