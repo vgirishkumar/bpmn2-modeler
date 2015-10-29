@@ -36,6 +36,8 @@ public class SignalEventDefinitionPropertiesAdapter extends EventDefinitionPrope
 		super(adapterFactory, object);
     	
 		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getSignalEventDefinition_SignalRef();
+    	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
 		setFeatureDescriptor(ref, new FeatureDescriptor<SignalEventDefinition>(this,object,ref) {
 
 			@Override
