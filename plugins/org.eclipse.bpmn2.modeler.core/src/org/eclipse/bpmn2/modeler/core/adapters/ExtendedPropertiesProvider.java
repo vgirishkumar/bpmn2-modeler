@@ -239,7 +239,7 @@ public class ExtendedPropertiesProvider {
 			return !((EReference)feature).isContainment();
 		}
 
-		return getChoiceOfValues(object, feature) != null;
+		return false;
 	}
 
 	/**
