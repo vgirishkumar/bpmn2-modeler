@@ -163,10 +163,12 @@ public class TaskNotificationsListComposite extends DefaultListComposite {
 						newlist.setTask(task);
 						for (DataInputAssociation dia : task.getDataInputAssociations()) {
 							DataInput di = (DataInput)dia.getTargetRef();
-							String type = di.getName();
-							if (NotificationType.get(type) != null) {
-								FormalExpression exp = (FormalExpression)dia.getAssignment().get(0).getFrom();
-								newlist.add(type, exp.getBody());
+							if (di!=null) {
+								String type = di.getName();
+								if (NotificationType.get(type) != null) {
+									FormalExpression exp = (FormalExpression)dia.getAssignment().get(0).getFrom();
+									newlist.add(type, exp.getBody());
+								}
 							}
 						}
 						
