@@ -931,6 +931,15 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 			oldElement = BusinessObjectUtil.getFirstElementOfType(context.getOldAnchor().getParent(), BaseElement.class);
 			newElement = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+			
+			if (oldAssociation!=null && oldAssociation.eContainer()==newElement) {
+				// the association connection has already been updated
+				// presumably by the Morph feature. Nothing to do.
+				DIUtils.updateDIEdge(connection);
+				commitTransaction();
+				return;
+			}
+			
 			if (oldElement instanceof Activity) {
 				// disconnect the DataAssociation
 				if (isInput) {
