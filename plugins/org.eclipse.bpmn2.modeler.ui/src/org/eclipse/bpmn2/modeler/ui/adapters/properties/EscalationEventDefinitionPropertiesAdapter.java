@@ -35,6 +35,10 @@ public class EscalationEventDefinitionPropertiesAdapter extends EventDefinitionP
 	public EscalationEventDefinitionPropertiesAdapter(AdapterFactory adapterFactory, EscalationEventDefinition object) {
 		super(adapterFactory, object);
 		
+    	setProperty(Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef(), UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef(), UI_CAN_EDIT, Boolean.TRUE);
+    	setProperty(Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef(), UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
 		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef();
 		setFeatureDescriptor(ref, new FeatureDescriptor<EscalationEventDefinition>(this,object,ref) {
 

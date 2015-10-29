@@ -50,6 +50,7 @@ public class CompensateEventDefinitionPropertiesAdapter extends EventDefinitionP
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getCompensateEventDefinition_ActivityRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.FALSE);
     	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(feature,UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
     	setFeatureDescriptor(feature, new FeatureDescriptor<CompensateEventDefinition>(this,object,feature) {
 
