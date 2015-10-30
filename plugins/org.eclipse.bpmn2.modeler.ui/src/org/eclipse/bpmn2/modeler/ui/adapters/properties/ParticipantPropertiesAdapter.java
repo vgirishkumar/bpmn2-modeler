@@ -21,11 +21,13 @@ import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -81,9 +83,13 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 						collaborations.get(0).getParticipants().add(participant);
 					}
 			        if (participant.eContainer()==null) {
+			        	BPMNDiagram bpmnDiagram = BPMN2Editor.getActiveEditor().getBpmnDiagram();
 			        	// no Collaboration element found - create one
 			        	Collaboration collaboration = Bpmn2ModelerFactory.createObject(resource, Collaboration.class);
 			        	collaboration.getParticipants().add(participant);
+						if (bpmnDiagram!=null) {
+							bpmnDiagram.getPlane().setBpmnElement(collaboration);
+						}
 			        }
 				}
 		        

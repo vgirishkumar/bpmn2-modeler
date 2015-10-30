@@ -17,8 +17,12 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class AbstractDefaultDeleteFeature extends DefaultDeleteBPMNShapeFeature {
 	public AbstractDefaultDeleteFeature(IFeatureProvider fp) {
@@ -28,9 +32,15 @@ public class AbstractDefaultDeleteFeature extends DefaultDeleteBPMNShapeFeature 
 	@Override
 	public void delete(IDeleteContext context) {
 		RootElement container = null;
-		BaseElement element = BusinessObjectUtil.getFirstBaseElement(context.getPictogramElement());
-		if (element!=null && element.eContainer() instanceof RootElement) {
+		PictogramElement pe = context.getPictogramElement();
+		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
+		if (element!=null && element.eContainer() instanceof RootElement && pe instanceof ContainerShape) {
 			container = (RootElement) element.eContainer();
+			// we must delete the container's children first
+			for (PictogramElement child : FeatureSupport.getContainerChildren((ContainerShape)pe)) {
+				IDeleteContext dc = new DeleteContext(child);
+				delete(dc);
+			}
 		}
 		deletePeEnvironment(context.getPictogramElement());
 		super.delete(context);
