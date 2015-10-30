@@ -72,10 +72,12 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		else if (elem instanceof CallActivity) {
 			// render a Call Activity with its called element target
 			// (a Process or Global Task) as the child node.
-			CallableElement target = ((CallActivity)elem).getCalledElementRef();
-			if (target!=null) {
-				retList.add(target);
-			}
+			// DON'T DO IT! This causes an infinite loop.
+			// TODO: figure out how to stop recursion at referenced process level.
+//			CallableElement target = ((CallActivity)elem).getCalledElementRef();
+//			if (target!=null) {
+//				retList.add(target);
+//			}
 		}
 		else if (elem instanceof CatchEvent) {
 			retList.addAll(((CatchEvent)elem).getEventDefinitions());

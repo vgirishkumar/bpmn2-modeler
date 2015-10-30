@@ -51,15 +51,15 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Messages;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
-import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.core.runtime.IStatus;
@@ -149,7 +149,7 @@ public class ModelHandler {
 					BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
 					ModelUtil.setID(plane,resource);
 
-					Process process = createProcess();
+					Process process = createProcess(null);
 					process.setName(name+Messages.ModelHandler_Process);
 					// the Process ID should be the same as the resource name
 					String filename = resource.getURI().lastSegment();
@@ -255,7 +255,7 @@ public class ModelHandler {
 					Collaboration collaboration = createCollaboration();
 					collaboration.setName(name+Messages.ModelHandler_Collaboration);
 
-					Process initiatingProcess = createProcess();
+					Process initiatingProcess = createProcess(null);
 					initiatingProcess.setName(Messages.ModelHandler_Initiating_Process);
 					initiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
@@ -263,7 +263,7 @@ public class ModelHandler {
 					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Pool);
 					initiatingParticipant.setProcessRef(initiatingProcess);
 					
-					Process nonInitiatingProcess = createProcess();
+					Process nonInitiatingProcess = createProcess(null);
 					nonInitiatingProcess.setName(Messages.ModelHandler_Non_Initiating_Process);
 					nonInitiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
@@ -466,7 +466,8 @@ public class ModelHandler {
 	}
 
 	public <T extends RootElement> T addRootElement(T element) {
-		getDefinitions().getRootElements().add(element);
+		if (!getDefinitions().getRootElements().contains(element))
+			getDefinitions().getRootElements().add(element);
 		return element;
 	}
 
@@ -539,9 +540,11 @@ public class ModelHandler {
 		return participant;
 	}
 
-	public Process createProcess() {
-		Process process = create(Process.class);
-		getDefinitions().getRootElements().add(process);
+	public Process createProcess(Participant participant) {
+		Process process = Bpmn2ModelerFactory.create(getResource(),Process.class);
+		if (participant!=null)
+			participant.setProcessRef(process);
+		addRootElement(process);
 		return process;
 	}
 	
@@ -562,14 +565,12 @@ public class ModelHandler {
 		}
 		
 		if (process == null) {
-			process = create(Process.class);
-			getDefinitions().getRootElements().add(process);
+			process = createProcess(participant);
 			if (participant!=null) {
 				process.setName(participant.getName() + Messages.ModelHandler_Process_Label);
 				if (participant.eContainer() instanceof Collaboration) {
 					process.setDefinitionalCollaborationRef((Collaboration)participant.eContainer());
 				}
-				participant.setProcessRef(process);
 			}
 		}
 
@@ -669,7 +670,7 @@ public class ModelHandler {
 	
 	public Collaboration createCollaboration() {
 		Collaboration collaboration = create(Collaboration.class);
-		getDefinitions().getRootElements().add(collaboration);
+		addRootElement(collaboration);
 		return collaboration;
 	}
 	
@@ -703,7 +704,7 @@ public class ModelHandler {
 	
 	public Choreography createChoreography() {
 		Choreography choreography = create(Choreography.class);
-		getDefinitions().getRootElements().add(choreography);
+		addRootElement(choreography);
 		return choreography;
 	}
 
@@ -780,31 +781,22 @@ public class ModelHandler {
 			if (be != null && be instanceof FlowElementsContainer) {
 				return (FlowElementsContainer)be;
 			}
-			else {
-				// find an elligible Process for this FlowElement,
+			else if (be instanceof Collaboration) {
+				// find an eligible Process for this FlowElement,
 				// one that is not referenced by a Pool
-				List<Participant> pools = getAll(Participant.class);
-				for (Process process : getAll(Process.class)) {
-					boolean isProcessForPool = false;
-					for (Participant pool : pools) {
-						if (pool.getProcessRef() == process) {
-							isProcessForPool = true;
-							break;
-						}
+				Collaboration collaboration = (Collaboration) be;
+				for (Participant participant : collaboration.getParticipants()) {
+					if (DIUtils.findBPMNShape(participant)==null) {
+						return getOrCreateProcess(participant);
 					}
-					if (!isProcessForPool)
-						return process;
 				}
-				// create a default Process.
-				// The BPMNDiagram now becomes a Process Diagram
-				try {
-					Process process = create(Process.class);
-					bpmnDiagram.getPlane().setBpmnElement(process);
-					return process;
-				}
-				catch (IllegalStateException e) {
-				}
-				return null;
+				// create a default Participant.
+				Participant defaultParticipant = create(Participant.class);
+				defaultParticipant.setName(Messages.ModelHandler_Default_Pool);
+				return getOrCreateProcess(defaultParticipant);
+			}
+			else if (be instanceof FlowElementsContainer) {
+				return (FlowElementsContainer) be;
 			}
 		}
 		if (o instanceof Participant) {
