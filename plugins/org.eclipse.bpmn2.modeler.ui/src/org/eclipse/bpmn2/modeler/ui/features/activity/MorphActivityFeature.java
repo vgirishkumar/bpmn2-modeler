@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.ResourceRole;
@@ -87,64 +88,108 @@ public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
 		}
 		else {
 			InputOutputSpecification oldIoSpec = oldObject.getIoSpecification();
+			List<DataInput> inputsToRemove = new ArrayList<DataInput>();
+			List<DataOutput> outputsToRemove = new ArrayList<DataOutput>();
+
 			if (oldIoSpec!=null) {
 				InputOutputSpecification newIoSpec = newObject.getIoSpecification();
+
 				if (newIoSpec!=null) {
+					// merge DataInputs
+					for (int i=0; i<oldIoSpec.getDataInputs().size(); ++i) {
+						DataInput odi = oldIoSpec.getDataInputs().get(i);
+						boolean addIt = true;
+						for (int j=0; j<newIoSpec.getDataInputs().size(); ++j) {
+							DataInput ndi = newIoSpec.getDataInputs().get(j);
+							String oldName = new String(odi.getName());
+							String newName = new String(ndi.getName());
+							if (oldName.equals(newName)) {
+								inputsToRemove.add(odi);
+								addIt = false;
+								break;
+							}
+						}
+						if (addIt)
+							newIoSpec.getDataInputs().add(odi);
+					}
+					oldIoSpec.getDataInputs().removeAll(inputsToRemove);
+					
+					// merge DataOutputs
+					for (int i=0; i<oldIoSpec.getDataOutputs().size(); ++i) {
+						DataOutput odo = oldIoSpec.getDataOutputs().get(i);
+						boolean addIt = true;
+						for (int j=0; j<newIoSpec.getDataOutputs().size(); ++j) {
+							DataOutput ndo = newIoSpec.getDataOutputs().get(j);
+							String oldName = new String(odo.getName());
+							String newName = new String(ndo.getName());
+							if (oldName.equals(newName)) {
+								outputsToRemove.add(odo);
+								addIt = false;
+								break;
+							}
+						}
+						if (addIt)
+							newIoSpec.getDataOutputs().add(odo);
+					}
+					oldIoSpec.getDataOutputs().removeAll(outputsToRemove);
+
 					if (oldIoSpec.getInputSets().size()>0) {
 						// merge InputSets
 						for (int i=0; i<oldIoSpec.getInputSets().size(); ++i) {
 							InputSet ois = oldIoSpec.getInputSets().get(i);
-							InputSet nis = null;
-							if (newIoSpec.getInputSets().size()>i) {
-								nis = newIoSpec.getInputSets().get(i);
-								nis.getDataInputRefs().addAll(ois.getDataInputRefs());
+							ois.getDataInputRefs().removeAll(inputsToRemove);
+							if (ois.getDataInputRefs().size()>0) {
+								InputSet nis = null;
+								if (newIoSpec.getInputSets().size()>i) {
+									nis = newIoSpec.getInputSets().get(i);
+									nis.getDataInputRefs().addAll(ois.getDataInputRefs());
+								}
+								else
+									newIoSpec.getInputSets().add(ois);
 							}
-							else
-								newIoSpec.getInputSets().add(ois);
 						}
 					}
 					if (oldIoSpec.getOutputSets().size()>0) {
 						// merge OutputSets
 						for (int i=0; i<oldIoSpec.getOutputSets().size(); ++i) {
 							OutputSet oos = oldIoSpec.getOutputSets().get(i);
-							OutputSet nos = null;
-							if (newIoSpec.getOutputSets().size()>i) {
-								nos = newIoSpec.getOutputSets().get(i);
-								nos.getDataOutputRefs().addAll(oos.getDataOutputRefs());
+							oos.getDataOutputRefs().removeAll(outputsToRemove);
+							if (oos.getDataOutputRefs().size()>0) {
+								OutputSet nos = null;
+								if (newIoSpec.getOutputSets().size()>i) {
+									nos = newIoSpec.getOutputSets().get(i);
+									nos.getDataOutputRefs().addAll(oos.getDataOutputRefs());
+								}
+								else
+									newIoSpec.getOutputSets().add(oos);
 							}
-							else
-								newIoSpec.getOutputSets().add(oos);
 						}
-					}
-					// merge DataInputs
-					for (int i=0; i<oldIoSpec.getDataInputs().size(); ++i) {
-						DataInput odi = oldIoSpec.getDataInputs().get(i);
-						if (!newIoSpec.getDataInputs().contains(odi))
-							newIoSpec.getDataInputs().add(odi);
-					}
-					// merge DataOutputs
-					for (int i=0; i<oldIoSpec.getDataOutputs().size(); ++i) {
-						DataOutput odo = oldIoSpec.getDataOutputs().get(i);
-						if (!newIoSpec.getDataOutputs().contains(odo))
-							newIoSpec.getDataOutputs().add(odo);
 					}
 				}
 				else {
 					newObject.setIoSpecification(oldIoSpec);
 				}
 			}
+			
 			// merge DataInputAssociations
 			List<DataInputAssociation> inputAssociations = new ArrayList<DataInputAssociation>();
 			inputAssociations.addAll(oldObject.getDataInputAssociations());
 			for (DataInputAssociation dia : inputAssociations) {
-				if (!newObject.getDataInputAssociations().contains(dia))
+				if (!inputsToRemove.contains(dia.getTargetRef()))
 					newObject.getDataInputAssociations().add(dia);
 			}
 			// merge DataOutputAssociations
 			List<DataOutputAssociation> outputAssociations = new ArrayList<DataOutputAssociation>();
 			outputAssociations.addAll(oldObject.getDataOutputAssociations());
 			for (DataOutputAssociation doa : outputAssociations) {
-				if (!newObject.getDataOutputAssociations().contains(doa))
+				boolean addIt = true;
+				for (ItemAwareElement e : doa.getSourceRef()) {
+					if (outputsToRemove.contains(e)) {
+						addIt = false;
+						break;
+					}
+				}
+				if (addIt)
 					newObject.getDataOutputAssociations().add(doa);
 			}
 		}
