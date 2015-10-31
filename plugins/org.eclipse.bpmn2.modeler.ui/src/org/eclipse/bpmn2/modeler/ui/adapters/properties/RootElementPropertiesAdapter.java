@@ -96,12 +96,14 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 			        	// This will be a Process that has a BPMNDiagram
 			        	List<Process> processes = ModelUtil.getAllRootElements(definitions, Process.class);
 			        	for (Process process : processes) {
-			        		if (DIUtils.findBPMNDiagram(process)!=null) {
+			        		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(process);
+			        		if (bpmnDiagram!=null) {
 				        		// create a Participant for the Default Process so we can add it to the Collaboration
 								Participant defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
 								defaultParticipant.setProcessRef(process);
 								defaultParticipant.setName(process.getName() +  " Pool"); //$NON-NLS-1$
 					        	collaboration.getParticipants().add(defaultParticipant);
+								bpmnDiagram.getPlane().setBpmnElement(collaboration);
 			        			break;
 			        		}
 			        	}

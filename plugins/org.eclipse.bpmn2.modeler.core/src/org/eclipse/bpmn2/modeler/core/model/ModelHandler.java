@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
@@ -355,14 +356,14 @@ public class ModelHandler {
 					Choreography choreography = createChoreography();
 					choreography.setName(name+Messages.ModelHandler_Choreography);
 					
-					Participant initiatingParticipant = create(Participant.class);
+					Participant initiatingParticipant = (Participant) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getParticipant());
 					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Participant);
 
 //					Process initiatingProcess = createProcess();
 //					initiatingProcess.setName(name+" Initiating Process");
 //					initiatingParticipant.setProcessRef(initiatingProcess);
 					
-					Participant nonInitiatingParticipant = create(Participant.class);
+					Participant nonInitiatingParticipant = (Participant) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getParticipant());
 					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Participant);
 
 //					Process nonInitiatingProcess = createProcess();

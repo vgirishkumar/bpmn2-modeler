@@ -872,9 +872,10 @@ public class DIUtils {
 			}
 			
 			if (canDelete) {
-				EcoreUtil.delete(rootElement);
-				if (bpmnDiagram!=null && newRootElement!=null)
+				if (bpmnDiagram!=null && newRootElement!=null) {
+					EcoreUtil.delete(rootElement);
 					bpmnDiagram.getPlane().setBpmnElement(newRootElement);
+				}
 			}
 		}
 		return canDelete;
