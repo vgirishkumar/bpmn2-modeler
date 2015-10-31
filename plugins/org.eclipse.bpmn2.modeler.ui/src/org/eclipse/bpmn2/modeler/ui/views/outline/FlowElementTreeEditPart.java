@@ -176,12 +176,13 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 			// Add Pools as children if the Pool has a Process associated with it,
 			// or if the Participant is NOT referenced by a Choreography Activity.
 			for (Participant p : ((Choreography)container).getParticipants()) {
-				if (p.getProcessRef()!=null)
+//				if (p.getProcessRef()!=null)
 					retList.add(p);
-				else {
+//				else 
+				{
 					for (FlowElement fe : flowElements) {
 						if (fe instanceof ChoreographyActivity) {
-							if (!((ChoreographyActivity)fe).getParticipantRefs().contains(p)) {
+							if (!((ChoreographyActivity)fe).getParticipantRefs().contains(p) && !retList.contains(p)) {
 								retList.add(p);
 							}
 						}

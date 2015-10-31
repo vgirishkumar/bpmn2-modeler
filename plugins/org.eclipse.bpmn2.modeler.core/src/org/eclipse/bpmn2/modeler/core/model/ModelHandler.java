@@ -95,8 +95,8 @@ public class ModelHandler {
 			TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
 
 			if (domain != null) {
-				final DocumentRoot docRoot = create(DocumentRoot.class);
-				final Definitions definitions = create(Definitions.class);
+				final DocumentRoot docRoot = createObject(DocumentRoot.class);
+				final Definitions definitions = createObject(Definitions.class);
 
 				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
@@ -158,16 +158,16 @@ public class ModelHandler {
 					process.setId( ModelUtil.generateID(process,resource,filename) );
 
 					// create StartEvent
-					StartEvent startEvent = create(StartEvent.class);
+					StartEvent startEvent = createObject(StartEvent.class);
 //					startEvent.setName("Start Event");
 					process.getFlowElements().add(startEvent);
 					
 					// create SequenceFlow
-					SequenceFlow flow = create(SequenceFlow.class);
+					SequenceFlow flow = createObject(SequenceFlow.class);
 					process.getFlowElements().add(flow);
 					
 					// create EndEvent
-					EndEvent endEvent = create(EndEvent.class);
+					EndEvent endEvent = createObject(EndEvent.class);
 //					endEvent.setName("End Event");
 					process.getFlowElements().add(endEvent);
 					
@@ -259,7 +259,7 @@ public class ModelHandler {
 					initiatingProcess.setName(Messages.ModelHandler_Initiating_Process);
 					initiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
-					Participant initiatingParticipant = create(Participant.class);
+					Participant initiatingParticipant = createObject(Participant.class);
 					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Pool);
 					initiatingParticipant.setProcessRef(initiatingProcess);
 					
@@ -267,7 +267,7 @@ public class ModelHandler {
 					nonInitiatingProcess.setName(Messages.ModelHandler_Non_Initiating_Process);
 					nonInitiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
-					Participant nonInitiatingParticipant = create(Participant.class);
+					Participant nonInitiatingParticipant = createObject(Participant.class);
 					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Pool);
 					nonInitiatingParticipant.setProcessRef(nonInitiatingProcess);
 					
@@ -355,14 +355,14 @@ public class ModelHandler {
 					Choreography choreography = createChoreography();
 					choreography.setName(name+Messages.ModelHandler_Choreography);
 					
-					Participant initiatingParticipant = create(Participant.class);
+					Participant initiatingParticipant = Bpmn2ModelerFactory.create(getResource(), Participant.class);
 					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Participant);
 
 //					Process initiatingProcess = createProcess();
 //					initiatingProcess.setName(name+" Initiating Process");
 //					initiatingParticipant.setProcessRef(initiatingProcess);
 					
-					Participant nonInitiatingParticipant = create(Participant.class);
+					Participant nonInitiatingParticipant = Bpmn2ModelerFactory.create(getResource(), Participant.class);
 					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Participant);
 
 //					Process nonInitiatingProcess = createProcess();
@@ -372,7 +372,7 @@ public class ModelHandler {
 					choreography.getParticipants().add(initiatingParticipant);
 					choreography.getParticipants().add(nonInitiatingParticipant);
 					
-					ChoreographyTask task = create(ChoreographyTask.class);
+					ChoreographyTask task = createObject(ChoreographyTask.class);
 					task.setName(Messages.ModelHandler_Choreography_Task);
 					task.getParticipantRefs().add(initiatingParticipant);
 					task.getParticipantRefs().add(nonInitiatingParticipant);
@@ -511,7 +511,7 @@ public class ModelHandler {
 	private InputOutputSpecification getOrCreateIOSpecification(Object target) {
 		Process process = getOrCreateProcess(getParticipant(target));
 		if (process.getIoSpecification() == null) {
-			InputOutputSpecification ioSpec = create(InputOutputSpecification.class);
+			InputOutputSpecification ioSpec = createObject(InputOutputSpecification.class);
 			process.setIoSpecification(ioSpec);
 		}
 		return process.getIoSpecification();
@@ -534,7 +534,7 @@ public class ModelHandler {
 		Participant participant = null;
 		Collaboration collaboration = getParticipantContainer(bpmnDiagram);
 		if (collaboration!=null) {
-			participant = create(Participant.class);
+			participant = createObject(Participant.class);
 			collaboration.getParticipants().add(participant);
 		}
 		return participant;
@@ -579,10 +579,10 @@ public class ModelHandler {
 
 	public static Lane createLane(Lane targetLane) {
 		Resource resource = targetLane.eResource();
-		Lane lane = create(resource, Lane.class);
+		Lane lane = createObject(resource, Lane.class);
 
 		if (targetLane.getChildLaneSet() == null) {
-			targetLane.setChildLaneSet(create(resource, LaneSet.class));
+			targetLane.setChildLaneSet(createObject(resource, LaneSet.class));
 		}
 
 		LaneSet targetLaneSet = targetLane.getChildLaneSet();
@@ -595,10 +595,10 @@ public class ModelHandler {
 	}
 
 	public Lane createLane(Object target) {
-		Lane lane = create(Lane.class);
+		Lane lane = createObject(Lane.class);
 		FlowElementsContainer container = getFlowElementContainer(target);
 		if (container.getLaneSets().isEmpty()) {
-			LaneSet laneSet = create(LaneSet.class);
+			LaneSet laneSet = createObject(LaneSet.class);
 			laneSet.setName(Messages.ModelHandler_Lane_Set+ModelUtil.getIDNumber( laneSet.getId() ));
 			container.getLaneSets().add(laneSet);
 		}
@@ -607,7 +607,7 @@ public class ModelHandler {
 	}
 
 	public SequenceFlow createSequenceFlow(FlowNode source, FlowNode target) {
-		SequenceFlow sequenceFlow = create(SequenceFlow.class);
+		SequenceFlow sequenceFlow = createObject(SequenceFlow.class);
 
 		addFlowElement(source.eContainer(), sequenceFlow);
 		sequenceFlow.setSourceRef(source);
@@ -619,7 +619,7 @@ public class ModelHandler {
 		MessageFlow messageFlow = null;
 		Participant participant = getParticipant(source);
 		if (participant!=null) {
-			messageFlow = create(MessageFlow.class);
+			messageFlow = createObject(MessageFlow.class);
 			messageFlow.setSourceRef(source);
 			messageFlow.setTargetRef(target);
 			if (participant.eContainer() instanceof Collaboration)
@@ -632,7 +632,7 @@ public class ModelHandler {
 		ConversationLink link = null;
 		Participant participant = getParticipant(source);
 		if (participant!=null) {
-			link = create(ConversationLink.class);
+			link = createObject(ConversationLink.class);
 			link.setSourceRef(source);
 			link.setTargetRef(target);
 			if (participant.eContainer() instanceof Collaboration)
@@ -650,7 +650,7 @@ public class ModelHandler {
 		} else {
 			e = getInternalParticipant();
 		}
-		Association association = create(Association.class);
+		Association association = createObject(Association.class);
 		addArtifact(e, association);
 		association.setSourceRef(source);
 		association.setTargetRef(target);
@@ -669,7 +669,7 @@ public class ModelHandler {
 	}
 	
 	public Collaboration createCollaboration() {
-		Collaboration collaboration = create(Collaboration.class);
+		Collaboration collaboration = createObject(Collaboration.class);
 		addRootElement(collaboration);
 		return collaboration;
 	}
@@ -703,7 +703,7 @@ public class ModelHandler {
 	}
 	
 	public Choreography createChoreography() {
-		Choreography choreography = create(Choreography.class);
+		Choreography choreography = createObject(Choreography.class);
 		addRootElement(choreography);
 		return choreography;
 	}
@@ -791,7 +791,7 @@ public class ModelHandler {
 					}
 				}
 				// create a default Participant.
-				Participant defaultParticipant = create(Participant.class);
+				Participant defaultParticipant = createObject(Participant.class);
 				defaultParticipant.setName(Messages.ModelHandler_Default_Pool);
 				return getOrCreateProcess(defaultParticipant);
 			}
@@ -900,22 +900,22 @@ public class ModelHandler {
 	/**
 	 * General-purpose factory method that sets appropriate default values for new objects.
 	 */
-	public EObject create(EClass eClass) {
-		return create(this.resource, eClass);
+	public EObject createObject(EClass eClass) {
+		return createObject(this.resource, eClass);
 	}
 
-	public <T extends EObject> T create(Class<T> clazz) {
-		return (T) create(this.resource, clazz);
+	public <T extends EObject> T createObject(Class<T> clazz) {
+		return (T) createObject(this.resource, clazz);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
 	// static versions of the above, for convenience
 	
-	public static EObject create(Resource resource, EClass eClass) {
+	public static EObject createObject(Resource resource, EClass eClass) {
 		return Bpmn2ModelerFactory.createObject(resource, eClass);
 	}
 
-	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
+	public static <T extends EObject> T createObject(Resource resource, Class<T> clazz) {
 		return (T) Bpmn2ModelerFactory.createObject(resource, clazz);
 	}
 }

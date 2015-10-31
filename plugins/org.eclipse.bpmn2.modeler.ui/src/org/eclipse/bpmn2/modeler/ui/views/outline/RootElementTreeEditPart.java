@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.EditPart;
 import org.eclipse.swt.graphics.Image;
 
 public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
@@ -51,22 +52,31 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		List<Object> retList = new ArrayList<Object>();
 		RootElement elem = getRootElement();
 		if (elem != null && elem.eResource() != null) {
-//			if (getParent() instanceof DiagramTreeEditPart)
-			{
-				if (elem instanceof FlowElementsContainer) {
-					FlowElementsContainer container = (FlowElementsContainer)elem;
-					return FlowElementTreeEditPart.getFlowElementsContainerChildren(container);
-				}
-				if (elem instanceof Collaboration) {
-					Collaboration collaboration = (Collaboration)elem;
-					retList.addAll(collaboration.getParticipants());
-					retList.addAll(collaboration.getConversations());
-					retList.addAll(collaboration.getConversationLinks());
-					retList.addAll(collaboration.getMessageFlows());
-					retList.addAll(collaboration.getArtifacts());
-				}
+			if (elem instanceof FlowElementsContainer) {
+				FlowElementsContainer container = (FlowElementsContainer)elem;
+				retList.addAll(FlowElementTreeEditPart.getFlowElementsContainerChildren(container));
+				return retList;
+			}
+			if (elem instanceof Collaboration) {
+				Collaboration collaboration = (Collaboration)elem;
+				retList.addAll(collaboration.getParticipants());
+				retList.addAll(collaboration.getConversations());
+				retList.addAll(collaboration.getConversationLinks());
+				retList.addAll(collaboration.getMessageFlows());
+				retList.addAll(collaboration.getArtifacts());
 			}
 		}
 		return retList;
 	}
+	
+	protected void reorderChild(EditPart editpart, int index) {
+		removeChildVisual(editpart);
+		List children = getChildren();
+		children.remove(editpart);
+		if (index>=children.size())
+			index = children.size() - 1;
+		children.add(index, editpart);
+		addChildVisual(editpart, index);
+	}
+
 }

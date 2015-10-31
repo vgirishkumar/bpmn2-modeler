@@ -32,15 +32,9 @@ public class AbstractDefaultDeleteFeature extends DefaultDeleteBPMNShapeFeature 
 	@Override
 	public void delete(IDeleteContext context) {
 		RootElement container = null;
-		PictogramElement pe = context.getPictogramElement();
-		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
-		if (element!=null && element.eContainer() instanceof RootElement && pe instanceof ContainerShape) {
+		BaseElement element = BusinessObjectUtil.getFirstBaseElement(context.getPictogramElement());
+		if (element!=null && element.eContainer() instanceof RootElement) {
 			container = (RootElement) element.eContainer();
-			// we must delete the container's children first
-			for (PictogramElement child : FeatureSupport.getContainerChildren((ContainerShape)pe)) {
-				IDeleteContext dc = new DeleteContext(child);
-				delete(dc);
-			}
 		}
 		deletePeEnvironment(context.getPictogramElement());
 		super.delete(context);

@@ -145,12 +145,16 @@ public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 		if (collaboration!=null && collaboration.getParticipants().size()==1) {
 			Participant lastParticipant = collaboration.getParticipants().get(0);
 			if (lastParticipant.getProcessRef()!=null && DIUtils.findBPMNShape(lastParticipant)==null) {
-				// can delete the final Participant and Collaboration
+				// We can delete the final Participant and Collaboration
 				// as long as the Participant has a Process and does
 				// not have a Pool shape. The Participant's Process
 				// will become the Default Process - the entire diagram
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(collaboration);
 				EcoreUtil.delete(lastParticipant);
 				EcoreUtil.delete(collaboration);
+				if (bpmnDiagram!=null) {
+					bpmnDiagram.getPlane().setBpmnElement(lastParticipant.getProcessRef());
+				}
 			}
 		}
 	}
