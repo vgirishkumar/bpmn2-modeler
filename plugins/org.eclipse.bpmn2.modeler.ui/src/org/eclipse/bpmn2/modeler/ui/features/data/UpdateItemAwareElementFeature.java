@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -49,13 +50,13 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 		if (isCollection!=null) {
 			boolean newIsCollection = (Boolean) element.eGet(isCollection);
-			boolean oldIsCollection = Boolean.parseBoolean(peService.getPropertyValue(container, GraphitiConstants.COLLECTION_PROPERTY));
+			boolean oldIsCollection = Boolean.parseBoolean(FeatureSupport.getPropertyValue(container, GraphitiConstants.COLLECTION_PROPERTY));
 			if (newIsCollection != oldIsCollection)
 				return Reason.createTrueReason("Cardinality Changed"); //$NON-NLS-1$
 		}
 		
 		String newDataState = getDataStateAsString(element);
-		Object oldDataState = peService.getPropertyValue(container,GraphitiConstants.DATASTATE_PROPERTY);
+		Object oldDataState = FeatureSupport.getPropertyValue(container,GraphitiConstants.DATASTATE_PROPERTY);
 
 		if (!newDataState.equals(oldDataState))
 			return Reason.createTrueReason("Data State Changed"); //$NON-NLS-1$
@@ -78,19 +79,19 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 			Iterator<Shape> iterator = peService.getAllContainedShapes(container).iterator();
 			while (iterator.hasNext()) {
 				Shape shape = iterator.next();
-				String prop = peService.getPropertyValue(shape, GraphitiConstants.HIDEABLE_PROPERTY);
+				String prop = FeatureSupport.getPropertyValue(shape, GraphitiConstants.HIDEABLE_PROPERTY);
 				if (prop != null && new Boolean(prop)) {
 					Polyline line = (Polyline) shape.getGraphicsAlgorithm();
 					line.setLineVisible(newIsCollection);
 				}
 			}
 	
-			peService.setPropertyValue(container, GraphitiConstants.COLLECTION_PROPERTY, Boolean.toString(newIsCollection));
+			FeatureSupport.setPropertyValue(container, GraphitiConstants.COLLECTION_PROPERTY, Boolean.toString(newIsCollection));
 		}
 		
 		// Update the Data State
 		String newDataState = getDataStateAsString(element);
-		peService.setPropertyValue(container, GraphitiConstants.DATASTATE_PROPERTY, newDataState);
+		FeatureSupport.setPropertyValue(container, GraphitiConstants.DATASTATE_PROPERTY, newDataState);
 
 		return true;
 	}

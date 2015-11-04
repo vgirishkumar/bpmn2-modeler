@@ -13,7 +13,6 @@ package org.eclipse.bpmn2.modeler.core.di;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;

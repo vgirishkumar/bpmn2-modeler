@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -48,7 +49,6 @@ import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
-import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * This is a Graphiti CreateFeature child component of {@link CompoundCreateFeature}.
@@ -254,7 +254,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			value = this.getProperty("source"); //$NON-NLS-1$
 			if (value!=null) {
 				for (PictogramElement pe : pictogramElements) {
-					String id = Graphiti.getPeService().getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
+					String id = FeatureSupport.getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
 					if (value.equals(id)) {
 						source = pe;
 						break;
@@ -270,7 +270,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			value = this.getProperty("target"); //$NON-NLS-1$
 			if (value!=null) {
 				for (PictogramElement pe : pictogramElements) {
-					String id = Graphiti.getPeService().getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
+					String id = FeatureSupport.getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
 					if (value.equals(id)) {
 						target = pe;
 						break;
@@ -318,7 +318,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			pictogramElements.add(pe);
 			value = this.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
 			if (value!=null) {
-				Graphiti.getPeService().setPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID, value);
+				FeatureSupport.setPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID, value);
 			}
 			updatePE = pe;
 		}
@@ -326,7 +326,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			be = BusinessObjectUtil.getFirstBaseElement(cn);
 			value = this.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
 			if (value!=null) {
-				Graphiti.getPeService().setPropertyValue(cn, ToolPaletteDescriptor.TOOLPART_ID, value);
+				FeatureSupport.setPropertyValue(cn, ToolPaletteDescriptor.TOOLPART_ID, value);
 			}
 			updatePE = cn;
 		}

@@ -91,8 +91,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
-		peService.setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
-		peService.setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
 
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);

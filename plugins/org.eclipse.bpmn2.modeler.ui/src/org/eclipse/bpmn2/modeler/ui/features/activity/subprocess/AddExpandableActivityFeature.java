@@ -50,7 +50,7 @@ public abstract class AddExpandableActivityFeature<T extends Activity>
 				isExpanded = bpmnShape.isIsExpanded();
 			}
 		}
-		peService.setPropertyValue(containerShape, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
 		FeatureSupport.setElementExpanded(containerShape, isExpanded);
 		
 		if (!isExpanded){

@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -107,9 +108,9 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddFeature<BoundaryEve
 			BoundaryEventPositionHelper.assignPositionOnLineProperty(containerShape, pos);
 		}
 
-		peService.setPropertyValue(containerShape, BOUNDARY_EVENT_CANCEL, Boolean.toString(businessObject.isCancelActivity()));
-		peService.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
-		peService.setPropertyValue(containerShape,
+		FeatureSupport.setPropertyValue(containerShape, BOUNDARY_EVENT_CANCEL, Boolean.toString(businessObject.isCancelActivity()));
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
+		FeatureSupport.setPropertyValue(containerShape,
 				UpdateBoundaryEventFeature.BOUNDARY_EVENT_MARKER,
 				AbstractUpdateEventFeature.getEventDefinitionsValue(businessObject));
 

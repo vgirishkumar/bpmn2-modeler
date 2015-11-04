@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
@@ -26,8 +27,8 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.provider.Bpmn2EditPlugin;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -124,7 +125,19 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 				}
 			}
 		}
-		// otherwise, we can create a Default Process
+		// attempting to create an object in a Participant that has been pushed down
+		// or a Participant that is just a reference to an actual Participant is not allowed.
+		// {@see CreateParticipantReferenceFeature}
+		if (FeatureSupport.isTargetParticipant(context)) {
+			Participant participant = FeatureSupport.getTargetParticipant(context);
+			if (FeatureSupport.isParticipantReference(getDiagram(), participant)) {
+				return false;
+			}
+			if (FeatureSupport.hasBpmnDiagram(participant)) {
+				return false;
+			}
+		}
+		// otherwise, we can create the object
 		return true;
 	}
 

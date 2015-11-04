@@ -67,8 +67,8 @@ public abstract class AddEventFeature<T extends Event>
 		gaService.setLocationAndSize(invisibleRect, x, y, width, height);
 
 		Shape ellipseShape = peService.createShape(containerShape, false);
-		peService.setPropertyValue(ellipseShape, GraphitiConstants.EVENT_ELEMENT, GraphitiConstants.EVENT_CIRCLE);
-		peService.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
+		FeatureSupport.setPropertyValue(ellipseShape, GraphitiConstants.EVENT_ELEMENT, GraphitiConstants.EVENT_CIRCLE);
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
 		StyleUtil.applyStyle(ellipse, businessObject);
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;

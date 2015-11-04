@@ -478,7 +478,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				connection.getBendpoints().add(route.get(i));
 			}
 
-			peService.setPropertyValue(connection, CONNECTION, "" + route.getId()); //$NON-NLS-1$
+			FeatureSupport.setPropertyValue(connection, CONNECTION, "" + route.getId()); //$NON-NLS-1$
 
 			Polyline connectionLine = Graphiti.getGaService().createPolyline(
 					connection);

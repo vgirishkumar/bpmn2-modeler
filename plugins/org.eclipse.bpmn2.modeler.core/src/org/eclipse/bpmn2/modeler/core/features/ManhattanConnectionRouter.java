@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -65,7 +66,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		}
 		if (connection instanceof FreeFormConnection) {
 
-			if (peService.getPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE) != null)
+			if (FeatureSupport.getPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE) != null)
 				return true;
 			if (forceRouting(connection))
 				return true;
@@ -192,7 +193,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		GraphicsUtil.debug = false;
 		GraphicsUtil.dump("\n===========================================\nRouting ", ffc); //$NON-NLS-1$
 		
-		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
+		boolean initialUpdate = (FeatureSupport.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		if (initialUpdate) {
 			peService.removeProperty(ffc, GraphitiConstants.INITIAL_UPDATE);
 		}

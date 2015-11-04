@@ -768,7 +768,7 @@ public class GraphicsUtil {
 		return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
 	}
 
-	public static Rectangle getBoundingRectangle(List<PictogramElement> pes) {
+	public static Rectangle getBoundingRectangle(List<? extends PictogramElement> pes) {
 		int xMin = Integer.MAX_VALUE;
 		int yMin = Integer.MAX_VALUE;
 		int xMax = Integer.MIN_VALUE;

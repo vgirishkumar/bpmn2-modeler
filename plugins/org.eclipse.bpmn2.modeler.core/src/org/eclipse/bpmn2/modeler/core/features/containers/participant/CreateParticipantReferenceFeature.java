@@ -13,10 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.core.features.containers.participant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -70,6 +74,7 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 
 		@Override
 		public Object[] create(ICreateContext context) {
+			context.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, shape);
 			PictogramElement pe = addGraphicalRepresentation(context, pool);
 			return new Object[] { pe };
 		}
@@ -105,7 +110,6 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return Messages.CreateParticipantReferenceFeature_Create_Pool_Reference;
 	}
 
@@ -117,16 +121,34 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 		
 		// build submenu features
 		BPMNDiagram thisDiagram = getBPMNDiagram(context);
+		if (thisDiagram==null)
+			return false;
 		
-//		List<Participant> existingPools = new ArrayList<Participant>();
-//		for (DiagramElement de : thisDiagram.getPlane().getPlaneElement()) {
-//			if (de instanceof BPMNShape) {
-//				BaseElement bpmnElement = ((BPMNShape)de).getBpmnElement();
-//				if (bpmnElement instanceof Participant) {
-//					existingPools.add((Participant)bpmnElement);
-//				}
-//			}
-//		}
+		// Collect all existing Pools in this diagram. We can't create references
+		// to any of these.
+		List<Participant> existingPools = new ArrayList<Participant>();
+		for (DiagramElement de : thisDiagram.getPlane().getPlaneElement()) {
+			if (de instanceof BPMNShape) {
+				BaseElement bpmnElement = ((BPMNShape)de).getBpmnElement();
+				if (bpmnElement instanceof Participant) {
+					existingPools.add((Participant)bpmnElement);
+				}
+			}
+		}
+		
+		BaseElement be = thisDiagram.getPlane().getBpmnElement();
+		if (be instanceof Process) {
+			// It's possible that this Diagram is a push-down of a Pool.
+			// If so, we can't create a reference shape to our own Pool.
+			Process thisProcess = (Process) be;
+			if (thisProcess.getDefinitionalCollaborationRef()!=null) {
+				for (Participant pool : thisProcess.getDefinitionalCollaborationRef().getParticipants()) {
+					if (pool.getProcessRef() == thisProcess) {
+						existingPools.add(pool);
+					}
+				}
+			}
+		}
 
 		String key = GraphitiConstants.CONTEXT_MENU_ENTRY + this.getName();
 		IContextMenuEntry contextMenuEntry = (IContextMenuEntry) context.getProperty(key);
@@ -136,7 +158,7 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 					for (DiagramElement de : mainDiagram.getPlane().getPlaneElement()) {
 						if (de instanceof BPMNShape) {
 							BaseElement bpmnElement = ((BPMNShape)de).getBpmnElement();
-							if (bpmnElement instanceof Participant ) { //&& !existingPools.contains(bpmnElement)) {
+							if (bpmnElement instanceof Participant && !existingPools.contains(bpmnElement)) {
 								Participant pool = (Participant) bpmnElement;
 								ICreateFeature feature = new CreateReferenceFeature(getFeatureProvider(), (BPMNShape)de, pool);
 								SubMenuCustomFeature submenuFeature = new SubMenuCustomFeature(this, feature);
@@ -165,7 +187,10 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 		PictogramElement pes[] = context.getPictogramElements();
 		if (pes.length==1 && pes[0] instanceof Diagram) {
 			BPMNDiagram bpmnDiagram = (BPMNDiagram) BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
-			if (bpmnDiagram.getPlane().getBpmnElement() instanceof SubProcess)
+			if (bpmnDiagram==null)
+				return null;
+			BaseElement be = bpmnDiagram.getPlane().getBpmnElement();
+			if (be instanceof FlowElementsContainer)
 				return bpmnDiagram;
 		}
 		return null;
@@ -180,11 +205,9 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 		if (createFeature!=null) {
 			CreateContext createContext = prepareCreateContext(context);
 			if (createFeature.canCreate(createContext)) {
-				BPMNShape shape = createFeature.getShape();
-				createContext.setWidth((int)shape.getBounds().getWidth());
-				createContext.setHeight((int)shape.getBounds().getHeight());
-
+				
 				// if user made a selection, then create the Pool reference
+				createContext.putProperty(GraphitiConstants.FORCE_UPDATE_ALL, Boolean.TRUE);
 				ContainerShape newShape = (ContainerShape) createFeature.create(createContext)[0];
 				// and select it
 				getFeatureProvider().
@@ -215,9 +238,6 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 		cc.setTargetContainer((ContainerShape)container);
 		cc.setX(context.getX());
 		cc.setY(context.getY());
-		
-		// set the IMPORT flag so that the new shape's location is not adjusted during creation
-		cc.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
 		return cc;
 	}
 }

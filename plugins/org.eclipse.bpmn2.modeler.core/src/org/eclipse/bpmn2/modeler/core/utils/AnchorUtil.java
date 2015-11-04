@@ -160,7 +160,7 @@ public class AnchorUtil {
 	public static List<FixPointAnchor> getAnchors(AnchorContainer ac, AnchorSite site) {
 		List<FixPointAnchor> result = new ArrayList<FixPointAnchor>();
 		for (Anchor anchor : ac.getAnchors()) {
-			if (peService.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null &&
+			if (FeatureSupport.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null &&
 				AnchorSite.getSite((FixPointAnchor)anchor)==site)
 				result.add((FixPointAnchor)anchor);
 		}
@@ -180,7 +180,7 @@ public class AnchorUtil {
 		}
 		else if (ac != null) {
 			for (Anchor anchor : ac.getAnchors()) {
-				if (peService.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null)
+				if (FeatureSupport.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null)
 					result.add((FixPointAnchor)anchor);
 			}
 		}
@@ -190,7 +190,7 @@ public class AnchorUtil {
 	public static int countAnchors(AnchorContainer ac, AnchorSite site) {
 		int count = 0;
 		for (Anchor anchor : ac.getAnchors()) {
-			if (peService.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null &&
+			if (FeatureSupport.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null &&
 				AnchorSite.getSite((FixPointAnchor)anchor)==site)
 				++count;
 		}
@@ -314,7 +314,7 @@ public class AnchorUtil {
 	public static List<Connection> getConnections(AnchorContainer ac, AnchorSite site) {
 		List<Connection> connections = new ArrayList<Connection>();
 		for (Anchor a : ac.getAnchors()) {
-			if (peService.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE)!=null)
+			if (FeatureSupport.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE)!=null)
 				if (site==AnchorSite.getSite((FixPointAnchor)a)) {
 					connections.addAll(a.getIncomingConnections());
 					connections.addAll(a.getOutgoingConnections());
@@ -326,7 +326,7 @@ public class AnchorUtil {
 	public static void adjustAnchors(AnchorContainer ac) {
 		if (ac instanceof ConnectionDecorator) {
 			for (Anchor a : ac.getAnchors()) {
-				String property = peService.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE);
+				String property = FeatureSupport.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE);
 				if ( property!=null &&
 						a.getIncomingConnections().isEmpty() &&
 						a.getOutgoingConnections().isEmpty()) {
@@ -438,7 +438,7 @@ public class AnchorUtil {
 		// First create a Connection Decorator and set its location according to the given Point
 		// If the Point is not provided, use the coordinates of the Connection midpoint.
 		ConnectionDecorator decorator = createService.createConnectionDecorator(connection, true, 0.5, true);
-		peService.setPropertyValue(decorator, GraphitiConstants.CONNECTION_POINT, Boolean.TRUE.toString());
+		FeatureSupport.setPropertyValue(decorator, GraphitiConstants.CONNECTION_POINT, Boolean.TRUE.toString());
 		Rectangle rectangle = createService.createRectangle(decorator);
 		rectangle.setFilled(true);
 		rectangle.setForeground(Graphiti.getGaService().manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
@@ -455,7 +455,7 @@ public class AnchorUtil {
 		AnchorSite.setSite(anchor, AnchorSite.CENTER);
 		AnchorType.setType(anchor, AnchorType.CONNECTION);
 		anchor.setLocation(GraphicsUtil.createPoint(CONNECTION_POINT_SIZE/2, CONNECTION_POINT_SIZE/2));
-		peService.setPropertyValue(anchor, GraphitiConstants.CONNECTION_POINT, Boolean.TRUE.toString());
+		FeatureSupport.setPropertyValue(anchor, GraphitiConstants.CONNECTION_POINT, Boolean.TRUE.toString());
 		
 		// if the anchor doesn't have a GraphicsAlgorithm, GEF will throw a fit
 		// so create an invisible rectangle for it
@@ -469,7 +469,7 @@ public class AnchorUtil {
 	}
 
 	private static boolean isConnectionAnchorContainer(AnchorContainer ac) {
-		return Boolean.TRUE.toString().equals(peService.getPropertyValue(ac, GraphitiConstants.CONNECTION_POINT));
+		return Boolean.TRUE.toString().equals(FeatureSupport.getPropertyValue(ac, GraphitiConstants.CONNECTION_POINT));
 	}
 	
 	/**
@@ -480,7 +480,7 @@ public class AnchorUtil {
 			List<Anchor> deleted = new ArrayList<Anchor>();
 	
 			for (Anchor a : ac.getAnchors()) {
-				String property = peService.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE);
+				String property = FeatureSupport.getPropertyValue(a, GraphitiConstants.ANCHOR_TYPE);
 				if ( property!=null &&
 						a.getIncomingConnections().isEmpty() &&
 						a.getOutgoingConnections().isEmpty()) {

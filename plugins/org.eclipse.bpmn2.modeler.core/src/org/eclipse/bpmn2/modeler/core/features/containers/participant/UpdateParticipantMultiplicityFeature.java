@@ -75,7 +75,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 				Participant.class);
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 
-		boolean multiplicityProperty = new Boolean(peService.getPropertyValue(containerShape,
+		boolean multiplicityProperty = new Boolean(FeatureSupport.getPropertyValue(containerShape,
 				GraphitiConstants.MULTIPLICITY));
 
 		boolean hasMultiplicity = false;
@@ -100,7 +100,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 		ParticipantMultiplicity pm = participant.getParticipantMultiplicity();
 		if (pm!=null && pm.getMaximum()>1) {
 			Shape shape = peService.createShape(containerShape, false);
-			peService.setPropertyValue(shape, GraphitiConstants.MULTIPLICITY_MARKER, Boolean.toString(true));
+			FeatureSupport.setPropertyValue(shape, GraphitiConstants.MULTIPLICITY_MARKER, Boolean.toString(true));
 			Rectangle invisibleRectangle = gaService.createInvisibleRectangle(shape);
 			GraphicsAlgorithm parentGa = containerShape.getGraphicsAlgorithm();
 			int x = (parentGa.getWidth() / 2) - 10;
@@ -124,7 +124,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 			}
 		}
 
-		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(hasMultiplicity));
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(hasMultiplicity));
 		return true;
 	}
 }

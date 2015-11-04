@@ -64,28 +64,29 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 			IReason reason = super.updateNeeded(context);
 			if (reason.toBoolean())
 				return reason;
-	
-		PictogramElement pe = context.getPictogramElement();
-			Property triggerProperty = Graphiti.getPeService().getProperty(pe,GraphitiConstants.TRIGGERED_BY_EVENT);
-			boolean isExpanded = FeatureSupport.isElementExpanded(pe);
-		
-		SubProcess subprocess = (SubProcess) getBusinessObjectForPictogramElement(pe);
-		try {
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(pe);
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
-				if (isExpanded != bpmnShape.isIsExpanded()) {
-				return Reason.createTrueReason(Messages.UpdateExpandableActivityFeature_Expand_Changed);
-			}
-			
-		} catch (Exception e) {
-			throw new IllegalStateException(
-				NLS.bind(Messages.UpdateExpandableActivityFeature_No_DI_Element,subprocess));
-		}
 
-		if (triggerProperty != null && Boolean.parseBoolean(triggerProperty.getValue()) != subprocess.isTriggeredByEvent()) {
-			return Reason.createTrueReason(Messages.UpdateExpandableActivityFeature_Trigger_Changed);
+			PictogramElement pe = context.getPictogramElement();
+			Property triggerProperty = Graphiti.getPeService().getProperty(pe, GraphitiConstants.TRIGGERED_BY_EVENT);
+			boolean isExpanded = FeatureSupport.isElementExpanded(pe);
+
+			SubProcess subprocess = (SubProcess) getBusinessObjectForPictogramElement(pe);
+			try {
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(pe);
+				BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
+				if (isExpanded != bpmnShape.isIsExpanded()) {
+					return Reason.createTrueReason(Messages.UpdateExpandableActivityFeature_Expand_Changed);
+				}
+
+			} catch (Exception e) {
+				throw new IllegalStateException(
+						NLS.bind(Messages.UpdateExpandableActivityFeature_No_DI_Element, subprocess));
+			}
+
+			if (triggerProperty != null
+					&& Boolean.parseBoolean(triggerProperty.getValue()) != subprocess.isTriggeredByEvent()) {
+				return Reason.createTrueReason(Messages.UpdateExpandableActivityFeature_Trigger_Changed);
+			}
 		}
-		}			
 		return Reason.createFalseReason();
 	}
 
@@ -99,7 +100,7 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(container);
 		BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
 		isExpanded = bpmnShape.isIsExpanded();
-		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(subprocess.isTriggeredByEvent()));
+		FeatureSupport.setPropertyValue(pe, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(subprocess.isTriggeredByEvent()));
 		FeatureSupport.setElementExpanded(pe, isExpanded);
 
 		GraphicsAlgorithm rectangle = Graphiti.getPeService()
@@ -108,11 +109,10 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 		LineStyle lineStyle = subprocess.isTriggeredByEvent() ? LineStyle.DOT : LineStyle.SOLID;
 		rectangle.setLineStyle(lineStyle);
 
-		if(!isExpanded){
-			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), container, false);
+		if(!isExpanded) {
 			ShapeDecoratorUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
-		}else{
-			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), container, true);
+		}
+		else {
 			ShapeDecoratorUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		

@@ -101,7 +101,7 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 
 		// the decorator for Participant Multiplicity will be added by the update feature
 		// if necessary. Set this property to "false" here, to force an update.
-		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(false));
+		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(false));
 		
 		decorateShape(context, containerShape, businessObject);
 		

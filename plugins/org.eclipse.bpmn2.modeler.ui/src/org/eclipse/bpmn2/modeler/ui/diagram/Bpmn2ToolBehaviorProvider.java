@@ -785,7 +785,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		}
 		// temp debugging stuff to dump connection routing info
 		for (PictogramElement pe : context.getPictogramElements()) {
-			String id = Graphiti.getPeService().getPropertyValue(pe, "ROUTING_NET_CONNECTION"); //$NON-NLS-1$
+			String id = FeatureSupport.getPropertyValue(pe, "ROUTING_NET_CONNECTION"); //$NON-NLS-1$
 			if (pe instanceof FreeFormConnection) {
 				System.out.println("id="+id); //$NON-NLS-1$
 				FreeFormConnection c = (FreeFormConnection)pe;

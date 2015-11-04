@@ -20,6 +20,8 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -34,12 +36,12 @@ import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -58,6 +60,12 @@ import org.eclipse.osgi.util.NLS;
 public class PushdownFeature extends AbstractCustomFeature {
 
 	protected String description;
+	protected ContainerShape containerShape;
+	protected FlowElementsContainer businessObject;
+	protected BPMNDiagram bpmnDiagram;
+	protected BPMNShape bpmnShape;
+	protected List<BaseElement> childElements = new ArrayList<BaseElement>();
+
 	
 	/**
 	 * @param fp
@@ -108,6 +116,8 @@ public class PushdownFeature extends AbstractCustomFeature {
 			description = NLS.bind(Messages.PushdownFeature_Description_1,ModelUtil.getLabel(bo));
 			
 			if (bo instanceof Participant) {
+				if (FeatureSupport.isParticipantReference(getDiagram(), (Participant)bo))
+					return false;
 				bo = ((Participant)bo).getProcessRef();
 			}
 			if (bo instanceof FlowElementsContainer) {
@@ -124,39 +134,43 @@ public class PushdownFeature extends AbstractCustomFeature {
 	public void execute(ICustomContext context) {
 		// we already know there's one and only one PE element in canExecute() and that it's
 		// a ContainerShape for an expandable activity
-		ContainerShape shape = (ContainerShape)context.getPictogramElements()[0];
-		Object bo = getBusinessObjectForPictogramElement(shape);
-		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(shape);
-		BPMNShape bpmnShape = null;
+		containerShape = (ContainerShape)context.getPictogramElements()[0];
+		Object bo = getBusinessObjectForPictogramElement(containerShape);
+		bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
+		bpmnShape = null;
 		if (bo instanceof Participant) {
 			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (Participant)bo);
-			bo = ((Participant)bo).getProcessRef();
+			businessObject = ((Participant)bo).getProcessRef();
 		}
 		else if (bo instanceof FlowElementsContainer) {
-			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (FlowElementsContainer)bo);
+			businessObject = (FlowElementsContainer)bo;
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, businessObject);
 		}
-		FlowElementsContainer container = (FlowElementsContainer)bo;
-		Definitions definitions = ModelUtil.getDefinitions(container);
+		Definitions definitions = ModelUtil.getDefinitions(businessObject);
 		
 		BPMNDiagram oldBpmnDiagram = DIUtils.getBPMNDiagram(bpmnShape);
 		Diagram oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
 		
 		// the contents of this expandable element is in the flowElements list 
-        BPMNDiagram newBpmnDiagram = DIUtils.createBPMNDiagram(definitions, container);
+        BPMNDiagram newBpmnDiagram = DIUtils.createBPMNDiagram(definitions, businessObject);
 		BPMNPlane newPlane = newBpmnDiagram.getPlane();
 
 		Diagram newDiagram = DIUtils.getOrCreateDiagram(getDiagramBehavior(), newBpmnDiagram);
-		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);
-		List <EObject> moved = new ArrayList<EObject>();
+		List <EObject> removedObjects = new ArrayList<EObject>();
 		
-		for (FlowElement fe : container.getFlowElements()) {
-			DiagramElement de = DIUtils.findDiagramElement(bpmnDiagram, fe);
+		collectChildElements(businessObject, childElements);
+
+		List<Shape> shapes = new ArrayList<Shape>();
+		List<Connection> connections = new ArrayList<Connection>();
+		
+		for (BaseElement be : childElements) {
+			DiagramElement de = DIUtils.findDiagramElement(bpmnDiagram, be);
 			if (de==null)
 				continue; // Diagram Element does not exist
 			
 			newPlane.getPlaneElement().add(de);
 			
-			List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(oldDiagram, fe);
+			List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(oldDiagram, be);
 			for (PictogramElement pe : pes) {
 				PictogramElement pictogramElement = null;
 				if (pe instanceof ConnectionDecorator) {
@@ -165,11 +179,14 @@ public class PushdownFeature extends AbstractCustomFeature {
 				}
 				else if (pe instanceof Shape) {
 					if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null) {
-						newDiagram.getChildren().add((Shape)pe);
+						if (((Shape) pe).getContainer() == containerShape)
+							newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
+						shapes.add((Shape)pe);
 					}
 					else if (FeatureSupport.isLabelShape(pe)) {
-						newDiagram.getChildren().add((Shape)pe);
+						if (((Shape) pe).getContainer() == containerShape)
+							newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
 					}
 				}
@@ -177,14 +194,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 					if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNEdge.class)!=null) {
 						newDiagram.getConnections().add((Connection)pe);
 						pictogramElement = pe;
-						if (pe instanceof FreeFormConnection) {
-							// adjust connection bendpoints
-							FreeFormConnection ffc = (FreeFormConnection)pe;
-							for (Point p : ffc.getBendpoints()) {
-								p.setX( p.getX() - loc.getX() );
-								p.setY( p.getY() - loc.getY() );
-							}
-						}
+						connections.add((Connection)pe);
 					}
 				}
 				if (pictogramElement!=null) {
@@ -193,7 +203,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 						EObject o = iter.next();
 						if (o instanceof PictogramLink) {
 							newDiagram.getPictogramLinks().add((PictogramLink)o);
-							moved.add(o);
+							removedObjects.add(o);
 						}
 //						else if (o instanceof Color) {
 //							newDiagram.getColors().add((Color)o);
@@ -207,20 +217,53 @@ public class PushdownFeature extends AbstractCustomFeature {
 //							newDiagram.getStyles().add((Style)o);
 //							moved.add(o);
 //						}
+						
+						pictogramElement.setVisible(true);
 					}
 				}
 			}
 		}
-		oldDiagram.getPictogramLinks().removeAll(moved);
+		oldDiagram.getPictogramLinks().removeAll(removedObjects);
 //		oldDiagram.getColors().removeAll(moved);
 //		oldDiagram.getFonts().removeAll(moved);
 //		oldDiagram.getStyles().removeAll(moved);
-
+		
 		// collapse the sub process
-		if (FeatureSupport.isExpandableElement(container)) {
+		if (FeatureSupport.isExpandableElement(businessObject)) {
 			bpmnShape.setIsExpanded(true);
 			CollapseFlowNodeFeature collapseFeature = new CollapseFlowNodeFeature(getFeatureProvider());
 			collapseFeature.execute(context);
+		}
+
+		// let the feature provider know there's a new diagram now
+		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
+
+		for (PictogramElement s : shapes) {
+			LayoutContext layoutContext = new LayoutContext(s);
+			ILayoutFeature layoutFeature = getFeatureProvider().getLayoutFeature(layoutContext);
+			if (layoutFeature!=null && layoutFeature.canLayout(layoutContext)) {
+				layoutFeature.layout(layoutContext);
+				
+			}
+		}		
+		
+		for (Connection c : connections) {
+			if (c instanceof FreeFormConnection) {
+				FreeFormConnection ffc = (FreeFormConnection)c;
+				ffc.getBendpoints().clear();
+			}
+		}
+		for (Connection c : connections) {
+			FeatureSupport.updateConnection(getFeatureProvider(), c, true);
+		}
+	}
+	
+	protected void collectChildElements(FlowElementsContainer container, List<BaseElement> children) {
+		for (FlowElement fe : container.getFlowElements()) {
+			children.add(fe);
+			if (fe instanceof FlowElementsContainer) {
+				collectChildElements((FlowElementsContainer)fe, children);
+			}
 		}
 	}
 }

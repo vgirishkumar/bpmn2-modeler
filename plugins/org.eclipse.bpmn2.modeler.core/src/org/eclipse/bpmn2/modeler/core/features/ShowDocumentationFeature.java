@@ -12,7 +12,6 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.List;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.modeler.core.IConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
