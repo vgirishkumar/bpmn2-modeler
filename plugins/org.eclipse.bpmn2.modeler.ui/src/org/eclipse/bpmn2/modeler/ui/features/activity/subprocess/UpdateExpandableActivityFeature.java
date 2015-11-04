@@ -94,12 +94,10 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 	public boolean update(IUpdateContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		SubProcess subprocess = (SubProcess) getBusinessObjectForPictogramElement(pe);
-		ContainerShape container = (ContainerShape) pe;
+		ContainerShape containerShape = (ContainerShape) pe;
 		boolean isExpanded = false;
 		
-		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(container);
-		BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
-		isExpanded = bpmnShape.isIsExpanded();
+		isExpanded = FeatureSupport.isElementExpanded(subprocess);
 		FeatureSupport.setPropertyValue(pe, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(subprocess.isTriggeredByEvent()));
 		FeatureSupport.setElementExpanded(pe, isExpanded);
 
@@ -110,10 +108,10 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 		rectangle.setLineStyle(lineStyle);
 
 		if(!isExpanded) {
-			ShapeDecoratorUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		else {
-			ShapeDecoratorUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			ShapeDecoratorUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		
 		if (subprocess.isTriggeredByEvent()) {

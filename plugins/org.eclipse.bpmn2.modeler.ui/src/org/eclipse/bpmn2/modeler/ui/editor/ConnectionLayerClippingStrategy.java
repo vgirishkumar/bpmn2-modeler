@@ -156,7 +156,8 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 		ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(pe);
 		GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
 		// return a very small rectangle if the SubProcess is collapsed.
-		if (FeatureSupport.isExpandableElement(pe) && !FeatureSupport.isElementExpanded(pe))
+		BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+		if (FeatureSupport.isExpandableElement(be) && !FeatureSupport.isElementExpanded(be))
 			return new Rectangle[] { new Rectangle(loc.getX(), loc.getY(), 1, 1) };
 		return new Rectangle[] { new Rectangle(loc.getX(), loc.getY(), ga.getWidth(), ga.getHeight()) };
 	}

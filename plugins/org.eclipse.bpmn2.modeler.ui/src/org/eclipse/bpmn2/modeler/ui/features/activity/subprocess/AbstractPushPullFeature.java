@@ -30,11 +30,8 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 	}
 
 	protected void moveChildren(List<Shape> children, ContainerShape oldContainer, ContainerShape newContainer, int xOffset, int yOffset) {
-		GraphicsUtil.debug = true;
-		GraphicsUtil.dump("Moving Shapes");
 		for (Shape s : children) {
 			if (s instanceof ContainerShape && FeatureSupport.hasBPMNShape((ContainerShape)s)) {
-				GraphicsUtil.dump("  Container ", (ContainerShape)s);
 				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(s);
 				int x = loc.getX() - xOffset;
 				int y = loc.getY() - yOffset;
@@ -51,7 +48,6 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 				newContainer.getChildren().add(s);
 			}
 		}
-		GraphicsUtil.debug = false;
 	}
 
 	private void layoutIfNecessary(ContainerShape shape) {
@@ -61,7 +57,6 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 			if (bpmnDiagram!=null) {
 				BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, fec);
 				if (bpmnShape!=null) {
-					bpmnShape.setIsExpanded(true);
 					LayoutContext layoutContext = new LayoutContext(shape);
 					ILayoutFeature layoutFeature = getFeatureProvider().getLayoutFeature(layoutContext);
 					layoutFeature.layout(layoutContext);

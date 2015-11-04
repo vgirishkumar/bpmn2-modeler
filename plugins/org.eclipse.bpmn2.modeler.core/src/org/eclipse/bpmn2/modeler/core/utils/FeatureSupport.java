@@ -1257,6 +1257,17 @@ public class FeatureSupport {
 		}
 	}
 
+	public static void setElementExpanded(BaseElement be, boolean isExpanded) {
+		if (isExpandableElement(be)) {
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be);
+			// otherwise check the "isExpanded" state of the BPMNShape element.
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(be);
+			if (bpmnShape!=null && bpmnDiagram==null) {
+				bpmnShape.setIsExpanded(isExpanded);
+			}
+		}
+	}
+	
 	public static boolean isElementExpanded(BaseElement be) {
 		if (isExpandableElement(be)) {
 			// if the BaseElement has its own BPMNDiagram page it should be considered

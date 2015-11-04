@@ -12,24 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNPlane;
-import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.activity.LayoutActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 
@@ -42,24 +31,7 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		try {
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, activity);
-			
-			boolean setChildrenVisible = bpmnShape.isIsExpanded();
-			if (activity instanceof FlowElementsContainer) {
-				FlowElementsContainer container = (FlowElementsContainer) activity;
-				for (FlowElement fe : container.getFlowElements()) {
-					DiagramElement de = DIUtils.findDiagramElement(fe);
-					if (de!=null) {
-						BPMNPlane plane = (BPMNPlane) de.eContainer();
-						if (bpmnDiagram != plane.eContainer()) {
-							setChildrenVisible = true;
-							break;
-						}
-					}
-				}
-			}
-
+			boolean setChildrenVisible = FeatureSupport.isElementExpanded(activity);
 			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), containerShape, setChildrenVisible);
 		} catch (Exception e) {
 			// It's OK, I've played a programmer before...

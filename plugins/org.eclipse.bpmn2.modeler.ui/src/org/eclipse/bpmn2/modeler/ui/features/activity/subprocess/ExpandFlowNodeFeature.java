@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -159,11 +162,16 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 						
 						LayoutContext layoutContext = new LayoutContext(containerShape);
 						getFeatureProvider().layoutIfPossible(layoutContext);
+						
+						List<ContainerShape> children = new ArrayList<ContainerShape>();
 						for (PictogramElement pe : containerShape.getChildren()) {
-							if (FeatureSupport.hasBPMNShape(pe)) {
-								layoutContext = new LayoutContext(pe);
-								getFeatureProvider().layoutIfPossible(layoutContext);
+							if (pe instanceof ContainerShape && FeatureSupport.hasBPMNShape(pe)) {
+								children.add((ContainerShape)pe);
 							}
+						}
+						for (ContainerShape s : children) {
+							layoutContext = new LayoutContext(s);
+							getFeatureProvider().layoutIfPossible(layoutContext);
 						}
 						
 						// layout the incoming and outgoing connections

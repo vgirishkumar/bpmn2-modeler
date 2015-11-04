@@ -43,12 +43,7 @@ public abstract class AddExpandableActivityFeature<T extends Activity>
 		if (businessObject instanceof SubProcess) {
 			SubProcess subprocess = (SubProcess) businessObject;
 			isTriggeredByEvent = subprocess.isTriggeredByEvent();
-
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
-			if (bpmnShape != null) {
-				isExpanded = bpmnShape.isIsExpanded();
-			}
+			isExpanded = FeatureSupport.isElementExpanded(subprocess);
 		}
 		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
 		FeatureSupport.setElementExpanded(containerShape, isExpanded);

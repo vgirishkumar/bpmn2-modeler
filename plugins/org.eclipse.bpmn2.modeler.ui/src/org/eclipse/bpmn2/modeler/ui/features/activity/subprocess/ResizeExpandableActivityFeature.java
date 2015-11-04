@@ -51,9 +51,8 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 		List<PictogramElement> containerChildren = FeatureSupport.getContainerChildren(containerShape);
 		try {
 			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
-			BPMNShape shape = DIUtils.findBPMNShape(bpmnDiagram, activity);
-			
-			if (shape.isIsExpanded()) {
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, activity);
+			if (bpmnShape.isIsExpanded()) {
 
 				// Activity is expanded
 				FeatureSupport.ExpandableActivitySizeCalculator sizeCalc = new FeatureSupport.ExpandableActivitySizeCalculator(resizeShapeContext);

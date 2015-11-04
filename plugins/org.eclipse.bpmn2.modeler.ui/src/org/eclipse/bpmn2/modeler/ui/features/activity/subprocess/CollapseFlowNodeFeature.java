@@ -122,14 +122,7 @@ public class CollapseFlowNodeFeature extends AbstractBpmn2CustomFeature {
 						updateFeature.update(updateContext);
 						
 						// layout the incoming and outgoing connections
-						for (Connection c : FeatureSupport.getConnections(containerShape)) {
-							if (c instanceof FreeFormConnection) {
-								// adjust connection bendpoints
-								FreeFormConnection ffc = (FreeFormConnection)c;
-								ffc.getBendpoints().clear();
-							}
-							FeatureSupport.updateConnection(getFeatureProvider(), c);
-						}
+						FeatureSupport.updateConnections(getFeatureProvider(), FeatureSupport.getConnections(containerShape), true);
 
 						getDiagramEditor().selectPictogramElements(new PictogramElement[] {});
 					}
