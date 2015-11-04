@@ -259,7 +259,7 @@ public class ModelHandler {
 					initiatingProcess.setName(Messages.ModelHandler_Initiating_Process);
 					initiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
-					Participant initiatingParticipant = createObject(Participant.class);
+					Participant initiatingParticipant = Bpmn2ModelerFactory.create(getResource(), Participant.class);
 					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Pool);
 					initiatingParticipant.setProcessRef(initiatingProcess);
 					
@@ -267,7 +267,7 @@ public class ModelHandler {
 					nonInitiatingProcess.setName(Messages.ModelHandler_Non_Initiating_Process);
 					nonInitiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
-					Participant nonInitiatingParticipant = createObject(Participant.class);
+					Participant nonInitiatingParticipant = Bpmn2ModelerFactory.create(getResource(), Participant.class);
 					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Pool);
 					nonInitiatingParticipant.setProcessRef(nonInitiatingProcess);
 					
