@@ -312,16 +312,16 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
-		protected Point getChildOffset(ContainerShape containerShape) {
-			boolean horz = FeatureSupport.isHorizontal(containerShape);
+		protected Point getChildOffset(ContainerShape targetContainerShape) {
+			boolean horz = FeatureSupport.isHorizontal(targetContainerShape);
 			if (horz)
-				return GraphicsUtil.createPoint(30, 0);
-			return GraphicsUtil.createPoint(0, 30);
+				return GraphicsUtil.createPoint(AddParticipantFeature.TITLE_HEIGHT, 0);
+			return GraphicsUtil.createPoint(0, AddParticipantFeature.TITLE_HEIGHT);
 		}
 
 		@Override
-		protected void collectChildShapes(Diagram diagram, List<Shape> shapes) {
-			super.collectChildShapes(diagram, shapes);
+		protected void collectChildShapes(ContainerShape containerShape, List<Shape> shapes) {
+			super.collectChildShapes(containerShape, shapes);
 			List<Shape> removed = new ArrayList<Shape>();
 			for (Shape s : shapes) {
 				if (FeatureSupport.isParticipant(s)) {

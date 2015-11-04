@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
@@ -835,6 +834,18 @@ public class FeatureSupport {
 			}
 		}
 		return connections;
+	}
+
+	public static void updateConnections(IFeatureProvider fp, List<Connection> connections, boolean force) {
+		for (Connection c : connections) {
+			if (c instanceof FreeFormConnection) {
+				FreeFormConnection ffc = (FreeFormConnection)c;
+				ffc.getBendpoints().clear();
+			}
+		}
+		for (Connection c : connections) {
+			updateConnection(fp,c,force);
+		}
 	}
 
 	public static boolean updateConnection(IFeatureProvider fp, Connection connection, boolean force) {

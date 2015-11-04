@@ -28,17 +28,14 @@ import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
-// NOT USED YET
 public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 
 	private final static String NAME = Messages.ExpandFlowNodeFeature_Name;
@@ -160,15 +157,17 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 						IUpdateFeature updateFeature = getFeatureProvider().getUpdateFeature(updateContext);
 						updateFeature.update(updateContext);
 						
-						// layout the incoming and outgoing connections
-						for (Connection c : FeatureSupport.getConnections(containerShape)) {
-							if (c instanceof FreeFormConnection) {
-								// adjust connection bendpoints
-								FreeFormConnection ffc = (FreeFormConnection)c;
-								ffc.getBendpoints().clear();
+						LayoutContext layoutContext = new LayoutContext(containerShape);
+						getFeatureProvider().layoutIfPossible(layoutContext);
+						for (PictogramElement pe : containerShape.getChildren()) {
+							if (FeatureSupport.hasBPMNShape(pe)) {
+								layoutContext = new LayoutContext(pe);
+								getFeatureProvider().layoutIfPossible(layoutContext);
 							}
-							FeatureSupport.updateConnection(getFeatureProvider(), c);
 						}
+						
+						// layout the incoming and outgoing connections
+						FeatureSupport.updateConnections(getFeatureProvider(), FeatureSupport.getConnections(containerShape), true);
 					}
 					
 				} catch (Exception e) {

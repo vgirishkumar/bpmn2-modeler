@@ -27,21 +27,14 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -51,7 +44,7 @@ import org.eclipse.osgi.util.NLS;
  * @author Bob Brodt
  *
  */
-public class PullupFeature extends AbstractCustomFeature {
+public class PullupFeature extends AbstractPushPullFeature {
 
 	protected String description;
 	protected ContainerShape containerShape;
@@ -158,38 +151,24 @@ public class PullupFeature extends AbstractCustomFeature {
 		BPMNPlane oldPlane = oldBpmnDiagram.getPlane();
 		Diagram oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
 		
-		// copy the elements into the same plane as the sub process
-		while (oldPlane.getPlaneElement().size()>0) {
-			DiagramElement de = oldPlane.getPlaneElement().get(0);
-			newPlane.getPlaneElement().add(de);
-		}
+		// copy the elements into the same plane as the container
+		newPlane.getPlaneElement().addAll(oldPlane.getPlaneElement());
 		
 		// collect all Shapes from old diagram
 		collectChildShapes(oldDiagram, childShapes);
 		
-		// and add them to the SubProcess or Pool shape
-		containerShape.getChildren().addAll(childShapes);
-		
 		// calculate bounding rectangle for all children shapes
 		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
-		
-		// Pools have different origins depending on whether they are horizontal
-		// or vertical
+		// Shapes added to Pools will have different offsets depending on
+		// whether the Pool is horizontal or vertical
 		Point offset = getChildOffset(containerShape);
-		boundingRectangle.x -= 20 + offset.getX();
-		boundingRectangle.y -= 20 + offset.getY();
-		boundingRectangle.width += 2 * 20 + offset.getX();
-		boundingRectangle.height += 2 * 20 + offset.getY();
+		boundingRectangle.x -= MARGIN + offset.getX();
+		boundingRectangle.y -= MARGIN + offset.getY();
+		boundingRectangle.width += 2 * MARGIN + offset.getX();
+		boundingRectangle.height += 2 * MARGIN + offset.getY();
 
-		// translate shape locations to top-left corner of new diagram
-		for (Shape s : childShapes) {
-			if (s instanceof ContainerShape) {
-				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(s);
-				GraphicsAlgorithm ga = s.getGraphicsAlgorithm();
-				ga.setX(loc.getX() - boundingRectangle.x);
-				ga.setY(loc.getY() - boundingRectangle.y);
-			}
-		}
+		// Move shapes into container and translate to top-left corner
+		moveChildren(childShapes, oldDiagram, containerShape, boundingRectangle.x, boundingRectangle.y);
 		
 		// collect all internal Connections on old diagram
 		List<Connection> connections = new ArrayList<Connection>();
@@ -203,26 +182,11 @@ public class PullupFeature extends AbstractCustomFeature {
 		
 		// get rid of the old BPMNDiagram
 		DIUtils.deleteDiagram(getDiagramBehavior(), oldBpmnDiagram);
+		
+		// tell feature provider to reload the active diagram
 		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
 		
-		for (Shape s : childShapes) {
-			LayoutContext layoutContext = new LayoutContext(s);
-			ILayoutFeature layoutFeature = getFeatureProvider().getLayoutFeature(layoutContext);
-			if (layoutFeature!=null && layoutFeature.canLayout(layoutContext)) {
-				layoutFeature.layout(layoutContext);
-				
-			}
-		}		
-
-		for (Connection c : connections) {
-			if (c instanceof FreeFormConnection) {
-				FreeFormConnection ffc = (FreeFormConnection)c;
-				ffc.getBendpoints().clear();
-			}
-		}
-		for (Connection c : connections) {
-			FeatureSupport.updateConnection(getFeatureProvider(), c, true);
-		}
+		FeatureSupport.updateConnections(getFeatureProvider(), connections, true);
 
 		// expand the sub process
 		if (FeatureSupport.isExpandableElement(businessObject)) {
@@ -232,11 +196,7 @@ public class PullupFeature extends AbstractCustomFeature {
 		}
 	}
 	
-	protected Point getChildOffset(ContainerShape containerShape) {
-		return GraphicsUtil.createPoint(0, 0);
-	}
-
-	protected void collectChildShapes(Diagram diagram, List<Shape> shapes) {
-		shapes.addAll(diagram.getChildren());
+	protected void collectChildShapes(ContainerShape containerShape, List<Shape> shapes) {
+		shapes.addAll(containerShape.getChildren());
 	}
 }

@@ -20,8 +20,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -31,22 +29,25 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.dd.di.DiagramElement;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -57,7 +58,7 @@ import org.eclipse.osgi.util.NLS;
  * @author Bob Brodt
  *
  */
-public class PushdownFeature extends AbstractCustomFeature {
+public class PushdownFeature extends AbstractPushPullFeature {
 
 	protected String description;
 	protected ContainerShape containerShape;
@@ -65,6 +66,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 	protected BPMNDiagram bpmnDiagram;
 	protected BPMNShape bpmnShape;
 	protected List<BaseElement> childElements = new ArrayList<BaseElement>();
+	protected Rectangle boundingRectangle = null;
 
 	
 	/**
@@ -160,7 +162,8 @@ public class PushdownFeature extends AbstractCustomFeature {
 		
 		collectChildElements(businessObject, childElements);
 
-		List<Shape> shapes = new ArrayList<Shape>();
+		List<Shape> allShapes = new ArrayList<Shape>();
+		List<Shape> diagramChildren = new ArrayList<Shape>();
 		List<Connection> connections = new ArrayList<Connection>();
 		
 		for (BaseElement be : childElements) {
@@ -180,13 +183,13 @@ public class PushdownFeature extends AbstractCustomFeature {
 				else if (pe instanceof Shape) {
 					if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null) {
 						if (((Shape) pe).getContainer() == containerShape)
-							newDiagram.getChildren().add((Shape)pe);
+							diagramChildren.add((Shape)pe);
 						pictogramElement = pe;
-						shapes.add((Shape)pe);
+						allShapes.add((Shape)pe);
 					}
 					else if (FeatureSupport.isLabelShape(pe)) {
 						if (((Shape) pe).getContainer() == containerShape)
-							newDiagram.getChildren().add((Shape)pe);
+							diagramChildren.add((Shape)pe);
 						pictogramElement = pe;
 					}
 				}
@@ -228,6 +231,15 @@ public class PushdownFeature extends AbstractCustomFeature {
 //		oldDiagram.getFonts().removeAll(moved);
 //		oldDiagram.getStyles().removeAll(moved);
 		
+		Point offset = getChildOffset(containerShape);
+		
+		// calculate bounding rectangle for all children shapes
+		boundingRectangle = GraphicsUtil.getBoundingRectangle(diagramChildren);
+		boundingRectangle.x -= offset.getX();
+		boundingRectangle.y -= offset.getY();
+		
+		moveChildren(diagramChildren, oldDiagram, newDiagram, boundingRectangle.x, boundingRectangle.y);
+
 		// collapse the sub process
 		if (FeatureSupport.isExpandableElement(businessObject)) {
 			bpmnShape.setIsExpanded(true);
@@ -237,25 +249,8 @@ public class PushdownFeature extends AbstractCustomFeature {
 
 		// let the feature provider know there's a new diagram now
 		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
-
-		for (PictogramElement s : shapes) {
-			LayoutContext layoutContext = new LayoutContext(s);
-			ILayoutFeature layoutFeature = getFeatureProvider().getLayoutFeature(layoutContext);
-			if (layoutFeature!=null && layoutFeature.canLayout(layoutContext)) {
-				layoutFeature.layout(layoutContext);
-				
-			}
-		}		
 		
-		for (Connection c : connections) {
-			if (c instanceof FreeFormConnection) {
-				FreeFormConnection ffc = (FreeFormConnection)c;
-				ffc.getBendpoints().clear();
-			}
-		}
-		for (Connection c : connections) {
-			FeatureSupport.updateConnection(getFeatureProvider(), c, true);
-		}
+		FeatureSupport.updateConnections(getFeatureProvider(), connections, true);
 	}
 	
 	protected void collectChildElements(FlowElementsContainer container, List<BaseElement> children) {
@@ -265,5 +260,9 @@ public class PushdownFeature extends AbstractCustomFeature {
 				collectChildElements((FlowElementsContainer)fe, children);
 			}
 		}
+	}
+
+	protected Point getChildOffset(ContainerShape targetContainerShape) {
+		return GraphicsUtil.createPoint(50, 50);
 	}
 }

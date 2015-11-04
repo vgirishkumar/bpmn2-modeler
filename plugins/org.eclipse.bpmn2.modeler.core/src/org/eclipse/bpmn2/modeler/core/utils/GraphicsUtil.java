@@ -23,6 +23,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
@@ -528,11 +529,11 @@ public class GraphicsUtil {
 
 	public static boolean debug = false;
 
-	public static void dump(String label, List<ContainerShape> shapes) {
+	public static void dump(String label, List<? extends Shape> shapes) {
 		if (shapes!=null) {
 			if (debug) {
 				System.out.println(label);
-				for (ContainerShape shape : shapes)
+				for (Shape shape : shapes)
 					GraphicsUtil.dump(1, "",shape,0,0); //$NON-NLS-1$
 				System.out.println(""); //$NON-NLS-1$
 			}
@@ -569,7 +570,17 @@ public class GraphicsUtil {
 		GraphicsUtil.dump(level, label,shape,loc.getX(),loc.getY());
 	}
 
-	public static void dump(int level, String label, ContainerShape shape, int x, int y) {
+	public static void dump(Shape shape) {
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
+		String label = "";
+		if (FeatureSupport.isLabelShape(shape) && shape.getGraphicsAlgorithm() instanceof AbstractText) {
+			AbstractText text = (AbstractText) shape.getGraphicsAlgorithm();
+			label = "Label: " + text.getValue();
+		}
+		GraphicsUtil.dump(0, label,shape,loc.getX(),loc.getY());
+	}
+
+	public static void dump(int level, String label, Shape shape, int x, int y) {
 		if (debug) {
 			String text = GraphicsUtil.getDebugText(shape);
 			for (int i=0; i<level; ++i)
@@ -586,10 +597,14 @@ public class GraphicsUtil {
 	public static String getDebugText(Shape shape) {
 		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 		String id = ""; //$NON-NLS-1$
+		String text = "";
 		if (be instanceof BaseElement) {
 			id = " " + ((BaseElement)be).getId(); //$NON-NLS-1$
 		}
-		String text = be.eClass().getName()+id+": "+ExtendedPropertiesProvider.getTextValue(be); //$NON-NLS-1$
+		if (be!=null)
+			text = be.eClass().getName()+id+": "+ExtendedPropertiesProvider.getTextValue(be); //$NON-NLS-1$
+		else
+			text = id + shape.toString();
 		return text;
 	}
 
