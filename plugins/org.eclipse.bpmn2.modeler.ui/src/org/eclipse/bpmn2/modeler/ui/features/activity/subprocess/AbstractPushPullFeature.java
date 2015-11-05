@@ -65,29 +65,6 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 		}
 	}
 	
-//	private void moveChildAndAncestors(ContainerShape shape, ContainerShape oldContainer, ContainerShape newContainer, int xOffset, int yOffset) {
-//		GraphicsUtil.dump("  Container ", shape);
-//		ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
-//		int x = loc.getX() - xOffset;
-//		int y = loc.getY() - yOffset;
-//		MoveShapeContext moveContext = new MoveShapeContext(shape);
-//		moveContext.setSourceContainer(oldContainer);
-//		moveContext.setTargetContainer(newContainer);
-//		moveContext.setLocation(x, y);
-//		
-//		IMoveShapeFeature moveFeature = getFeatureProvider().getMoveShapeFeature(moveContext);
-//		moveFeature.moveShape(moveContext);
-//		
-//		List<Shape> copies = new ArrayList<Shape>();
-//		copies.addAll(shape.getChildren());
-//
-//		for (Shape s : copies) {
-//			if (FeatureSupport.hasBPMNShape(s)) {
-//				moveChildAndAncestors((ContainerShape)s, newContainer, newContainer, 0, 0);
-//			}
-//		}
-//	}
-	
 	protected Point getChildOffset(ContainerShape targetContainerShape) {
 		return GraphicsUtil.createPoint(0, 0);
 	}

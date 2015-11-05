@@ -17,24 +17,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.CreateShapeReferenceFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.SubMenuCustomFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.dd.di.DiagramElement;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
@@ -51,56 +48,18 @@ import org.eclipse.graphiti.tb.IContextMenuEntry;
 public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 	
 	protected boolean changesDone = false;
-
-	private static class CreateReferenceFeature extends AbstractBpmn2CreateFeature<Participant> {
-
-		Participant pool;
-		BPMNShape shape;
-		
-		private CreateReferenceFeature(IFeatureProvider fp, BPMNShape shape, Participant pool) {
-		    this(fp);
-		    this.shape = shape;
-		    this.pool = pool;
-	    }
-		
-		private CreateReferenceFeature(IFeatureProvider fp) {
-		    super(fp);
-	    }
-
-		@Override
-	    public boolean canCreate(ICreateContext context) {
-			return true;
-	    }
-
-		@Override
-		public Object[] create(ICreateContext context) {
-			context.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, shape);
-			PictogramElement pe = addGraphicalRepresentation(context, pool);
-			return new Object[] { pe };
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getBusinessObjectClass()
-		 */
-		@Override
-		public EClass getBusinessObjectClass() {
-			return Bpmn2Package.eINSTANCE.getParticipant();
-		}
-		
-		public Participant getPool() {
-			return pool;
-		}
-		
-		public BPMNShape getShape() {
-			return shape;
-		}
-	}
-
+	private CreateShapeReferenceFeature<Participant> createFeature = null;
+	
 	/**
 	 * @param fp
 	 */
 	public CreateParticipantReferenceFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public CreateParticipantReferenceFeature(IFeatureProvider fp, BPMNShape bpmnShape, Participant participant) {
+		super(fp);
+		createFeature = createCreateFeature(bpmnShape, participant);
 	}
 
 	@Override
@@ -115,6 +74,10 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
+		if (createFeature!=null) {
+			return true;
+		}
+		
 		CreateContext createContext = prepareCreateContext(context);
 		if (createContext==null)
 			return false;
@@ -159,11 +122,11 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 						if (de instanceof BPMNShape) {
 							BaseElement bpmnElement = ((BPMNShape)de).getBpmnElement();
 							if (bpmnElement instanceof Participant && !existingPools.contains(bpmnElement)) {
-								Participant pool = (Participant) bpmnElement;
-								ICreateFeature feature = new CreateReferenceFeature(getFeatureProvider(), (BPMNShape)de, pool);
+								Participant participant = (Participant) bpmnElement;
+								ICreateFeature feature = createCreateFeature((BPMNShape)de, participant);
 								SubMenuCustomFeature submenuFeature = new SubMenuCustomFeature(this, feature);
 								ContextMenuEntry cme = new ContextMenuEntry(submenuFeature, context);
-								cme.setText(pool.getName());
+								cme.setText(participant.getName());
 								contextMenuEntry.add(cme);
 							}
 						}
@@ -175,6 +138,10 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 		return true;
 	}
 
+	private CreateShapeReferenceFeature<Participant> createCreateFeature(BPMNShape bpmnShape, Participant participant) {
+		return new CreateShapeReferenceFeature<Participant>(getFeatureProvider(), bpmnShape, participant);
+	}
+	
 	@Override
 	public boolean isAvailable(IContext context) {
 		if (context instanceof ICustomContext) {
@@ -201,7 +168,9 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		CreateReferenceFeature createFeature = (CreateReferenceFeature) context.getProperty(GraphitiConstants.CREATE_FEATURE);
+		if (createFeature==null)
+			createFeature = (CreateShapeReferenceFeature) context.getProperty(GraphitiConstants.CREATE_FEATURE);
+		
 		if (createFeature!=null) {
 			CreateContext createContext = prepareCreateContext(context);
 			if (createFeature.canCreate(createContext)) {
@@ -216,6 +185,7 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 					getDiagramContainer().
 					setPictogramElementForSelection(newShape);
 				
+				createContext.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, newShape);
 				changesDone = true;
 			}
 		}

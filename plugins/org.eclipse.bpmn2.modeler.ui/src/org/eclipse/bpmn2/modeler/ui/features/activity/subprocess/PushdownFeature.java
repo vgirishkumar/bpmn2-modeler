@@ -36,13 +36,9 @@ import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -62,8 +58,9 @@ public class PushdownFeature extends AbstractPushPullFeature {
 
 	protected String description;
 	protected ContainerShape containerShape;
+	protected Diagram oldDiagram;
+	protected Diagram newDiagram;
 	protected FlowElementsContainer businessObject;
-	protected BPMNDiagram bpmnDiagram;
 	protected BPMNShape bpmnShape;
 	protected List<BaseElement> childElements = new ArrayList<BaseElement>();
 	protected Rectangle boundingRectangle = null;
@@ -138,7 +135,7 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		// a ContainerShape for an expandable activity
 		containerShape = (ContainerShape)context.getPictogramElements()[0];
 		Object bo = getBusinessObjectForPictogramElement(containerShape);
-		bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
 		bpmnShape = null;
 		if (bo instanceof Participant) {
 			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (Participant)bo);
@@ -151,13 +148,13 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		Definitions definitions = ModelUtil.getDefinitions(businessObject);
 		
 		BPMNDiagram oldBpmnDiagram = DIUtils.getBPMNDiagram(bpmnShape);
-		Diagram oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
+		oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
 		
 		// the contents of this expandable element is in the flowElements list 
         BPMNDiagram newBpmnDiagram = DIUtils.createBPMNDiagram(definitions, businessObject);
 		BPMNPlane newPlane = newBpmnDiagram.getPlane();
 
-		Diagram newDiagram = DIUtils.getOrCreateDiagram(getDiagramBehavior(), newBpmnDiagram);
+		newDiagram = DIUtils.getOrCreateDiagram(getDiagramBehavior(), newBpmnDiagram);
 		List <EObject> removedObjects = new ArrayList<EObject>();
 		
 		collectChildElements(businessObject, childElements);

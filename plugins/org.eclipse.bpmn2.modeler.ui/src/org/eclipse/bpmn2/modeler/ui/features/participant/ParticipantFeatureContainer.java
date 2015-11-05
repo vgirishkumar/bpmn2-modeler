@@ -20,13 +20,17 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.LaneSet;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CreateShapeReferenceFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.LayoutContainerFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.UpdateContainerLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.participant.CreateParticipantReferenceFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.DirectEditParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.ResizeParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantFeature;
@@ -62,6 +66,7 @@ import org.eclipse.graphiti.features.context.IMoveContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IResizeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
@@ -250,18 +255,35 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			// Create dummy Pools and Data Inputs/Outputs and reconnect all external connections
 			Hashtable<ContainerShape, ContainerShape> externalContainers = new Hashtable<ContainerShape, ContainerShape>();
 			for (Entry<Connection, ContainerShape> e : externalConnections.entrySet()) {
-				Connection c = e.getKey();
+				Connection externalConnection = e.getKey();
 				ContainerShape externalShape = e.getValue();
 				ContainerShape externalContainer = getExternalContainer(externalShape);
 				ContainerShape localContainer = externalContainers.get(externalContainer);
 				if (localContainer==null) {
 					// the local Pool or DataInput/Output does not exist yet
 					BaseElement be = BusinessObjectUtil.getFirstBaseElement(externalContainer);
+					BPMNShape bs = BusinessObjectUtil.getFirstElementOfType(externalContainer, BPMNShape.class);
 					if (be instanceof Participant) {
-						
+						CustomContext customContext = new CustomContext(new PictogramElement[] {newDiagram});
+						customContext.setX(100);
+						customContext.setY(500);
+						ICustomFeature f = new CreateParticipantReferenceFeature(getFeatureProvider(),bs, (Participant) be);
+						f.execute(customContext);
+						Object o = customContext.getProperty(GraphitiConstants.PICTOGRAM_ELEMENT);
+						if (o instanceof ContainerShape) {
+							localContainer = (ContainerShape) o;
+							externalContainers.put(externalContainer, localContainer);
+						}
 					}
 					else {
 						// external container must be a Diagram
+					}
+				}
+				
+				if (localContainer!=null) {
+					BaseElement be = BusinessObjectUtil.getFirstBaseElement(externalConnection);
+					if (be instanceof MessageFlow) {
+//						CreateReferenceFeature cf = new CreateReferenceFeature<MessageFlow>(getFeatureProvider(), externalConnection, (MessageFlow)mf);
 					}
 				}
 			}
