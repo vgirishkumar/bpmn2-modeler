@@ -537,7 +537,7 @@
 			name="%modelExtension.name.2"
 			type="CallActivity">
 			<property name="waitForCompletion" value="true" type="EBoolean"/>
-			<property name="independent" value="false" type="EBoolean"/>
+			<property name="independent" value="true" type="EBoolean"/>
 		</modelExtension>
 		
 		<modelExtension
