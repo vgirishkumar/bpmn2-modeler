@@ -14,6 +14,9 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
@@ -38,7 +41,17 @@ public class JbpmDataInputPropertiesAdapter extends DataInputPropertiesAdapter {
 	    			value = JbpmModelUtil.getDataType(dataInput, value);
 	    			super.internalSet(object, feature, value, index);
 				}
-				
+	    		
+	    		@Override
+				protected void changeReferences(RootElement object, ItemDefinition itemDefinition) {
+	    			// do nothing!
+	    		}
+	    		
+	    		@Override
+				protected void changeReferences(ItemAwareElement object, ItemDefinition itemDefinition) {
+	    			// do nothing!
+	    		}
+	    		
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {
 					return JbpmModelUtil.getChoiceOfValues(object);
