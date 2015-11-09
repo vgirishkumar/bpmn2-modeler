@@ -48,7 +48,10 @@ public class EscalationEventDefinitionPropertiesAdapter extends EventDefinitionP
 				Escalation escalation = object.getEscalationRef();
 				if (escalation!=null) {
 					ItemDefinition itemDefinition = escalation.getStructureRef();
-					ExtendedPropertiesProvider.setValue(escalation, Bpmn2Package.eINSTANCE.getEscalation_StructureRef(), itemDefinition);
+					// propagate the structureRef of this Escalation to Activity DataInputs and DataOutputs
+					// but only if it is define (not null)
+					if (itemDefinition!=null)
+						ExtendedPropertiesProvider.setValue(escalation, Bpmn2Package.eINSTANCE.getEscalation_StructureRef(), itemDefinition);
 				}
 			}
 
