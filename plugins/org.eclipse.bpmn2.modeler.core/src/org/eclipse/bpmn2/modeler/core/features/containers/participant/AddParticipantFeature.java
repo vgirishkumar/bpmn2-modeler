@@ -87,7 +87,7 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		boolean horz = bpmnShape.isIsHorizontal();
-		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			horz = ((BPMNShape) copiedBpmnShape).isIsHorizontal();
 		}

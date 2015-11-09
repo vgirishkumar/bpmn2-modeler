@@ -147,6 +147,9 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public T createBusinessObject(ICreateContext context) {
+		Object bo = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
+		if (bo!=null)
+			return (T) bo;
 		Resource resource = getResource(context);
 		EClass eclass = getBusinessObjectClass();
 		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);

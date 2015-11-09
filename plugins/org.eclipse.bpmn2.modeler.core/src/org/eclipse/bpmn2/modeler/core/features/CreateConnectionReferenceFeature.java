@@ -1,10 +1,8 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.DataAssociation;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
@@ -34,23 +32,36 @@ public class CreateConnectionReferenceFeature extends AbstractCreateConnectionFe
 
 	@Override
     public boolean canCreate(ICreateConnectionContext context) {
-		return referencedBusinessObject instanceof MessageFlow ||
-				referencedBusinessObject instanceof Association ||
-				referencedBusinessObject instanceof DataAssociation;
+		createFeature = getCreateFeature(context);
+		return createFeature!=null && createFeature.canCreate(context);
     }
 
 	@Override
 	public Connection create(ICreateConnectionContext context) {
-		if (referencedBusinessObject instanceof MessageFlow) {
-//			createFeature = new CreateMessageFlowFeature(getFeatureProvider()) {
-//				
-//			};
+		Connection connection = null;
+		if (canCreate(context)) {
+			context.putProperty(GraphitiConstants.BUSINESS_OBJECT, referencedBusinessObject);
+			context.putProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT, referencedBpmnEdge);
+			connection = createFeature.create(context);
+			context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, connection);
 		}
-		return null;
+		return connection;
 	}
 
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		return true;
+	}
+	
+	private ICreateConnectionFeature getCreateFeature(ICreateConnectionContext context) {
+		for (ICreateConnectionFeature cf : getFeatureProvider().getCreateConnectionFeatures()) {
+			if (cf instanceof AbstractCreateFlowFeature) {
+				AbstractCreateFlowFeature acf = (AbstractCreateFlowFeature) cf;
+				if (acf.getBusinessObjectClass().isInstance(referencedBusinessObject)) {
+					return acf;
+				}
+			}
+		}
+		return null;
 	}
 }

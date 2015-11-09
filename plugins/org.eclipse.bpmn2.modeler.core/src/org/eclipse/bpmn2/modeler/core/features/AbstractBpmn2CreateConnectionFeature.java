@@ -249,6 +249,9 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public CONNECTION createBusinessObject(ICreateConnectionContext context) {
+		Object bo = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
+		if (bo!=null)
+			return (CONNECTION) bo;
 		Resource resource = getResource(context);
 		EClass eclass = getBusinessObjectClass();
 		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);

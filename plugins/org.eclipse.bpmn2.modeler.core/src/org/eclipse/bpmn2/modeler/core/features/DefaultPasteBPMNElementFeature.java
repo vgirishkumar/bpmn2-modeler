@@ -538,7 +538,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		if (oldObject instanceof BaseElement) {
 			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(oldShape);
 			oldBpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (BaseElement)oldObject);
-			ac.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, oldBpmnShape);
+			ac.putProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT, oldBpmnShape);
 		}
 		ac.putProperty(GraphitiConstants.COPIED_BPMN_OBJECT, oldObject);
 		

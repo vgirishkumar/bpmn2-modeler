@@ -206,23 +206,29 @@ public class DIUtils {
 					bpmnEdge = BpmnDiFactory.eINSTANCE.createBPMNEdge();
 					bpmnEdge.setBpmnElement(elem);
 
-					if (elem instanceof Association) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								((Association) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								((Association) elem).getTargetRef()));
-					} else if (elem instanceof MessageFlow) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								(BaseElement) ((MessageFlow) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								(BaseElement) ((MessageFlow) elem).getTargetRef()));
-					} else if (elem instanceof SequenceFlow) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								((SequenceFlow) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								((SequenceFlow) elem).getTargetRef()));
+					DiagramElement diSource = BusinessObjectUtil.getFirstElementOfType(connection.getStart().getParent(), DiagramElement.class);
+					DiagramElement diTarget = BusinessObjectUtil.getFirstElementOfType(connection.getEnd().getParent(), DiagramElement.class);
+					if (diSource==null) {
+						if (elem instanceof Association) {
+							diSource = DIUtils.findDiagramElement(((Association) elem).getSourceRef());
+						} else if (elem instanceof MessageFlow) {
+							diSource = DIUtils.findDiagramElement((BaseElement) ((MessageFlow) elem).getSourceRef());
+						} else if (elem instanceof SequenceFlow) {
+							diSource = DIUtils.findDiagramElement(((SequenceFlow) elem).getSourceRef());
+						}
 					}
-
+					if (diTarget==null) {
+						if (elem instanceof Association) {
+							diTarget = DIUtils.findDiagramElement(((Association) elem).getTargetRef());
+						} else if (elem instanceof MessageFlow) {
+							diTarget = DIUtils.findDiagramElement((BaseElement) ((MessageFlow) elem).getTargetRef());
+						} else if (elem instanceof SequenceFlow) {
+							diTarget = DIUtils.findDiagramElement(((SequenceFlow) elem).getTargetRef());
+						}
+					}
+					bpmnEdge.setSourceElement(diSource);
+					bpmnEdge.setTargetElement(diTarget);
+					
 					ILocation sourceLoc = Graphiti.getPeService().getLocationRelativeToDiagram(connection.getStart());
 					ILocation targetLoc = Graphiti.getPeService().getLocationRelativeToDiagram(connection.getEnd());
 

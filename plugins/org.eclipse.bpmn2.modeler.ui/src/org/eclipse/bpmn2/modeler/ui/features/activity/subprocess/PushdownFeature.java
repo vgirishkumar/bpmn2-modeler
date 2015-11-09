@@ -20,6 +20,8 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -58,12 +60,16 @@ public class PushdownFeature extends AbstractPushPullFeature {
 
 	protected String description;
 	protected ContainerShape containerShape;
+	protected FlowElementsContainer businessObject;
 	protected Diagram oldDiagram;
 	protected Diagram newDiagram;
-	protected FlowElementsContainer businessObject;
+	protected BPMNDiagram oldBpmnDiagram;
+	protected BPMNDiagram newBpmnDiagram;
 	protected BPMNShape bpmnShape;
-	protected List<BaseElement> childElements = new ArrayList<BaseElement>();
 	protected Rectangle boundingRectangle = null;
+	protected List<DiagramElement> diagramElements = new ArrayList<DiagramElement>();
+	protected List<Shape> childShapes = new ArrayList<Shape>();
+	List<Connection> childConnections = new ArrayList<Connection>();
 
 	
 	/**
@@ -147,95 +153,32 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		}
 		Definitions definitions = ModelUtil.getDefinitions(businessObject);
 		
-		BPMNDiagram oldBpmnDiagram = DIUtils.getBPMNDiagram(bpmnShape);
+		oldBpmnDiagram = DIUtils.getBPMNDiagram(bpmnShape);
 		oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
 		
 		// the contents of this expandable element is in the flowElements list 
-        BPMNDiagram newBpmnDiagram = DIUtils.createBPMNDiagram(definitions, businessObject);
-		BPMNPlane newPlane = newBpmnDiagram.getPlane();
-
+        newBpmnDiagram = DIUtils.createBPMNDiagram(definitions, businessObject);
 		newDiagram = DIUtils.getOrCreateDiagram(getDiagramBehavior(), newBpmnDiagram);
-		List <EObject> removedObjects = new ArrayList<EObject>();
 		
-		collectChildElements(businessObject, childElements);
+		collectDiagramElements(businessObject, oldBpmnDiagram, diagramElements);
+		moveDiagramElements(diagramElements, oldBpmnDiagram, newBpmnDiagram);
 
-		List<Shape> allShapes = new ArrayList<Shape>();
-		List<Shape> diagramChildren = new ArrayList<Shape>();
-		List<Connection> connections = new ArrayList<Connection>();
+		// collect all Shapes from old Diagram...
+		collectShapes(containerShape, childShapes);
+		// collect all internal Connections from old Diagram and move to new Diagram
+		collectConnections(containerShape, childConnections);
+
+		// ...calculate a bounding rectangle which contains the source container's descendants...
+		boundingRectangle = calculateBoundingRectangle(containerShape, childShapes);
+		// ...and move shapes from container into new diagram
+		moveShapes(childShapes, oldDiagram, newDiagram, boundingRectangle.x, boundingRectangle.y);
+		// update bounding rectangle after the move
+		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
 		
-		for (BaseElement be : childElements) {
-			DiagramElement de = DIUtils.findDiagramElement(bpmnDiagram, be);
-			if (de==null)
-				continue; // Diagram Element does not exist
-			
-			newPlane.getPlaneElement().add(de);
-			
-			List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(oldDiagram, be);
-			for (PictogramElement pe : pes) {
-				PictogramElement pictogramElement = null;
-				if (pe instanceof ConnectionDecorator) {
-					// this will be moved as part of the connection
-					continue;
-				}
-				else if (pe instanceof Shape) {
-					if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null) {
-						if (((Shape) pe).getContainer() == containerShape)
-							diagramChildren.add((Shape)pe);
-						pictogramElement = pe;
-						allShapes.add((Shape)pe);
-					}
-					else if (FeatureSupport.isLabelShape(pe)) {
-						if (((Shape) pe).getContainer() == containerShape)
-							diagramChildren.add((Shape)pe);
-						pictogramElement = pe;
-					}
-				}
-				else if (pe instanceof Connection) {
-					if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNEdge.class)!=null) {
-						newDiagram.getConnections().add((Connection)pe);
-						pictogramElement = pe;
-						connections.add((Connection)pe);
-					}
-				}
-				if (pictogramElement!=null) {
-					TreeIterator<EObject> iter = pictogramElement.eAllContents();
-					while (iter.hasNext()) {
-						EObject o = iter.next();
-						if (o instanceof PictogramLink) {
-							newDiagram.getPictogramLinks().add((PictogramLink)o);
-							removedObjects.add(o);
-						}
-//						else if (o instanceof Color) {
-//							newDiagram.getColors().add((Color)o);
-//							moved.add(o);
-//						}
-//						else if (o instanceof Font) {
-//							newDiagram.getFonts().add((Font)o);
-//							moved.add(o);
-//						}
-//						else if (o instanceof Style) {
-//							newDiagram.getStyles().add((Style)o);
-//							moved.add(o);
-//						}
-						
-						pictogramElement.setVisible(true);
-					}
-				}
-			}
-		}
-		oldDiagram.getPictogramLinks().removeAll(removedObjects);
-//		oldDiagram.getColors().removeAll(moved);
-//		oldDiagram.getFonts().removeAll(moved);
-//		oldDiagram.getStyles().removeAll(moved);
-		
-		Point offset = getChildOffset(containerShape);
-		
-		// calculate bounding rectangle for all children shapes
-		boundingRectangle = GraphicsUtil.getBoundingRectangle(diagramChildren);
-		boundingRectangle.x -= offset.getX();
-		boundingRectangle.y -= offset.getY();
-		
-		moveChildren(diagramChildren, oldDiagram, newDiagram, boundingRectangle.x, boundingRectangle.y);
+		moveConnections(childConnections, oldDiagram, containerShape);
+
+		// move associated Graphiti data structures
+		moveGraphitiData(childShapes, childConnections, oldDiagram, newDiagram);
 
 		// collapse the sub process
 		if (FeatureSupport.isExpandableElement(businessObject)) {
@@ -247,19 +190,80 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		// let the feature provider know there's a new diagram now
 		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
 		
-		FeatureSupport.updateConnections(getFeatureProvider(), connections, true);
+		FeatureSupport.updateConnections(getFeatureProvider(), childConnections, true);
 	}
 	
-	protected void collectChildElements(FlowElementsContainer container, List<BaseElement> children) {
-		for (FlowElement fe : container.getFlowElements()) {
-			children.add(fe);
+	protected void collectDiagramElements(FlowElementsContainer businessObject, BPMNDiagram source, List<DiagramElement> diagramElements) {
+		for (LaneSet ls : businessObject.getLaneSets()) {
+			for (Lane l : ls.getLanes()) {
+				DiagramElement de = DIUtils.findDiagramElement(source, l);
+				if (de!=null)
+					diagramElements.add(de);
+			}
+		}
+		// super
+		for (FlowElement fe : businessObject.getFlowElements()) {
+			DiagramElement de = DIUtils.findDiagramElement(source, fe);
+			if (de!=null)
+				diagramElements.add(de);
 			if (fe instanceof FlowElementsContainer) {
-				collectChildElements((FlowElementsContainer)fe, children);
+				collectDiagramElements((FlowElementsContainer)fe, source, diagramElements);
 			}
 		}
 	}
 
+	protected void collectShapes(ContainerShape source, List<Shape> shapes) {
+		for (Shape s : source.getChildren()) {
+			if (s instanceof ContainerShape) {
+				shapes.add(s);
+				Shape l = FeatureSupport.getLabelShape(s);
+				if (l!=null)
+					shapes.add(l);
+			}
+		}
+	}
+
+	protected void collectConnections(ContainerShape source, List<Connection> connections) {
+		for (Shape s : source.getChildren()) {
+			if (s instanceof ContainerShape) {
+				connections.addAll(FeatureSupport.getConnections(s));
+				FlowElementsContainer fec = BusinessObjectUtil.getFirstElementOfType(s, FlowElementsContainer.class);
+				if (fec!=null) {
+					collectConnections((ContainerShape)s, connections);
+				}
+			}
+		}
+	}
+
+	protected void moveGraphitiData(List<Shape> shapes, List<Connection> connections, Diagram source, Diagram target) {
+		for (Shape s : shapes) {
+			// PictogramLinks is not a containment list, so each link needs to be
+			// explicitly removed from the old Diagram and added to the new one.
+			if (s.getLink()!=null) {
+				source.getPictogramLinks().remove(s.getLink());
+				target.getPictogramLinks().add(s.getLink());
+			}
+		}
+		for (Connection c : connections) {
+			if (c.getLink()!=null) {
+				source.getPictogramLinks().remove(c.getLink());
+				target.getPictogramLinks().add(c.getLink());
+			}
+		}
+		// Colors, Fonts and Styles on the other hand, are containment lists so we
+		// need to make copies of these.
+	}
+
 	protected Point getChildOffset(ContainerShape targetContainerShape) {
 		return GraphicsUtil.createPoint(50, 50);
+	}
+	
+	protected Rectangle calculateBoundingRectangle(ContainerShape containerShape, List<Shape> childShapes) {
+		// calculate bounding rectangle for all children shapes
+		Point offset = getChildOffset(containerShape);
+		Rectangle rect = GraphicsUtil.getBoundingRectangle(childShapes);
+		rect.x -= offset.getX();
+		rect.y -= offset.getY();
+		return rect;
 	}
 }

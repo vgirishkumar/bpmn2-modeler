@@ -850,6 +850,12 @@ public class FeatureSupport {
 
 	public static boolean updateConnection(IFeatureProvider fp, Connection connection, boolean force) {
 		AbstractConnectionRouter.setForceRouting(connection, force);
+		if (force) {
+			if (connection instanceof FreeFormConnection) {
+				FreeFormConnection ffc = (FreeFormConnection)connection;
+				ffc.getBendpoints().clear();
+			}
+		}
 		return updateConnection(fp,connection);
 	}
 

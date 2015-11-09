@@ -185,7 +185,7 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 					getDiagramContainer().
 					setPictogramElementForSelection(newShape);
 				
-				createContext.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, newShape);
+				context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, newShape);
 				changesDone = true;
 			}
 		}

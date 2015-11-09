@@ -594,8 +594,8 @@ public class GraphicsUtil {
 		}
 	}
 	
-	public static String getDebugText(Shape shape) {
-		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+	public static String getDebugText(PictogramElement pe) {
+		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
 		String id = ""; //$NON-NLS-1$
 		String text = "";
 		if (be instanceof BaseElement) {
@@ -604,7 +604,7 @@ public class GraphicsUtil {
 		if (be!=null)
 			text = be.eClass().getName()+id+": "+ExtendedPropertiesProvider.getTextValue(be); //$NON-NLS-1$
 		else
-			text = id + shape.toString();
+			text = id + pe.toString();
 		return text;
 	}
 

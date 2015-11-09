@@ -241,7 +241,7 @@ public interface GraphitiConstants {
 	 * copied to the AddContext and picked up by the AddFeature which duplicates
 	 * the copied shape's size and other attributes.
 	 */
-	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape"; //$NON-NLS-1$
+	public static final String COPIED_BPMN_DI_ELEMENT = "copied.bpmn.shape"; //$NON-NLS-1$
 
 	/** The key used to store the copied business object in the Paste Context. */
 	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object"; //$NON-NLS-1$

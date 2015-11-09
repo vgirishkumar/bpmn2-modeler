@@ -255,14 +255,17 @@ public abstract class AbstractCreateFlowFeature<
 				}
 			}
 			if (source instanceof Collaboration) {
-				((Collaboration)source).getMessageFlows().add((MessageFlow)connection);
+				if (!((Collaboration)source).getMessageFlows().contains(connection))
+					((Collaboration)source).getMessageFlows().add((MessageFlow)connection);
 				return true;
 			}
 			else if (source instanceof ChoreographyTask) {
-				((ChoreographyTask)source).getMessageFlowRef().add((MessageFlow)connection);
+				if (!((ChoreographyTask)source).getMessageFlowRef().contains(connection))
+					((ChoreographyTask)source).getMessageFlowRef().add((MessageFlow)connection);
 			}
 			else if (source instanceof ConversationNode) {
-				((ConversationNode)source).getMessageFlowRefs().add((MessageFlow)connection);
+				if (!((ConversationNode)source).getMessageFlowRefs().contains(connection))
+					((ConversationNode)source).getMessageFlowRefs().add((MessageFlow)connection);
 			}
 		}
 		else if (connection instanceof ConversationLink) {

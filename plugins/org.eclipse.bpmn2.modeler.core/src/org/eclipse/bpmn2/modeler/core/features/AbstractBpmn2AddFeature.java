@@ -282,7 +282,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return the height
 	 */
 	protected int getHeight(IAddContext context) {
-		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null)
@@ -310,7 +310,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return the width
 	 */
 	protected int getWidth(IAddContext context) {
-		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null) {
@@ -366,7 +366,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		}
 		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
 			// not importing - set isHorizontal to be the same as copied element or parent
-			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
+			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT);
 			if (copiedBpmnShape instanceof BPMNShape) {
 				return ((BPMNShape)copiedBpmnShape).isIsHorizontal();
 			}

@@ -18,13 +18,17 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.CreateShapeReferenceFeature;
+import org.eclipse.bpmn2.modeler.core.features.CreateConnectionReferenceFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.LayoutContainerFeature;
@@ -35,6 +39,7 @@ import org.eclipse.bpmn2.modeler.core.features.containers.participant.DirectEdit
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.ResizeParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantMultiplicityFeature;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -46,8 +51,9 @@ import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyMess
 import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyParticipantFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.WhiteboxFeature;
-import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -56,6 +62,7 @@ import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
+import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -66,12 +73,15 @@ import org.eclipse.graphiti.features.context.IMoveContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IResizeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -175,6 +185,15 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 	}
 	
 	public static class ParticipantPushdownFeature extends PushdownFeature {
+		
+		protected class SourceTarget {
+			ContainerShape source;
+			ContainerShape target;
+			public SourceTarget(ContainerShape source, ContainerShape target) {
+				this.source = source;
+				this.target = target;
+			}
+		}
 
 		public ParticipantPushdownFeature(IFeatureProvider fp) {
 			super(fp);
@@ -182,7 +201,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		
 		private ContainerShape getExternalContainer(ContainerShape ac) {
 			// the external container can only be a Participant or a Diagram
-			EObject parent = ac.eContainer();
+			EObject parent = ac;
 			while (parent!=null && !(parent instanceof Diagram)) {
 				if (parent==containerShape) {
 					return null;
@@ -199,13 +218,14 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			return null;
 		}
 		
-		private void collectExternalConnections(Connection c, Hashtable<Connection, ContainerShape> externalConnections) {
+		private void collectExternalConnections(Connection c, Hashtable<Connection, SourceTarget> externalConnections) {
 			AnchorContainer ac;
-			ac = c.getStart().getParent();
 			ContainerShape startShape = null;
 			ContainerShape endShape = null;
 			ContainerShape startContainer = null;
 			ContainerShape endContainer = null;
+
+			ac = c.getStart().getParent();
 			if (ac instanceof ContainerShape) {
 				startShape = (ContainerShape) ac;
 				startContainer = getExternalContainer(startShape);
@@ -216,11 +236,18 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 				endShape = (ContainerShape) ac;
 				endContainer = getExternalContainer(endShape);
 			}
-			if (startContainer!=null && endContainer==null)
-				externalConnections.put(c, startShape);
-			else if (endContainer!=null && startContainer==null)
-				externalConnections.put(c, endShape);
+			if (startContainer!=null && endContainer==null) {
+				// the  startContainer is the external Pool, endShape is the local shape
+				// to which this connection attached.
+				externalConnections.put(c, new SourceTarget(startContainer,endShape));
+			}
+			else if (endContainer!=null && startContainer==null) {
+				// the startShape is the local shape, endContainer is external Pool
+				externalConnections.put(c, new SourceTarget(startShape,endContainer));
+			}
 		}
+		
+		Hashtable<Connection, SourceTarget> externalConnections = new Hashtable<Connection, SourceTarget>();
 		
 		@Override
 		public void execute(ICustomContext context) {
@@ -228,51 +255,113 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			// Participants in this collaboration, or Data Inputs/Outputs by
 			// following all incoming and outgoing Message Flows and Data Associations.
 			containerShape = (ContainerShape)context.getPictogramElements()[0];
+			bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
+			boolean isHorz = bpmnShape.isIsHorizontal();
 
 			// Follow all connections that start or end outside of this pool.
-			Hashtable<Connection, ContainerShape> externalConnections = new Hashtable<Connection, ContainerShape>();
 
-			AnchorContainer ac;
-			for (Connection c : FeatureSupport.getConnections(containerShape)) {
-				collectExternalConnections(c, externalConnections);
-			}
+			// we don't need to track connections attached to the Pool itself
+			// since these will remain behind and not copied to the new diagram.
+//			for (Connection c : FeatureSupport.getConnections(containerShape)) {
+//				collectExternalConnections(c, externalConnections);
+//			}
 			
 			// Follow all external connections of ancestor shapes, keeping track
-			// of the external shape.
-			TreeIterator<EObject> iter = containerShape.eAllContents();
-			while (iter.hasNext()) {
-				EObject o = iter.next();
-				if (o instanceof ContainerShape) {
-					for (Connection c : FeatureSupport.getConnections((ContainerShape)o)) {
+			// of the external shape that is connected to the local shape.
+			List<ContainerShape> localShapes = new ArrayList<ContainerShape>();
+			for (PictogramElement pe : FeatureSupport.getPoolAndLaneDescendants(containerShape)) {
+				if (pe instanceof ContainerShape) {
+					localShapes.add((ContainerShape)pe);
+					for (Connection c : FeatureSupport.getConnections((ContainerShape)pe)) {
 						collectExternalConnections(c, externalConnections);
 					}
 				}
 			}
 			
+			// disconnect external connections from the shape that will be
+			// pushed to the new diagram, and reconnect it to the soon to be
+			// empty Pool shape on the original diagram.
+			ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(containerShape);
+			for (Entry<Connection, SourceTarget> e : externalConnections.entrySet()) {
+				Connection c = e.getKey();
+				if (localShapes.contains(c.getStart().getParent())) {
+					// reconnect source to the Pool on the original diagram
+					Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
+					ReconnectionContext rc = new ReconnectionContext(c, c.getStart(), anchor, loc);
+					rc.setReconnectType(ReconnectionContext.RECONNECT_SOURCE);
+					rc.setTargetPictogramElement(containerShape);
+					IReconnectionFeature rf = getFeatureProvider().getReconnectionFeature(rc);
+					rf.reconnect(rc);
+				}
+				else if (localShapes.contains(c.getEnd().getParent())) {
+					// reconnect target
+					Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
+					ReconnectionContext rc = new ReconnectionContext(c, c.getEnd(), anchor, loc);
+					rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
+					rc.setTargetPictogramElement(containerShape);
+					IReconnectionFeature rf = getFeatureProvider().getReconnectionFeature(rc);
+					rf.reconnect(rc);
+				}
+				FeatureSupport.updateConnection(getFeatureProvider(), c, true);
+			}
+
 			// Push the contents of this Pool into a new diagram.
 			super.execute(context);
 			
 			// Create dummy Pools and Data Inputs/Outputs and reconnect all external connections
+			int nextX = 0;
+			int nextY = 0;
+			if (isHorz) {
+				nextX = boundingRectangle.x;
+				nextY = boundingRectangle.y + boundingRectangle.height + 4*MARGIN;
+			}
+			else {
+				nextX = boundingRectangle.x + boundingRectangle.width + 4*MARGIN;
+				nextY = boundingRectangle.y;
+			}
+			
 			Hashtable<ContainerShape, ContainerShape> externalContainers = new Hashtable<ContainerShape, ContainerShape>();
-			for (Entry<Connection, ContainerShape> e : externalConnections.entrySet()) {
+			List<Connection> newConnections = new ArrayList<Connection>();
+			
+			for (Entry<Connection, SourceTarget> e : externalConnections.entrySet()) {
 				Connection externalConnection = e.getKey();
-				ContainerShape externalShape = e.getValue();
-				ContainerShape externalContainer = getExternalContainer(externalShape);
+				ContainerShape externalContainer = null;
+				ContainerShape localShape = null;
+				boolean localShapeIsSource = false;
+				SourceTarget st = e.getValue();
+				if (localShapes.contains(st.source)) {
+					localShapeIsSource = true;
+					localShape = st.source;
+					externalContainer = st.target;
+				}
+				else if (localShapes.contains(st.target)) {
+					localShape = st.target;
+					externalContainer = st.source;
+				}
 				ContainerShape localContainer = externalContainers.get(externalContainer);
 				if (localContainer==null) {
-					// the local Pool or DataInput/Output does not exist yet
+					// the local Pool or DataInput/Output does not exist yet, create it
 					BaseElement be = BusinessObjectUtil.getFirstBaseElement(externalContainer);
 					BPMNShape bs = BusinessObjectUtil.getFirstElementOfType(externalContainer, BPMNShape.class);
 					if (be instanceof Participant) {
 						CustomContext customContext = new CustomContext(new PictogramElement[] {newDiagram});
-						customContext.setX(100);
-						customContext.setY(500);
+						customContext.setX(nextX);
+						customContext.setY(nextY);
 						ICustomFeature f = new CreateParticipantReferenceFeature(getFeatureProvider(),bs, (Participant) be);
 						f.execute(customContext);
 						Object o = customContext.getProperty(GraphitiConstants.PICTOGRAM_ELEMENT);
 						if (o instanceof ContainerShape) {
 							localContainer = (ContainerShape) o;
+							// keep track of this in case more than one
+							// connection is attached to this container
 							externalContainers.put(externalContainer, localContainer);
+							IDimension size = GraphicsUtil.calculateSize(localContainer);
+							if (isHorz) {
+								nextX += size.getWidth() + 2*MARGIN;
+							}
+							else {
+								nextY += size.getHeight() + 2*MARGIN;
+							}
 						}
 					}
 					else {
@@ -281,21 +370,48 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 				}
 				
 				if (localContainer!=null) {
+					Connection localConnection = null;
 					BaseElement be = BusinessObjectUtil.getFirstBaseElement(externalConnection);
-					if (be instanceof MessageFlow) {
-//						CreateReferenceFeature cf = new CreateReferenceFeature<MessageFlow>(getFeatureProvider(), externalConnection, (MessageFlow)mf);
+					BPMNEdge bpmnEdge = DIUtils.findBPMNEdge(oldBpmnDiagram, be);
+					CreateConnectionReferenceFeature ccf = new CreateConnectionReferenceFeature(
+							getFeatureProvider(), bpmnEdge, be);
+					AnchorContainer sourceShape = null;
+					AnchorContainer targetShape = null;
+					if (localShapeIsSource) {
+						// outgoing connection: connect the source to the local Shape
+						// and target to the reference Pool shape.
+						sourceShape = localShape;
+						targetShape = localContainer;
+						
+					}					
+					else {
+						sourceShape = localContainer;
+						targetShape = localShape;
+					}					
+
+					if (sourceShape!=null && targetShape!=null) {
+						Anchor sourceAnchor = AnchorUtil.createAnchor(sourceShape, GraphicsUtil.getShapeCenter(sourceShape));
+						Anchor targetAnchor = AnchorUtil.createAnchor(targetShape, GraphicsUtil.getShapeCenter(targetShape));
+						CreateConnectionContext ccc = new CreateConnectionContext();
+						ccc.setSourcePictogramElement(sourceShape);
+						ccc.setTargetPictogramElement(targetShape);
+						ccc.setSourceAnchor(sourceAnchor);
+						ccc.setTargetAnchor(targetAnchor);
+
+						localConnection = ccf.create(ccc);
+						if (localConnection!=null) {
+							newConnections.add(localConnection);
+						}
 					}
 				}
 			}
+			FeatureSupport.updateConnections(getFeatureProvider(), newConnections, true);
+
 			updateParticipant(getFeatureProvider(), containerShape);
 		}
 		
-		@Override
-		protected void collectChildElements(FlowElementsContainer container, List<BaseElement> children) {
-			for (LaneSet ls : container.getLaneSets()) {
-				children.addAll(ls.getLanes());
-			}
-			super.collectChildElements(container, children);
+		protected void collectConnections(ContainerShape source, List<Connection> connections) {
+			super.collectConnections(source, connections);
 		}
 	}
 	
@@ -342,8 +458,8 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
-		protected void collectChildShapes(ContainerShape containerShape, List<Shape> shapes) {
-			super.collectChildShapes(containerShape, shapes);
+		protected void collectShapes(ContainerShape source, List<Shape> shapes) {
+			super.collectShapes(source, shapes);
 			List<Shape> removed = new ArrayList<Shape>();
 			for (Shape s : shapes) {
 				if (FeatureSupport.isParticipant(s)) {
@@ -355,10 +471,36 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			}
 			shapes.removeAll(removed);
 		}
+		
+		@Override
+		protected void collectConnections(ContainerShape source, List<Connection> connections) {
+			Diagram diagram = Graphiti.getPeService().getDiagramForShape(source);
+			super.collectConnections(diagram, connections);
+			List<Connection> removed = new ArrayList<Connection>();
+			for (Connection c : connections) {
+				AnchorContainer sc = c.getStart().getParent();
+				AnchorContainer tc = c.getEnd().getParent();
+				String sourceName = GraphicsUtil.getDebugText(sc);
+				String targetName = GraphicsUtil.getDebugText(tc);
+				String text = sourceName + " -> " + targetName;
+				Graphiti.getPeService().setPropertyValue(c, "description", text);
+				
+				Object sourceObject = BusinessObjectUtil.getFirstBaseElement(sc);
+				if (sourceObject instanceof Participant) {
+					if (FeatureSupport.isParticipantReference(diagram, (Participant)sourceObject))
+						removed.add(c);
+				}
+				Object targetObject = BusinessObjectUtil.getFirstBaseElement(tc);
+				if (targetObject instanceof Participant) {
+					if (FeatureSupport.isParticipantReference(diagram, (Participant)targetObject))
+						removed.add(c);
+				}
+			}
+			connections.removeAll(removed);
+		}
 	}
 	
 	protected static void updateParticipant(IFeatureProvider fp, ContainerShape containerShape) {
-		// update the Participant
 		UpdateContext updateContext = new UpdateContext(containerShape);
 		updateContext.putProperty(GraphitiConstants.FORCE_UPDATE_ALL, Boolean.TRUE);
 		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext);

@@ -38,8 +38,10 @@ public class CreateShapeReferenceFeature<T extends BaseElement> extends Abstract
 
 	@Override
 	public Object[] create(ICreateContext context) {
-		context.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, referencedBpmnShape);
+		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, referencedBusinessObject);
+		context.putProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT, referencedBpmnShape);
 		PictogramElement pe = addGraphicalRepresentation(context, referencedBusinessObject);
+		context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, pe);
 		return new Object[] { pe };
 	}
 

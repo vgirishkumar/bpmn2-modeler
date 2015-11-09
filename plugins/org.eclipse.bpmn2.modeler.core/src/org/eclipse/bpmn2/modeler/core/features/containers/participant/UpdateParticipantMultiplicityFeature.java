@@ -43,15 +43,17 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		EObject container = context.getPictogramElement().eContainer();
-		if (container instanceof PictogramElement) {
-			PictogramElement containerElem = (PictogramElement) container;
-			if (BusinessObjectUtil.containsElementOfType(containerElem, ChoreographyActivity.class)) {
+		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape))
+			return false;
+		
+		ContainerShape container = ((ContainerShape)pe).getContainer();
+		if (container!=null) {
+			if (BusinessObjectUtil.containsElementOfType(container, ChoreographyActivity.class)) {
 				return false;
 			}
 		}
-		return BusinessObjectUtil.containsElementOfType(context.getPictogramElement(), Participant.class)
-				&& context.getPictogramElement() instanceof ContainerShape;
+		return BusinessObjectUtil.containsElementOfType(pe, Participant.class);
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 		if (!(context.getPictogramElement() instanceof ContainerShape)) {
 			return Reason.createFalseReason();
 		}
-		IPeService peService = Graphiti.getPeService();
+
 		Participant participant = (Participant) BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 				Participant.class);
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
