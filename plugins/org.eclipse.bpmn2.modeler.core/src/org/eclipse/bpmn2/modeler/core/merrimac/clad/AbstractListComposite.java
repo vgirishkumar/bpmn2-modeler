@@ -609,9 +609,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 			final EList<EObject> list = getItemList();
 			tableViewer.setInput(list);
-
-			redrawPage();
 		}
+		redrawPageAsync();
 	}
 	
 	/**
@@ -709,8 +708,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					remainingWidth -= tc.getWidth();
 				}
 				
-				gridData.heightHint = size.y;
+				gridData.heightHint = size.y + table.getHeaderHeight();
 				gridData.widthHint = 50;
+
+				redrawPageAsync();
 			}
 		});
 		
@@ -773,13 +774,6 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 								if (i>=0)
 									tableViewer.setSelection(new StructuredSelection(item));
 							}
-							
-//							Display.getDefault().asyncExec( new Runnable() {
-//								@Override
-//								public void run() {
-//									showDetails(false);
-//								}
-//							});
 						}
 					});
 				}

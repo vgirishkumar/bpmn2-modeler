@@ -295,8 +295,8 @@ public class ExtendedPropertiesProvider {
 				return ((Boolean) result);
 		}
 		
-		if (feature instanceof EReference && feature.isMany()) {
-			return !((EReference)feature).isContainment();
+		if (feature instanceof EReference &&  !((EReference)feature).isContainment()) {
+			return true;
 		}
 		return false;
 	}
