@@ -150,6 +150,15 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return boDelegate;
 	}
 	
+	public void redrawPageAsync() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				redrawPage();
+			}
+		});
+	}
+	
 	public void redrawPage() {
 		Composite root = getParent();
 		while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {

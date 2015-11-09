@@ -66,7 +66,6 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.internal.preferences.PropertyUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
  
 
@@ -609,9 +608,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 			final EList<EObject> list = getItemList();
 			tableViewer.setInput(list);
-
-			redrawPage();
 		}
+		redrawPageAsync();
 	}
 	
 	/**
@@ -709,8 +707,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					remainingWidth -= tc.getWidth();
 				}
 				
-				gridData.heightHint = size.y;
+				gridData.heightHint = size.y + table.getHeaderHeight();
 				gridData.widthHint = 50;
+				
+				redrawPageAsync();
 			}
 		});
 		
@@ -726,8 +726,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							EObject newItem = addListItem(businessObject,feature);
-							if (newItem!=null) {
+
+							EObject newItem = addListItem(businessObject, feature);
+							if (newItem != null) {
 								final EList<EObject> list = getItemList();
 								tableViewer.setInput(list);
 								tableViewer.setSelection(new StructuredSelection(newItem));
@@ -773,13 +774,6 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 								if (i>=0)
 									tableViewer.setSelection(new StructuredSelection(item));
 							}
-							
-//							Display.getDefault().asyncExec( new Runnable() {
-//								@Override
-//								public void run() {
-//									showDetails(false);
-//								}
-//							});
 						}
 					});
 				}
