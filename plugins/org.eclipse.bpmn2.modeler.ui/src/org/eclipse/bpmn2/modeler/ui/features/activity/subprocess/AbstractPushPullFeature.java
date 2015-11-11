@@ -2,8 +2,10 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -19,9 +21,11 @@ import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -38,7 +42,32 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 	abstract protected void collectConnections(ContainerShape source, List<Connection> connections);
 
 	protected void moveDiagramElements(List<DiagramElement> diagramElements, BPMNDiagram source, BPMNDiagram target) {
-		target.getPlane().getPlaneElement().addAll(diagramElements);
+		for (DiagramElement sourceDe : diagramElements) {
+			BaseElement be = null;
+			if (sourceDe instanceof BPMNEdge) {
+				be = ((BPMNEdge)sourceDe).getBpmnElement();
+			}
+			else if (sourceDe instanceof BPMNShape) {
+				be = ((BPMNShape)sourceDe).getBpmnElement();
+			}
+			
+			boolean moveIt = true;
+			// is there an element on the target diagram that has the same business object?
+			for (DiagramElement targetDe : target.getPlane().getPlaneElement()) {
+				if (sourceDe instanceof BPMNEdge && targetDe instanceof BPMNEdge) {
+					if (be == ((BPMNEdge)targetDe).getBpmnElement()) {
+						moveIt = false;
+					}
+				}
+				else if (sourceDe instanceof BPMNShape && targetDe instanceof BPMNShape) {
+					if (be == ((BPMNShape)targetDe).getBpmnElement()) {
+						moveIt = false;
+					}
+				}
+			}
+			if (moveIt)
+				target.getPlane().getPlaneElement().add(sourceDe);
+		}
 	}
 
 	protected void moveShapes(List<Shape> children, ContainerShape source, ContainerShape target, int xOffset, int yOffset) {
@@ -67,10 +96,46 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 		targetDiagram.getConnections().addAll(connections);
 	}
 	
+	protected abstract void moveGraphitiData(List<Shape> shapes, List<Connection> connections, Diagram source, Diagram target);
+	
 	protected abstract Rectangle calculateBoundingRectangle(ContainerShape containerShape, List<Shape> childShapes);
 	
 	protected Point getChildOffset(ContainerShape targetContainerShape) {
 		return GraphicsUtil.createPoint(0, 0);
+	}
+
+	protected boolean isDescendant(ContainerShape containerShape, PictogramElement shape) {
+		while (shape!=null && !(shape instanceof Diagram)) {
+			if (shape==containerShape)
+				return true;
+			if (shape.eContainer() instanceof ContainerShape)
+				shape = (ContainerShape) shape.eContainer();
+			else
+				break;
+		}
+		return shape==containerShape;
+	}
+	
+	protected boolean isInternalConnection(ContainerShape containerShape, AnchorContainer shape, Connection c) {
+		AnchorContainer otherShape = null;
+		if (c.getStart().getParent()==shape) {
+			otherShape = c.getEnd().getParent();
+		}
+		else if (c.getEnd().getParent()==shape) {
+			otherShape = c.getStart().getParent();
+		}
+		if (otherShape instanceof AnchorContainer) {
+			AnchorContainer otherContainerShape = (AnchorContainer)otherShape;
+			while (!(otherContainerShape instanceof Diagram)) {
+				if (otherContainerShape == containerShape)
+					return true;
+				if (otherContainerShape.eContainer() instanceof AnchorContainer)
+					otherContainerShape = (AnchorContainer)otherContainerShape.eContainer();
+				else
+					break;
+			}
+		}
+		return false;
 	}
 
 	protected void layoutIfNecessary(ContainerShape shape) {

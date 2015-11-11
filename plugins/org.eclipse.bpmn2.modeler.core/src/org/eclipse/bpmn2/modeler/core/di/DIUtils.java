@@ -256,6 +256,9 @@ public class DIUtils {
 	public static void updateDIEdge(Connection connection) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		EObject be = BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
+		if (be==null)
+			return;
+		
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
 		BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, be);
 		if (edge!=null) {
@@ -536,9 +539,20 @@ public class DIUtils {
 					if (!list.contains(o))
 						list.add(o);
 				}
+				else if (o instanceof PictogramElement)
+					if (!list.contains(o))
+						list.add(o);
 			}
-			for (EObject o : list)
-				EcoreUtil.delete(o);
+			for (EObject o : list) {
+				if (o instanceof PictogramElement) {
+					PictogramLink pl = ((PictogramElement)o).getLink();
+					if (pl!=null)
+						pl.getBusinessObjects().clear();
+					Graphiti.getPeService().deletePictogramElement((PictogramElement)o);
+				}
+				else
+					EcoreUtil.delete(o);
+			}
 			
 			EcoreUtil.delete(diagram);
 			EcoreUtil.delete(bpmnDiagram);

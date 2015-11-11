@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
@@ -187,11 +186,13 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 	public static class ParticipantPushdownFeature extends PushdownFeature {
 		
 		protected class SourceTarget {
+			ContainerShape localShape;
 			ContainerShape source;
 			ContainerShape target;
-			public SourceTarget(ContainerShape source, ContainerShape target) {
+			public SourceTarget(ContainerShape source, ContainerShape target, ContainerShape localShape) {
 				this.source = source;
 				this.target = target;
+				this.localShape = localShape;
 			}
 		}
 
@@ -217,7 +218,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 				return (Diagram) parent;
 			return null;
 		}
-		
+
 		private void collectExternalConnections(Connection c, Hashtable<Connection, SourceTarget> externalConnections) {
 			AnchorContainer ac;
 			ContainerShape startShape = null;
@@ -239,11 +240,11 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			if (startContainer!=null && endContainer==null) {
 				// the  startContainer is the external Pool, endShape is the local shape
 				// to which this connection attached.
-				externalConnections.put(c, new SourceTarget(startContainer,endShape));
+				externalConnections.put(c, new SourceTarget(startContainer,endShape,endShape));
 			}
 			else if (endContainer!=null && startContainer==null) {
 				// the startShape is the local shape, endContainer is external Pool
-				externalConnections.put(c, new SourceTarget(startShape,endContainer));
+				externalConnections.put(c, new SourceTarget(startShape,endContainer,startShape));
 			}
 		}
 		
@@ -251,32 +252,40 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		
 		@Override
 		public void execute(ICustomContext context) {
-			// If necessary create dummy Pools that represent the other
-			// Participants in this collaboration, or Data Inputs/Outputs by
-			// following all incoming and outgoing Message Flows and Data Associations.
-			containerShape = (ContainerShape)context.getPictogramElements()[0];
-			bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
-			boolean isHorz = bpmnShape.isIsHorizontal();
 
-			// Follow all connections that start or end outside of this pool.
+			// Push the contents of this Pool into a new diagram.
+			super.execute(context);
 
-			// we don't need to track connections attached to the Pool itself
-			// since these will remain behind and not copied to the new diagram.
-//			for (Connection c : FeatureSupport.getConnections(containerShape)) {
-//				collectExternalConnections(c, externalConnections);
-//			}
-			
+			updateParticipant(getFeatureProvider(), containerShape);
+		}
+		
+		@Override
+		protected void collectConnections(ContainerShape source, List<Connection> connections) {
 			// Follow all external connections of ancestor shapes, keeping track
 			// of the external shape that is connected to the local shape.
-			List<ContainerShape> localShapes = new ArrayList<ContainerShape>();
-			for (PictogramElement pe : FeatureSupport.getPoolAndLaneDescendants(containerShape)) {
-				if (pe instanceof ContainerShape) {
-					localShapes.add((ContainerShape)pe);
-					for (Connection c : FeatureSupport.getConnections((ContainerShape)pe)) {
-						collectExternalConnections(c, externalConnections);
+			for (Shape s : source.getChildren()) {
+				if (s instanceof ContainerShape) {
+					for (Connection c : FeatureSupport.getConnections(s)) {
+						if (isInternalConnection(containerShape, s, c)) {
+							if (!connections.contains(c))
+								connections.add(c);
+						}
+						else
+							collectExternalConnections(c, externalConnections);
+					}
+					BaseElement be = BusinessObjectUtil.getFirstBaseElement(s);
+					if (be instanceof FlowElementsContainer) {
+						collectConnections((ContainerShape)s, connections);
+					}
+					else if (be instanceof Lane) {
+						collectConnections((ContainerShape)s, connections);
 					}
 				}
 			}
+		}
+		
+		@Override
+		protected void moveConnections(List<Connection> connections, ContainerShape source, ContainerShape target) {
 			
 			// disconnect external connections from the shape that will be
 			// pushed to the new diagram, and reconnect it to the soon to be
@@ -284,7 +293,8 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(containerShape);
 			for (Entry<Connection, SourceTarget> e : externalConnections.entrySet()) {
 				Connection c = e.getKey();
-				if (localShapes.contains(c.getStart().getParent())) {
+				SourceTarget st = e.getValue();
+				if (st.localShape==c.getStart().getParent()) {
 					// reconnect source to the Pool on the original diagram
 					Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
 					ReconnectionContext rc = new ReconnectionContext(c, c.getStart(), anchor, loc);
@@ -293,7 +303,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 					IReconnectionFeature rf = getFeatureProvider().getReconnectionFeature(rc);
 					rf.reconnect(rc);
 				}
-				else if (localShapes.contains(c.getEnd().getParent())) {
+				else if (st.localShape==c.getEnd().getParent()) {
 					// reconnect target
 					Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
 					ReconnectionContext rc = new ReconnectionContext(c, c.getEnd(), anchor, loc);
@@ -305,10 +315,10 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 				FeatureSupport.updateConnection(getFeatureProvider(), c, true);
 			}
 
-			// Push the contents of this Pool into a new diagram.
-			super.execute(context);
+			super.moveConnections(connections, source, target);
 			
 			// Create dummy Pools and Data Inputs/Outputs and reconnect all external connections
+			boolean isHorz = bpmnShape.isIsHorizontal();
 			int nextX = 0;
 			int nextY = 0;
 			if (isHorz) {
@@ -321,21 +331,16 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 			}
 			
 			Hashtable<ContainerShape, ContainerShape> externalContainers = new Hashtable<ContainerShape, ContainerShape>();
-			List<Connection> newConnections = new ArrayList<Connection>();
 			
 			for (Entry<Connection, SourceTarget> e : externalConnections.entrySet()) {
+				SourceTarget st = e.getValue();
 				Connection externalConnection = e.getKey();
 				ContainerShape externalContainer = null;
-				ContainerShape localShape = null;
-				boolean localShapeIsSource = false;
-				SourceTarget st = e.getValue();
-				if (localShapes.contains(st.source)) {
-					localShapeIsSource = true;
-					localShape = st.source;
+				ContainerShape localShape = st.localShape;
+				if (st.localShape==st.source) {
 					externalContainer = st.target;
 				}
-				else if (localShapes.contains(st.target)) {
-					localShape = st.target;
+				else if (st.localShape==st.target) {
 					externalContainer = st.source;
 				}
 				ContainerShape localContainer = externalContainers.get(externalContainer);
@@ -377,7 +382,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 							getFeatureProvider(), bpmnEdge, be);
 					AnchorContainer sourceShape = null;
 					AnchorContainer targetShape = null;
-					if (localShapeIsSource) {
+					if (st.localShape==st.source) {
 						// outgoing connection: connect the source to the local Shape
 						// and target to the reference Pool shape.
 						sourceShape = localShape;
@@ -400,18 +405,11 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
 						localConnection = ccf.create(ccc);
 						if (localConnection!=null) {
-							newConnections.add(localConnection);
+							childConnections.add(localConnection);
 						}
 					}
 				}
 			}
-			FeatureSupport.updateConnections(getFeatureProvider(), newConnections, true);
-
-			updateParticipant(getFeatureProvider(), containerShape);
-		}
-		
-		protected void collectConnections(ContainerShape source, List<Connection> connections) {
-			super.collectConnections(source, connections);
 		}
 	}
 	
@@ -423,7 +421,6 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		
 		@Override
 		public void execute(ICustomContext context) {
-			containerShape = (ContainerShape)context.getPictogramElements()[0];
 
 			super.execute(context);
 			
@@ -436,14 +433,26 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 				// the Pool has no Lanes, only individual flow elements so
 				// we need to resize the Pool to the bounding rectangle
 				// of all the flow elements.
-				ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
-				resizeContext.setHeight(boundingRectangle.height);
-				resizeContext.setWidth(boundingRectangle.width);
-				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(containerShape);
-				resizeContext.setLocation(loc.getX(), loc.getY());
-
-				IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
-				resizeFeature.resizeShape(resizeContext);
+				IDimension dim = GraphicsUtil.calculateSize(containerShape);
+				boolean resizeNeeded = false;
+				if (dim.getWidth()<boundingRectangle.width) {
+					resizeNeeded = true;
+					dim.setWidth(boundingRectangle.width);
+				}
+				if (dim.getHeight()<boundingRectangle.height) {
+					resizeNeeded = true;
+					dim.setHeight(boundingRectangle.height);
+				}
+				if (resizeNeeded) {
+					ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
+					resizeContext.setHeight(dim.getHeight());
+					resizeContext.setWidth(dim.getWidth());
+					ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(containerShape);
+					resizeContext.setLocation(loc.getX(), loc.getY());
+	
+					IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
+					resizeFeature.resizeShape(resizeContext);
+				}
 			}
 			
 			updateParticipant(getFeatureProvider(), containerShape);
@@ -459,44 +468,72 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		protected void collectShapes(ContainerShape source, List<Shape> shapes) {
-			super.collectShapes(source, shapes);
-			List<Shape> removed = new ArrayList<Shape>();
+			List <PictogramElement> deleted = new ArrayList<PictogramElement>();
+			shapes.addAll(source.getChildren());
 			for (Shape s : shapes) {
-				if (FeatureSupport.isParticipant(s)) {
-					removed.add(s);
-					s = FeatureSupport.getLabelShape(s);
-					if (s!=null)
-						removed.add(s);
+				if (s instanceof ContainerShape) {
+					Participant p = BusinessObjectUtil.getFirstElementOfType(s, Participant.class);
+					if (FeatureSupport.isParticipantReference(oldDiagram, p)) {
+						deleted.add(s);
+						deleted.add(FeatureSupport.getLabelShape(s));
+						continue;
+					}
 				}
 			}
-			shapes.removeAll(removed);
+			shapes.removeAll(deleted);
 		}
 		
 		@Override
 		protected void collectConnections(ContainerShape source, List<Connection> connections) {
 			Diagram diagram = Graphiti.getPeService().getDiagramForShape(source);
-			super.collectConnections(diagram, connections);
-			List<Connection> removed = new ArrayList<Connection>();
-			for (Connection c : connections) {
+			List <Connection> deleted = new ArrayList<Connection>();
+			
+			for (Connection c : diagram.getConnections()) {
 				AnchorContainer sc = c.getStart().getParent();
 				AnchorContainer tc = c.getEnd().getParent();
-				String sourceName = GraphicsUtil.getDebugText(sc);
-				String targetName = GraphicsUtil.getDebugText(tc);
-				String text = sourceName + " -> " + targetName;
-				Graphiti.getPeService().setPropertyValue(c, "description", text);
-				
+//				String sourceName = GraphicsUtil.getDebugText(sc);
+//				String targetName = GraphicsUtil.getDebugText(tc);
+//				BaseElement be = BusinessObjectUtil.getFirstBaseElement(c);
+//				String text = "";
+//				if (be!=null)
+//					text = be.eClass().getName() + ": ";
+//				else
+//					text = "Unknown Flow: ";
+//				text += sourceName + " -> " + targetName;
+//				Graphiti.getPeService().setPropertyValue(c, "description", text);
+
+				boolean addit = true;
 				Object sourceObject = BusinessObjectUtil.getFirstBaseElement(sc);
 				if (sourceObject instanceof Participant) {
 					if (FeatureSupport.isParticipantReference(diagram, (Participant)sourceObject))
-						removed.add(c);
+						addit = false;
 				}
 				Object targetObject = BusinessObjectUtil.getFirstBaseElement(tc);
 				if (targetObject instanceof Participant) {
 					if (FeatureSupport.isParticipantReference(diagram, (Participant)targetObject))
-						removed.add(c);
+						addit = false;
+				}
+				if (addit)
+					connections.add(c);
+				else {
+					deleted.add(c);
 				}
 			}
-			connections.removeAll(removed);
+		}
+		
+		@Override
+		protected void moveConnections(List<Connection> connections, ContainerShape source, ContainerShape target) {
+			Diagram targetDiagram = Graphiti.getPeService().getDiagramForShape(target);
+			for (Connection c : connections) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(c);
+				for (Connection c2 : targetDiagram.getConnections()) {
+					BaseElement be2 = BusinessObjectUtil.getFirstBaseElement(c2);
+					if (be == be2) {
+						// this one needs to be reconnected:
+						// take the source or target from the object being moved
+					}
+				}
+			}
 		}
 	}
 	

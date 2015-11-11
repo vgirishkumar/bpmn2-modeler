@@ -24,8 +24,6 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNEdge;
-import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
@@ -36,20 +34,16 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -69,7 +63,7 @@ public class PushdownFeature extends AbstractPushPullFeature {
 	protected Rectangle boundingRectangle = null;
 	protected List<DiagramElement> diagramElements = new ArrayList<DiagramElement>();
 	protected List<Shape> childShapes = new ArrayList<Shape>();
-	List<Connection> childConnections = new ArrayList<Connection>();
+	protected List<Connection> childConnections = new ArrayList<Connection>();
 
 	
 	/**
@@ -175,7 +169,7 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		// update bounding rectangle after the move
 		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
 		
-		moveConnections(childConnections, oldDiagram, containerShape);
+		moveConnections(childConnections, containerShape, newDiagram);
 
 		// move associated Graphiti data structures
 		moveGraphitiData(childShapes, childConnections, oldDiagram, newDiagram);
@@ -222,7 +216,7 @@ public class PushdownFeature extends AbstractPushPullFeature {
 			}
 		}
 	}
-
+	
 	protected void collectConnections(ContainerShape source, List<Connection> connections) {
 		for (Shape s : source.getChildren()) {
 			if (s instanceof ContainerShape) {

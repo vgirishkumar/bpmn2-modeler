@@ -168,7 +168,7 @@ public class PullupFeature extends AbstractPushPullFeature {
 		// ...and move shapes from diagram into container
 		moveShapes(childShapes, oldDiagram, containerShape, boundingRectangle.x, boundingRectangle.y);
 		// update bounding rectangle after the move
-		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
+//		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
 
 		// collect all internal Connections from old Diagram and move to new Diagram
 		collectConnections(oldDiagram, childConnections);
