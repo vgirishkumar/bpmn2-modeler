@@ -737,6 +737,13 @@ public class DIUtils {
 		return null;
 	}
 	
+	public static BPMNDiagram createBPMNDiagram(BaseElement container) {
+		Definitions definitions = ModelUtil.getDefinitions(container);
+		if (definitions!=null)
+			return createBPMNDiagram(definitions, container);
+		return null;
+	}
+	
 	public static BPMNDiagram createBPMNDiagram(Definitions definitions, BaseElement container) {
 		
 		Resource resource = definitions.eResource();

@@ -259,16 +259,10 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 				}
 				
 				Connection newConnection = null;
-				for (ICreateConnectionFeature cf : getFeatureProvider().getCreateConnectionFeatures()) {
-					if (cf instanceof AbstractCreateFlowFeature) {
-						AbstractCreateFlowFeature acf = (AbstractCreateFlowFeature) cf;
-						if (acf.getBusinessObjectClass().isInstance(baseElement)) {
-							newConnection = acf.create(ccc);
-							DIUtils.updateDIEdge(newConnection);
-							break;
-						}
-					}
-				}
+				ICreateConnectionFeature ccf = AbstractCreateFlowFeature.getCreateFeature(getFeatureProvider(), ccc, baseElement);
+				if (ccf!=null)
+					newConnection = ccf.create(ccc);
+				DIUtils.updateDIEdge(newConnection);
 			}
 			DIUtils.updateDIEdge(connection);
 		}

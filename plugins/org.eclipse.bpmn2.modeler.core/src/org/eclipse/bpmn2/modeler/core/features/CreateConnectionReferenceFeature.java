@@ -32,7 +32,7 @@ public class CreateConnectionReferenceFeature extends AbstractCreateConnectionFe
 
 	@Override
     public boolean canCreate(ICreateConnectionContext context) {
-		createFeature = getCreateFeature(context);
+		createFeature = AbstractCreateFlowFeature.getCreateFeature(getFeatureProvider(), context, referencedBusinessObject);
 		return createFeature!=null && createFeature.canCreate(context);
     }
 
@@ -51,17 +51,5 @@ public class CreateConnectionReferenceFeature extends AbstractCreateConnectionFe
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		return true;
-	}
-	
-	private ICreateConnectionFeature getCreateFeature(ICreateConnectionContext context) {
-		for (ICreateConnectionFeature cf : getFeatureProvider().getCreateConnectionFeatures()) {
-			if (cf instanceof AbstractCreateFlowFeature) {
-				AbstractCreateFlowFeature acf = (AbstractCreateFlowFeature) cf;
-				if (acf.getBusinessObjectClass().isInstance(referencedBusinessObject)) {
-					return acf;
-				}
-			}
-		}
-		return null;
 	}
 }

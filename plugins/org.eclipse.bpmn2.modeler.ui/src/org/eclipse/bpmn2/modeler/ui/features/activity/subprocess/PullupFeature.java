@@ -13,27 +13,22 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNPlane;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -46,19 +41,6 @@ import org.eclipse.osgi.util.NLS;
  *
  */
 public class PullupFeature extends AbstractPushPullFeature {
-
-	protected String description;
-	protected ContainerShape containerShape;
-	protected FlowElementsContainer businessObject;
-	protected Diagram oldDiagram;
-	protected Diagram newDiagram;
-	protected BPMNDiagram oldBpmnDiagram;
-	protected BPMNDiagram newBpmnDiagram;
-	protected BPMNShape bpmnShape;
-	protected Rectangle boundingRectangle = null;
-	protected List<DiagramElement> diagramElements = new ArrayList<DiagramElement>();
-	protected List<Shape> childShapes = new ArrayList<Shape>();
-	protected List<Connection> childConnections = new ArrayList<Connection>();
 
 	/**
 	 * @param fp
@@ -132,10 +114,10 @@ public class PullupFeature extends AbstractPushPullFeature {
 	@Override
 	public void execute(ICustomContext context) {
 		// we already know there's one and only one PE element in canExecute() and that it's
-		// a ContainerShape for an expandable activity
+		// a ContainerShape for a Flow Elements Container object (e.g. a Pool or SubProcess)
 		containerShape = (ContainerShape)context.getPictogramElements()[0];
 
-		// get the BPMNDiagram that this container lives in..
+		// get the BPMNDiagram that this container lives in...
 		newBpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
 		// ...and its Graphiti Diagram parent
 		newDiagram = Graphiti.getPeService().getDiagramForShape(containerShape);
@@ -145,6 +127,7 @@ public class PullupFeature extends AbstractPushPullFeature {
 		Object bo = getBusinessObjectForPictogramElement(containerShape);
 		if (bo instanceof Participant) {
 			bpmnShape = DIUtils.findBPMNShape(newBpmnDiagram, (Participant)bo);
+			// the business object for a Pool is its referenced Process
 			businessObject = ((Participant)bo).getProcessRef();
 		}
 		else if (bo instanceof FlowElementsContainer) {
@@ -152,30 +135,29 @@ public class PullupFeature extends AbstractPushPullFeature {
 			businessObject = (FlowElementsContainer)bo;
 		}
 		
-		// find the BPMNDiagram that contains the Process being pulled up...
+		// find the BPMNDiagram that contains the Flow Elements Container being pulled up...
 		oldBpmnDiagram = DIUtils.findBPMNDiagram(businessObject);
 		// ...and its Graphiti Diagram
 		oldDiagram = DIUtils.findDiagram(getDiagramBehavior(), oldBpmnDiagram);
 
-		// copy the elements into the same plane as the container
-		collectDiagramElements(businessObject, oldBpmnDiagram, diagramElements);
-		moveDiagramElements(diagramElements, oldBpmnDiagram, newBpmnDiagram);
+		// copy the BPMN DI elements into the same plane as the container
+		collectDiagramElements(businessObject, oldBpmnDiagram);
 		
-		// collect all Shapes from old Diagram...
-		collectShapes(oldDiagram, childShapes);
-		// ...calculate a bounding rectangle which defines the size of the target container...
-		boundingRectangle = calculateBoundingRectangle(containerShape, childShapes);
-		// ...and move shapes from diagram into container
-		moveShapes(childShapes, oldDiagram, containerShape, boundingRectangle.x, boundingRectangle.y);
-		// update bounding rectangle after the move
-//		boundingRectangle = GraphicsUtil.getBoundingRectangle(childShapes);
+		// collect all Shapes and Connections from old Diagram
+		collectShapes(oldDiagram);
+		collectConnections(oldDiagram);
 
-		// collect all internal Connections from old Diagram and move to new Diagram
-		collectConnections(oldDiagram, childConnections);
-		moveConnections(childConnections, oldDiagram, containerShape);
+		// calculate a bounding rectangle which defines the size of the target container...
+		boundingRectangle = calculateBoundingRectangle(containerShape, childShapes);
+		// ...and move shapes from old Diagram into target container
+		moveShapes(oldDiagram, containerShape, boundingRectangle.x, boundingRectangle.y);
+
+		// move Connections from old Diagram to new Diagram
+		moveConnections(oldDiagram, containerShape);
+		moveDiagramElements(oldBpmnDiagram, newBpmnDiagram);
 	
 		// move associated Graphiti data structures
-		moveGraphitiData(childShapes, childConnections, oldDiagram, newDiagram);
+		moveGraphitiData(oldDiagram, newDiagram);
 		
 		// get rid of the old BPMNDiagram and its Graphiti Diagram
 		DIUtils.deleteDiagram(getDiagramBehavior(), oldBpmnDiagram);
@@ -183,9 +165,9 @@ public class PullupFeature extends AbstractPushPullFeature {
 		// tell feature provider to reload the active diagram
 		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
 		
-		FeatureSupport.updateConnections(getFeatureProvider(), childConnections, true);
+		FeatureSupport.updateConnections(getFeatureProvider(), internalConnections, true);
 
-		// expand the sub process
+		// expand the SubProcess if applicable
 		if (FeatureSupport.isExpandableElement(businessObject)) {
 			bpmnShape.setIsExpanded(false);
 			ExpandFlowNodeFeature expandFeature = new ExpandFlowNodeFeature(getFeatureProvider());
@@ -193,26 +175,25 @@ public class PullupFeature extends AbstractPushPullFeature {
 		}
 	}
 
-	protected void collectDiagramElements(FlowElementsContainer businessObject, BPMNDiagram source, List<DiagramElement> diagramElements) {
+	@Override
+	protected void collectDiagramElements(FlowElementsContainer businessObject, BPMNDiagram source) {
 		diagramElements.addAll(source.getPlane().getPlaneElement());
 	}
 
-	protected void collectShapes(ContainerShape source, List<Shape> shapes) {
-		shapes.addAll(source.getChildren());
+	@Override
+	protected void collectShapes(ContainerShape source) {
+		childShapes.addAll(source.getChildren());
 	}
 
-	protected void collectConnections(ContainerShape source, List<Connection> connections) {
-		Diagram sourceDiagram = Graphiti.getPeService().getDiagramForShape(source);
-		connections.addAll(sourceDiagram.getConnections());
-	}
-
-	protected void moveGraphitiData(List<Shape> shapes, List<Connection> connections, Diagram source, Diagram target) {
+	@Override
+	protected void moveGraphitiData(Diagram source, Diagram target) {
 		target.getPictogramLinks().addAll(source.getPictogramLinks());
 		target.getColors().addAll(source.getColors());
 		target.getFonts().addAll(source.getFonts());
 		target.getStyles().addAll(source.getStyles());
 	}
 
+	@Override
 	protected Rectangle calculateBoundingRectangle(ContainerShape containerShape, List<Shape> childShapes) {
 		// calculate bounding rectangle for all children shapes
 		Rectangle rect = GraphicsUtil.getBoundingRectangle(childShapes);

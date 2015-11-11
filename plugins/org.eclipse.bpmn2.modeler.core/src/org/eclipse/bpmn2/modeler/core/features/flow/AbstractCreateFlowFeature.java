@@ -35,6 +35,7 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
@@ -341,5 +342,18 @@ public abstract class AbstractCreateFlowFeature<
 			return true;
 		}
 		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static ICreateConnectionFeature getCreateFeature(IFeatureProvider fp, ICreateConnectionContext context, Object businessObject) {
+		for (ICreateConnectionFeature cf : fp.getCreateConnectionFeatures()) {
+			if (cf instanceof AbstractCreateFlowFeature) {
+				AbstractCreateFlowFeature acf = (AbstractCreateFlowFeature) cf;
+				if (acf.getBusinessObjectClass().isInstance(businessObject)) {
+					return acf;
+				}
+			}
+		}
+		return null;
 	}
 }

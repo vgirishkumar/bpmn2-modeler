@@ -814,9 +814,20 @@ public class FeatureSupport {
 	
 	public static List<Connection> getConnections(AnchorContainer ac) {
 		List<Connection> connections = new ArrayList<Connection>();
-		for (Anchor a : ac.getAnchors()) {
-			connections.addAll(a.getIncomingConnections());
-			connections.addAll(a.getOutgoingConnections());
+		if (ac instanceof Connection) {
+			Connection c = (Connection)ac;
+			for (ConnectionDecorator cd : c.getConnectionDecorators()) {
+				for (Anchor a : cd.getAnchors()) {
+					connections.addAll(a.getIncomingConnections());
+					connections.addAll(a.getOutgoingConnections());
+				}
+			}
+		}
+		else {
+			for (Anchor a : ac.getAnchors()) {
+				connections.addAll(a.getIncomingConnections());
+				connections.addAll(a.getOutgoingConnections());
+			}
 		}
 		return connections;
 	}
