@@ -5,7 +5,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
@@ -34,6 +33,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -129,37 +129,62 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 		}
 	}
 	
-	protected AnchorContainer getExternalContainer(AnchorContainer ac) {
+	protected boolean isReferenceShape(Diagram diagram, PictogramElement pe) {
+		BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+		if (be instanceof Participant && FeatureSupport.isParticipantReference(diagram, (Participant)be))
+			return true;
+		return false;
+	}
+	
+	protected AnchorContainer getExternalContainer(ContainerShape source, AnchorContainer ac) {
 		// the external container can only be a Participant or a Diagram
 		EObject parent = ac;
 		while (parent!=null && !(parent instanceof Diagram)) {
-			if (parent==containerShape) {
+			if (parent==source) {
 				// the shape is a descendant of the container being pushed down
 				// so it is considered not external to the new diagram.
 				return null;
 			}
 			if (parent instanceof ContainerShape) {
 				BaseElement be = BusinessObjectUtil.getFirstBaseElement((PictogramElement)parent);
-				if (be instanceof Participant)
+				if (be instanceof Participant) // || be instanceof FlowElementsContainer)
 					return (AnchorContainer) parent;
-				else if (be instanceof Artifact && parent.eContainer() instanceof ContainerShape) 
-					return (AnchorContainer) parent.eContainer();
+//				else if (be instanceof Artifact && parent.eContainer() instanceof ContainerShape) 
+//					return (AnchorContainer) parent.eContainer();
 			}
 			parent = parent.eContainer();
 		}
 		if (parent instanceof Diagram) {
-			if (parent==oldDiagram) {
-				// the shape is on the diagram being pulled up so it
-				// is considered not external to the old diagram.
-				return null;
-			}
+//			if (parent==Graphiti.getPeService().getDiagramForPictogramElement(source)) {
+//				// the shape is on the diagram being pulled up so it
+//				// is considered not external to the old diagram.
+//				return null;
+//			}
 			return (AnchorContainer) parent;
 		}
 		return null;
 	}
 
 	protected boolean isDescendant(AnchorContainer ac, PictogramElement shape) {
+		// if this is a Lane, the real container should be its enclosing Diagram
+		// or Pool shape.
+		while (FeatureSupport.isLane(ac)) {
+			if (ac.eContainer() instanceof AnchorContainer) {
+				ac = (AnchorContainer)ac.eContainer();
+			}
+		}
+		if (shape instanceof ConnectionDecorator) {
+			shape = ((ConnectionDecorator) shape).getConnection();
+		}
+		if (shape instanceof Connection) {
+			Connection c = (Connection) shape;
+			return isDescendant(ac, c.getStart().getParent()) &&
+					isDescendant(ac, c.getEnd().getParent());
+		}
+		Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(ac);
 		while (shape!=null) {
+			if (isReferenceShape(diagram,shape))
+				return false;
 			if (shape==ac)
 				return true;
 			if (shape.eContainer() instanceof ContainerShape)
@@ -178,54 +203,56 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 	// "External" is from the point of view of the diagram containing the internals
 	// of a pushed container: any connection to/from a shape that is a reference
 	// to a business object on another diagram is considered "external".
-	protected void collectExternalConnections(Connection c) {
-		AnchorContainer ac;
-		AnchorContainer startShape = null;
-		AnchorContainer endShape = null;
-		AnchorContainer startContainer = null;
-		AnchorContainer endContainer = null;
-
-		ac = c.getStart().getParent();
-		if (ac instanceof AnchorContainer) {
-			startShape = (AnchorContainer) ac;
-			startContainer = getExternalContainer(startShape);
-		}
-		
-		ac = c.getEnd().getParent();
-		if (ac instanceof AnchorContainer) {
-			endShape = (AnchorContainer) ac;
-			endContainer = getExternalContainer(endShape);
-		}
-		if (startContainer!=null && endContainer==null) {
-			// the  startContainer is the external Pool, endShape is the local shape
-			// to which this connection attached.
-			externalConnections.put(c, new SourceTarget(startContainer,endShape,endShape));
-		}
-		else if (endContainer!=null && startContainer==null) {
-			// the startShape is the local shape, endContainer is external Pool
-			externalConnections.put(c, new SourceTarget(startShape,endContainer,startShape));
+	protected void collectExternalConnections(ContainerShape source, Connection c) {
+		if (!externalConnections.containsKey(c)) {
+			AnchorContainer ac;
+			AnchorContainer startShape = null;
+			AnchorContainer endShape = null;
+			AnchorContainer startContainer = null;
+			AnchorContainer endContainer = null;
+	
+			startShape = c.getStart().getParent();
+			endShape = c.getEnd().getParent();
+			if (isDescendant(source, startShape)) {
+				if (isDescendant(source, endShape))
+					return;
+				endContainer = getExternalContainer(source, endShape);
+				externalConnections.put(c, new SourceTarget(startShape,endContainer,startShape));
+			}
+			else if (isDescendant(source, endShape)) {
+				if (isDescendant(source, startShape))
+					return;
+				startContainer = getExternalContainer(source, startShape);
+				externalConnections.put(c, new SourceTarget(startContainer,endShape,endShape));
+			}
 		}
 	}
 
 	protected void collectConnections(ContainerShape source) {
 		// Follow all external connections of ancestor shapes, keeping track
 		// of the external shape that is connected to the local shape.
+		GraphicsUtil.debug = true;
 		for (Shape s : source.getChildren()) {
 			if (s instanceof ContainerShape) {
 				for ( Connection c : FeatureSupport.getConnections(s)) {
+					GraphicsUtil.dump("", c);
 					if (isExternalConnection(source, c)) {
-						collectExternalConnections(c);
+						System.out.println("    external");
+						collectExternalConnections(source, c);
 					}
 					else {
+						System.out.println("    internal");
 						if (!internalConnections.contains(c))
 							internalConnections.add(c);
 					}
 					for (Connection c2 : FeatureSupport.getConnections(c)) {
-						System.out.println("c2="+c2);
+						GraphicsUtil.dump("    ", c2);
 						if (isExternalConnection(source, c2)) {
-							collectExternalConnections(c2);
+							System.out.println("        external");
+							collectExternalConnections(source, c2);
 						}
 						else {
+							System.out.println("        internal");
 							if (!internalConnections.contains(c2))
 								internalConnections.add(c2);
 						}
@@ -241,37 +268,10 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 				}
 			}
 		}
+		GraphicsUtil.debug = false;
 	}
 
 	protected void moveConnections(ContainerShape source, ContainerShape target) {
-		// disconnect external connections from the shapes that will be
-		// pushed to the new diagram, and reconnect it to the soon to be
-		// empty Pool shape on the original diagram.
-		ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(containerShape);
-		for (Entry<Connection, SourceTarget> e : externalConnections.entrySet()) {
-			Connection c = e.getKey();
-			SourceTarget st = e.getValue();
-			if (st.localShape==c.getStart().getParent()) {
-				// reconnect source to the Pool on the original diagram
-				Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
-				ReconnectionContext rc = new ReconnectionContext(c, c.getStart(), anchor, loc);
-				rc.setReconnectType(ReconnectionContext.RECONNECT_SOURCE);
-				rc.setTargetPictogramElement(containerShape);
-				IReconnectionFeature rf = getFeatureProvider().getReconnectionFeature(rc);
-				rf.reconnect(rc);
-			}
-			else if (st.localShape==c.getEnd().getParent()) {
-				// reconnect target
-				Anchor anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
-				ReconnectionContext rc = new ReconnectionContext(c, c.getEnd(), anchor, loc);
-				rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
-				rc.setTargetPictogramElement(containerShape);
-				IReconnectionFeature rf = getFeatureProvider().getReconnectionFeature(rc);
-				rf.reconnect(rc);
-			}
-			FeatureSupport.updateConnection(getFeatureProvider(), c, true);
-		}
-
 		Diagram targetDiagram = Graphiti.getPeService().getDiagramForShape(target);
 		targetDiagram.getConnections().addAll(internalConnections);
 	}
@@ -289,7 +289,7 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 	
 	protected Connection findReferencedConnection(Connection refConnection, Diagram diagram) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(refConnection);
-		for (Connection c : newDiagram.getConnections()) {
+		for (Connection c : diagram.getConnections()) {
 			if (BusinessObjectUtil.getFirstBaseElement(c)==be) {
 				return c;
 			}

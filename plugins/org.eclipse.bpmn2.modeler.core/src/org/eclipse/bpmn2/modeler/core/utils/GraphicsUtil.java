@@ -556,9 +556,13 @@ public class GraphicsUtil {
 
 	public static void dump(String label, Connection c) {
 		if (debug) {
-			System.out.print(label+" connection="); //$NON-NLS-1$
-			ContainerShape source = (ContainerShape) c.getStart().getParent();
-			ContainerShape target = (ContainerShape) c.getEnd().getParent();
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(c);
+			if (be==null)
+				System.out.print(label+" connection="); //$NON-NLS-1$
+			else
+				System.out.print(label+be.eClass().getName()+"=");
+			AnchorContainer source = (AnchorContainer) c.getStart().getParent();
+			AnchorContainer target = (AnchorContainer) c.getEnd().getParent();
 			String sourceName = GraphicsUtil.getDebugText(source);
 			String targetName = GraphicsUtil.getDebugText(target);
 			System.out.println(sourceName+" -> "+targetName); //$NON-NLS-1$

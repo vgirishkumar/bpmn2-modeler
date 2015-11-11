@@ -96,8 +96,7 @@ public class PullupFeature extends AbstractPushPullFeature {
 			
 			if (bo instanceof Participant) {
 				Diagram diagram = Graphiti.getPeService().getDiagramForShape(containerShape);
-				boolean isReference = FeatureSupport.isParticipantReference(diagram, (Participant)bo);
-				if (isReference)
+				if (FeatureSupport.isParticipantReference(diagram, (Participant)bo))
 					return false;
 				bo = ((Participant)bo).getProcessRef();
 			}
