@@ -96,7 +96,7 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 			if (context.getProperty(GraphitiConstants.INITIAL_UPDATE) == Boolean.TRUE)
 				FeatureSupport.setPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE, Boolean.TRUE.toString());
 
-			diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
+			diagram = Graphiti.getPeService().getDiagramForPictogramElement(connection);
 			IConnectionRouter router = getRouter(connection);
 			if (router.canRoute(connection) && router.routingNeeded(connection)) {
 				hasDoneChanges |= router.route(connection);

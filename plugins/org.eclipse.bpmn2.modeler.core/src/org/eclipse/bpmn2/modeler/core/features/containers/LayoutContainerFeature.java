@@ -88,13 +88,8 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 		DIUtils.updateDIShape(rootContainer);
 		
 		for (PictogramElement pe : FeatureSupport.getPoolAndLaneDescendants(rootContainer)) {
-			if (pe instanceof FreeFormConnection) {
-				FreeFormConnection c = (FreeFormConnection) pe;
-				// only reroute connections between shapes in different containers
-				AnchorContainer start = c.getStart().getParent();
-				AnchorContainer end = c.getEnd().getParent();
-				if (start.eContainer()!=end.eContainer())
-					FeatureSupport.updateConnection(getFeatureProvider(), (Connection)pe, true);
+			if (pe instanceof Connection) {
+				FeatureSupport.updateConnection(getFeatureProvider(), (Connection)pe, true);
 			}
 		}
 

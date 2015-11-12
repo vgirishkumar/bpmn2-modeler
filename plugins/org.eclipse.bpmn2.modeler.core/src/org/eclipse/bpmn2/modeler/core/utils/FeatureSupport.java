@@ -848,10 +848,12 @@ public class FeatureSupport {
 	}
 
 	public static void updateConnections(IFeatureProvider fp, List<Connection> connections, boolean force) {
-		for (Connection c : connections) {
-			if (c instanceof FreeFormConnection) {
-				FreeFormConnection ffc = (FreeFormConnection)c;
-				ffc.getBendpoints().clear();
+		if (force) {
+			for (Connection c : connections) {
+				if (c instanceof FreeFormConnection) {
+					FreeFormConnection ffc = (FreeFormConnection)c;
+					ffc.getBendpoints().clear();
+				}
 			}
 		}
 		for (Connection c : connections) {

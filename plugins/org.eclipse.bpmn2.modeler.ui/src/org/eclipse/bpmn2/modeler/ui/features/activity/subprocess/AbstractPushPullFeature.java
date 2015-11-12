@@ -3,7 +3,6 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
@@ -13,7 +12,6 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -24,13 +22,10 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
-import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
-import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -231,28 +226,21 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 	protected void collectConnections(ContainerShape source) {
 		// Follow all external connections of ancestor shapes, keeping track
 		// of the external shape that is connected to the local shape.
-		GraphicsUtil.debug = true;
 		for (Shape s : source.getChildren()) {
 			if (s instanceof ContainerShape) {
 				for ( Connection c : FeatureSupport.getConnections(s)) {
-					GraphicsUtil.dump("", c);
 					if (isExternalConnection(source, c)) {
-						System.out.println("    external");
 						collectExternalConnections(source, c);
 					}
 					else {
-						System.out.println("    internal");
 						if (!internalConnections.contains(c))
 							internalConnections.add(c);
 					}
 					for (Connection c2 : FeatureSupport.getConnections(c)) {
-						GraphicsUtil.dump("    ", c2);
 						if (isExternalConnection(source, c2)) {
-							System.out.println("        external");
 							collectExternalConnections(source, c2);
 						}
 						else {
-							System.out.println("        internal");
 							if (!internalConnections.contains(c2))
 								internalConnections.add(c2);
 						}
@@ -268,7 +256,6 @@ public abstract class AbstractPushPullFeature extends AbstractCustomFeature {
 				}
 			}
 		}
-		GraphicsUtil.debug = false;
 	}
 
 	protected void moveConnections(ContainerShape source, ContainerShape target) {

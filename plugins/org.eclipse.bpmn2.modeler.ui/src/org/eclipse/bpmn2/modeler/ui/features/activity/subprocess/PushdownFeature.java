@@ -170,7 +170,9 @@ public class PushdownFeature extends AbstractPushPullFeature {
 		// let the feature provider know there's a new diagram now
 		getFeatureProvider().getDiagramTypeProvider().resourceReloaded(newDiagram);
 		
+//		GraphicsUtil.debug = true;
 		FeatureSupport.updateConnections(getFeatureProvider(), internalConnections, true);
+//		GraphicsUtil.debug = false;
 	}
 	
 	@Override
