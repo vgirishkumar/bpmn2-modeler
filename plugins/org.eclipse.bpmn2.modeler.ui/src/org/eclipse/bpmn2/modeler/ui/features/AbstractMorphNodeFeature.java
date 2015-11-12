@@ -313,7 +313,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		createContext.setSize(w, h);
 		createContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
 		BPMNShape oldBpmnShape = BusinessObjectUtil.getFirstElementOfType(oldShape, BPMNShape.class);
-		createContext.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, oldBpmnShape);
+		createContext.putProperty(GraphitiConstants.COPIED_BPMN_DI_ELEMENT, oldBpmnShape);
 
 		Object[] created = createFeature.create(createContext);
 		FlowElement newObject = (FlowElement) created[0];

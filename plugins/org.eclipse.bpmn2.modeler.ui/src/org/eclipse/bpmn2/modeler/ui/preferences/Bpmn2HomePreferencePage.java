@@ -88,12 +88,11 @@ public class Bpmn2HomePreferencePage
 				group);
 		addField(isHorizontal);
 
-		// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work. Until then, always show these as expanded
-//		BPMNDIAttributeDefaultComboFieldEditor isExpanded = new BPMNDIAttributeDefaultComboFieldEditor(
-//				Bpmn2Preferences.PREF_IS_EXPANDED,
-//				Bpmn2Preferences.PREF_IS_EXPANDED_LABEL,
-//				group);
-//		addField(isExpanded);
+		BPMNDIAttributeDefaultComboFieldEditor isExpanded = new BPMNDIAttributeDefaultComboFieldEditor(
+				Bpmn2Preferences.PREF_IS_EXPANDED,
+				Bpmn2Preferences.PREF_IS_EXPANDED_LABEL,
+				group);
+		addField(isExpanded);
 
 		BPMNDIAttributeDefaultComboFieldEditor isMessageVisible = new BPMNDIAttributeDefaultComboFieldEditor(
 				Bpmn2Preferences.PREF_IS_MESSAGE_VISIBLE,
@@ -139,8 +138,7 @@ public class Bpmn2HomePreferencePage
 	@Override
 	protected void performDefaults() {
 		preferences.setToDefault(Bpmn2Preferences.PREF_IS_HORIZONTAL);
-		// FIXME: rendering of expanded/collapsed FlowElementsContainers needs work. Until then, always show these as expanded
-//		preferences.setToDefault(Bpmn2Preferences.PREF_IS_EXPANDED);
+		preferences.setToDefault(Bpmn2Preferences.PREF_IS_EXPANDED);
 		preferences.setToDefault(Bpmn2Preferences.PREF_IS_MESSAGE_VISIBLE);
 		preferences.setToDefault(Bpmn2Preferences.PREF_IS_MARKER_VISIBLE);
 		preferences.setToDefault(Bpmn2Preferences.PREF_CONNECTION_TIMEOUT);

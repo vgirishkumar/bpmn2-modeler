@@ -80,7 +80,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		Shape labelShape = FeatureSupport.getLabelShape(ownerPE);
 		if (labelShape != null) {
 
-			if (Graphiti.getPeService().getPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED) != null) {
+			if (FeatureSupport.getPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED) != null) {
 				return Reason.createTrueReason(Messages.UpdateLabelFeature_LabelChanged);
 			}
 

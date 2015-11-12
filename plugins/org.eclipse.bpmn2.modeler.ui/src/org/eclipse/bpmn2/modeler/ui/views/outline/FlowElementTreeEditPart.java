@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
-import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;

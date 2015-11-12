@@ -53,7 +53,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 		if (size==1) {
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
 			link(addedShape, eventDefinitions.get(0));
-			Graphiti.getPeService().setPropertyValue(addedShape,
+			FeatureSupport.setPropertyValue(addedShape,
 					GraphitiConstants.EVENT_DEFINITION_SHAPE,
 					Boolean.toString(true));
 		}
@@ -61,7 +61,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 			Shape multipleShape = Graphiti.getPeService().createShape(container, false);
 			drawForEvent(event, multipleShape);
 			link(multipleShape, eventDefinitions.toArray(new EventDefinition[size]));
-			Graphiti.getPeService().setPropertyValue(multipleShape,
+			FeatureSupport.setPropertyValue(multipleShape,
 					GraphitiConstants.EVENT_DEFINITION_SHAPE,
 					Boolean.toString(true));
 		}

@@ -166,7 +166,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	public static MessageFlow getMessageFlow(PictogramElement pe) {
 		if (pe instanceof ContainerShape) {
-			String id = peService.getPropertyValue(pe, MESSAGE_REF);
+			String id = FeatureSupport.getPropertyValue(pe, MESSAGE_REF);
 			if (id!=null && !id.isEmpty()) {
 				EObject o = pe.eContainer();
 				while (!(o instanceof Diagram)) {
@@ -204,7 +204,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	protected static Connection getMessageFlowConnection(PictogramElement pe) {
 		if (pe instanceof ContainerShape) {
-			String id = peService.getPropertyValue(pe, MESSAGE_REF);
+			String id = FeatureSupport.getPropertyValue(pe, MESSAGE_REF);
 			if (id!=null && !id.isEmpty()) {
 				EObject o = pe.eContainer();
 				while (!(o instanceof Diagram)) {
@@ -238,7 +238,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	protected static ConnectionDecorator findMessageDecorator(Connection connection) {
 		for (ConnectionDecorator d : connection.getConnectionDecorators()) {
-			if (Graphiti.getPeService().getPropertyValue(d, MESSAGE_REF) != null) {
+			if (FeatureSupport.getPropertyValue(d, MESSAGE_REF) != null) {
 				return d;
 			}
 		}
@@ -307,14 +307,14 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			moveFeature.moveShape(moveContext);
 		}
 		fp.link(decorator, new Object[] {message, messageShape});
-		peService.setPropertyValue(decorator, MESSAGE_REF, "true"); //$NON-NLS-1$
+		FeatureSupport.setPropertyValue(decorator, MESSAGE_REF, "true"); //$NON-NLS-1$
 		// Set our MessageFlow ID in the Message shape. Sadly Graphiti shape properties
 		// can only hold Strings, so if the MessageFlow ID is null, we need to assign
 		// a new one to it.
 		String id = messageFlow.getId();
 		if (id==null || id.isEmpty())
 			id = ModelUtil.setID(messageFlow);
-		peService.setPropertyValue(messageShape, MESSAGE_REF, id);
+		FeatureSupport.setPropertyValue(messageShape, MESSAGE_REF, id);
 		messageFlow.setMessageRef(message);
 	}
 	
@@ -622,7 +622,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(messageFlowConnection);
 			if (messageFlow!=null) {
 				messageFlow.setMessageRef(null);
-				peService.setPropertyValue(messageFlowConnection, MESSAGE_REF, ""); //$NON-NLS-1$
+				FeatureSupport.setPropertyValue(messageFlowConnection, MESSAGE_REF, ""); //$NON-NLS-1$
 			}
 		}
 
@@ -648,7 +648,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 				Connection connection = (Connection) context.getPictogramElement();
 				MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
 				
-				String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
+				String oldMessageRef = FeatureSupport.getPropertyValue(connection, MESSAGE_REF);
 				if (oldMessageRef==null)
 					oldMessageRef = ""; //$NON-NLS-1$
 				
@@ -670,7 +670,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			Connection connection = (Connection) context.getPictogramElement();
 			MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
 			Message message = messageFlow.getMessageRef();
-			String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
+			String oldMessageRef = FeatureSupport.getPropertyValue(connection, MESSAGE_REF);
 			if (oldMessageRef==null)
 				oldMessageRef = ""; //$NON-NLS-1$
 			
@@ -682,7 +682,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 					Shape messageShape = (Shape) context.getProperty(MESSAGE_REF);
 					addMessageDecorator(getFeatureProvider(), connection, message, messageShape);
 				}
-				peService.setPropertyValue(connection, MESSAGE_REF, newMessageRef);
+				FeatureSupport.setPropertyValue(connection, MESSAGE_REF, newMessageRef);
 			}
 			else {
 				// move the message decorator

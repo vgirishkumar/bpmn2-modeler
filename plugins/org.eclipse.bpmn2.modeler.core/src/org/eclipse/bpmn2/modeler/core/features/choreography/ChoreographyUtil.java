@@ -136,9 +136,9 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		if (o instanceof MessageFlow && pe instanceof Connection) {
 			Connection c = (Connection)pe;
-			if (c.getStart()!=null && peService.getPropertyValue(c.getStart().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
+			if (c.getStart()!=null && FeatureSupport.getPropertyValue(c.getStart().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
-			if (c.getEnd()!=null && peService.getPropertyValue(c.getEnd().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
+			if (c.getEnd()!=null && FeatureSupport.getPropertyValue(c.getEnd().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
 		}
 		return false;
@@ -153,7 +153,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	public static boolean isChoreographyMessage(PictogramElement pe) {
 		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		if (o instanceof Message && pe instanceof ContainerShape) {
-			if (peService.getPropertyValue(pe,GraphitiConstants.MESSAGE_LINK) != null)
+			if (FeatureSupport.getPropertyValue(pe,GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
 		}
 		return false;
@@ -172,7 +172,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	}
 	
 	public static String getMessageRefIds(ContainerShape choreographyTaskShape) {
-		String property = peService.getPropertyValue(choreographyTaskShape, MESSAGE_REF_IDS);
+		String property = FeatureSupport.getPropertyValue(choreographyTaskShape, MESSAGE_REF_IDS);
 		if (property == null) {
 			return new String(); // return empty string
 		}
@@ -293,7 +293,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	}
 
 	public static String getParticipantRefIds(ContainerShape choreographyActivityShape) {
-		String property = peService.getPropertyValue(choreographyActivityShape, PARTICIPANT_REF_IDS);
+		String property = FeatureSupport.getPropertyValue(choreographyActivityShape, PARTICIPANT_REF_IDS);
 		if (property == null) {
 			return new String(); // return empty string
 		}

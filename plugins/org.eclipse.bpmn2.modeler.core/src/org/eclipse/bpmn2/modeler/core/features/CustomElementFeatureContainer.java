@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -163,7 +164,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-			Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,id); 
+			FeatureSupport.setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,id); 
 		}
 		else {
 			context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
@@ -199,18 +200,18 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-			id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID); 
+			id = FeatureSupport.getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID); 
 		}
 		else if (context instanceof ICustomContext) {
 			for (PictogramElement pe : ((ICustomContext)context).getPictogramElements()) {
-				id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
+				id = FeatureSupport.getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
 				if (id!=null)
 					break;
 			}
 		}
 		else if (context instanceof IReconnectionContext) {
 			PictogramElement pe = ((IReconnectionContext) context).getConnection();
-			id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID); 
+			id = FeatureSupport.getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID); 
 		}
 		else {
 			id = context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
@@ -276,7 +277,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			if (pe!=null)
-				peService.setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
+				FeatureSupport.setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
 			
 			// add an icon to the top-left corner if applicable, and if the implementing
 			// addFeatureDelegate hasn't already done so.

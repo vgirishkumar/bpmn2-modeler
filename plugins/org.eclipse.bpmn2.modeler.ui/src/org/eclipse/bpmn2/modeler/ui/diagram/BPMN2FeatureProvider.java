@@ -106,6 +106,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.FeatureContainerDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AdHocSubProcessFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer;
@@ -675,7 +676,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	// TODO: move this to the adapter registry
 	public IFeature getCreateFeatureForPictogramElement(PictogramElement pe) {
 		if (pe!=null) {
-			String id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
+			String id = FeatureSupport.getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
 			if (id!=null) {
 				for (IFeatureContainer container : containers.values()) {
 					if (container instanceof ICustomElementFeatureContainer) {
