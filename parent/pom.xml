@@ -127,7 +127,7 @@
 				</property>
 			</activation>
 			<properties>
-				<eclipse-site>http://download.eclipse.org/releases/neon</eclipse-site>
+				<eclipse-site>http://download.eclipse.org/eclipse/updates/4.6milestones/S-4.6M3-201510291100/</eclipse-site>
 				<platform-version>[4.6,5.0)</platform-version>
 				<platform-version-name>neon</platform-version-name>
 			</properties>
