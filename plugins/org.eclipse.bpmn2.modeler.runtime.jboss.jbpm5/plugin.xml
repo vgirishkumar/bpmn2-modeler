@@ -500,6 +500,18 @@
 			type="org.eclipse.bpmn2.IntermediateThrowEvent"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmIntermediateThrowEventFeatureContainer">
 		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.SubProcess"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmSubProcessFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.AdHocSubProcess"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmAdHocSubProcessFeatureContainer">
+		</featureContainer>
 		
 <!-- BPMN Model Element Extensions -->
 		

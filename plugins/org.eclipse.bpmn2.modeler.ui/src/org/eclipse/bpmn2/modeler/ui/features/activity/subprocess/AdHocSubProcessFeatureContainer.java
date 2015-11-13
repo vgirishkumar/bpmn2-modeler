@@ -39,20 +39,27 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddExpandableActivityFeature<AdHocSubProcess>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, AdHocSubProcess businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
-			}
-
-			@Override
-			public Class getBusinessObjectType() {
-				return AdHocSubProcess.class;
-			}
-		};
+		return new AddAdHocSubProcessFeature(fp);
 	}
 
+	public static class AddAdHocSubProcessFeature extends AddExpandableActivityFeature<AdHocSubProcess> {
+
+		public AddAdHocSubProcessFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+		
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, AdHocSubProcess businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
+			ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
+		}
+
+		@Override
+		public Class getBusinessObjectType() {
+			return AdHocSubProcess.class;
+		}
+	}
+	
 	public static class CreateAdHocSubProcessFeature extends AbstractCreateExpandableFlowNodeFeature<AdHocSubProcess> {
 
 		public CreateAdHocSubProcessFeature(IFeatureProvider fp) {
