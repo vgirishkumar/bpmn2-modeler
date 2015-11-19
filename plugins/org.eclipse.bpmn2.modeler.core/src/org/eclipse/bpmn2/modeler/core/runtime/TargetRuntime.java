@@ -433,12 +433,18 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	}
 	
 	static TargetRuntime getRuntime(IConfigurationElement e) {
-		TargetRuntime rt = getRuntime( getRuntimeId(e) );
+		String id = getRuntimeId(e);
+		TargetRuntime rt = getRuntime(id);
 		if (rt==null) {
 			if (currentRuntime!=null)
 				rt = currentRuntime;
 			else
 				rt = getDefaultRuntime();
+			if (id!=null && rt!=null && !id.equals(rt.getId())) {
+				throw new IllegalArgumentException("Runtime ID "+id+
+						" referenced in plugin "+e.getContributor().getName()+
+						" is not defined.");
+			}
 		}
 		return rt;
 	}
