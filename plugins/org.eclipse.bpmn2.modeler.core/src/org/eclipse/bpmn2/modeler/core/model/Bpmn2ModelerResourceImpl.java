@@ -86,6 +86,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -94,7 +95,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
@@ -631,27 +631,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 			else {
 				newObject = super.createObjectFromFeatureType(peekObject, feature);
-				TargetRuntime rt = TargetRuntime.getRuntime(xmlResource);
-				String id = rt.getCustomTaskId(newObject);
-				if (id!=null) {
-					// if this is a CustomElement we need to discard this object and construct it
-					// properly such that all extension attributes and elements are created and
-					// initialized.
-					EClass eClass = newObject.eClass();
-					try {
-						// remove all traces of the old object
-						objects.pop();
-						mixedTargets.pop();
-						types.pop();
-						EcoreUtil.delete(newObject);
-						// then construct and initialize the object
-						newObject = Bpmn2ModelerFactory.create(xmlResource, eClass,
-								new KeyValue(GraphitiConstants.CUSTOM_ELEMENT_ID, id));
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
 			}
 			
 			if (newObject!=null) {
@@ -664,6 +643,22 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			return newObject;
 		}
 		
+		protected EObject validateCreateObjectFromFactory(EFactory factory, String typeName, EObject newObject, EStructuralFeature feature) {
+			if (newObject != null) {
+				TargetRuntime rt = TargetRuntime.getRuntime(xmlResource);
+				String id = rt.getCustomTaskId(newObject);
+				if (id!=null) {
+					// if this is a CustomElement we need to discard this object and construct it
+					// properly such that all extension attributes and elements are created and
+					// initialized.
+					newObject = Bpmn2ModelerFactory.create(xmlResource, newObject.eClass(),
+							new KeyValue(GraphitiConstants.CUSTOM_ELEMENT_ID, id));
+					handleObjectAttribs(newObject);
+				}
+			}
+			return super.validateCreateObjectFromFactory(factory, typeName, newObject, feature);
+		}
+		  
 		@Override
 		protected void setFeatureValue(EObject object, EStructuralFeature feature, Object value, int position) {
 			ModelDecorator md = ModelDecorator.getModelDecorator(feature);
