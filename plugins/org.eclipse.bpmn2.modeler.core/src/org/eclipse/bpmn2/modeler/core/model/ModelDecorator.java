@@ -69,7 +69,6 @@ import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
 import org.eclipse.emf.ecore.xml.type.AnyType;
-import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -547,7 +546,7 @@ public class ModelDecorator {
 					return feature;
 			}
 		}
-		return findEStructuralFeatureInDocumentRoot(name);
+		return findEStructuralFeatureInDocumentRoot(name, type);
 	}
 	
 	/**
@@ -559,7 +558,7 @@ public class ModelDecorator {
 	 * @return the EAttribute or null if not found.
 	 */
 	public EAttribute getEAttribute(String name, String type, String owningtype) {
-		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name, owningtype);
 		if (feature instanceof EAttribute) {
 //			if (type!=null)
 //				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
@@ -696,7 +695,7 @@ public class ModelDecorator {
 	 * @return the EReference or null if not found.
 	 */
 	public EReference getEReference(String name, String type, String owningtype, boolean containment, boolean many) {
-		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name, owningtype);
 		if (feature instanceof EReference) {
 			if (type!=null)
 				Assert.isTrue(type.equals(((EReference) feature).getEType().getName()) );
@@ -895,24 +894,24 @@ public class ModelDecorator {
 		return findEClassifier(null,type);
 	}
 	
-	public EStructuralFeature findEStructuralFeatureInDocumentRoot(String name) {
+	public EStructuralFeature findEStructuralFeatureInDocumentRoot(String name, String owningType) {
 		if (name==null)
 			return null;
 			
 		EStructuralFeature feature = null;
 		
 		if (ePackage!=null) {
-			feature = findEStructuralFeatureInDocumentRoot(ePackage,name);
+			feature = findEStructuralFeatureInDocumentRoot(ePackage,name, owningType);
 			if (feature!=null)
 				return feature;
 		}
 		for (EPackage pkg : getRelatedEPackages()) {
-			feature = findEStructuralFeatureInDocumentRoot(pkg,name);
+			feature = findEStructuralFeatureInDocumentRoot(pkg,name, owningType);
 			if (feature!=null)
 				return feature;
 		}
 		
-		feature = findEStructuralFeatureInDocumentRoot(Bpmn2Package.eINSTANCE, name);
+		feature = findEStructuralFeatureInDocumentRoot(Bpmn2Package.eINSTANCE, name, owningType);
 		if (feature!=null)
 			return feature;
 		
@@ -986,13 +985,13 @@ public class ModelDecorator {
 	 * @return - an EClassifier if found or null if not found.
 	 */
 	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String name) {
-		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(pkg, name);
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(pkg, null, name);
 		if (feature!=null)
-			return feature.getEType();
+			return (EClassifier) feature.eContainer();
 		return null;
 	}
 	
-	private static EStructuralFeature findEStructuralFeatureInDocumentRoot(EPackage pkg, String name) {
+	private static EStructuralFeature findEStructuralFeatureInDocumentRoot(EPackage pkg, String featureName, String typeName) {
 		try {
 			EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
 			if (docRoot==null) {
@@ -1000,10 +999,15 @@ public class ModelDecorator {
 			}
 			if (docRoot!=null) {
 				for (EStructuralFeature feature : docRoot.getEAllStructuralFeatures()) {
-					if (feature.getEContainingClass().getEPackage()==pkg) {
-						if (name.equals(feature.getName()))
+					if (feature.getEContainingClass().getEPackage()==pkg && feature.eContainer() instanceof EClassifier) {
+						if (typeName!=null) {
+							EClassifier owningEClass = (EClassifier) feature.eContainer();
+							if (typeName.equals(owningEClass.getName()))
+								return feature;
+						}
+						else if (featureName.equals(feature.getName()))
 							return feature;
-						if (name.equals(ExtendedMetaData.INSTANCE.getName(feature)))
+						else if (featureName.equals(ExtendedMetaData.INSTANCE.getName(feature)))
 							return feature;
 					}
 				}
