@@ -441,9 +441,10 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			else
 				rt = getDefaultRuntime();
 			if (id!=null && rt!=null && !id.equals(rt.getId())) {
-				throw new IllegalArgumentException("Runtime ID "+id+
-						" referenced in plugin "+e.getContributor().getName()+
-						" is not defined.");
+				return null;
+//				throw new IllegalArgumentException("Runtime ID "+id+
+//						" referenced in plugin "+e.getContributor().getName()+
+//						" is not defined.");
 			}
 		}
 		return rt;
