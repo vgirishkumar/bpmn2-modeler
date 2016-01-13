@@ -459,7 +459,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 		}
 		
-		InputSet inputSet = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
+		final InputSet inputSet = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 		if (ioSpec.getInputSets().size()==0) {
 			ModelUtil.setID(inputSet);
 			if (operationChanged || ioSpec.eContainer()==null)
@@ -471,7 +471,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 		}
 		
-		OutputSet outputSet = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
+		final OutputSet outputSet = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
 		if (ioSpec.getOutputSets().size()==0) {
 			ModelUtil.setID(outputSet);
 			if (operationChanged || ioSpec.eContainer()==null)
