@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Composite;
  * @author Bob Brodt
  *
  */
-public class JbpmManualTaskDetailComposite extends JbpmActivityDetailComposite {
+public class JbpmManualTaskDetailComposite extends JbpmTaskDetailComposite {
 
 	/**
 	 * @param section

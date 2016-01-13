@@ -118,13 +118,15 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 							props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 						else
 							props = med.getProperties("ioSpecification/dataOutputs/name"); //$NON-NLS-1$
+					}
 					
-						List<Object> filtered = new ArrayList<Object>();
-						for (Object e : elements) {
-							boolean skip = false;
-							EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-							if (f!=null) {
-								Object elementName = (String) ((EObject)e).eGet(f);
+					List<Object> filtered = new ArrayList<Object>();
+					for (Object e : elements) {
+						boolean skip = false;
+						EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+						if (f!=null) {
+							Object elementName = (String) ((EObject)e).eGet(f);
+							if (props!=null) {
 								for (Property p : props) {
 									Object propName = p.getFirstStringValue();
 									if (elementName!=null && propName!=null && elementName.equals(propName)) {
@@ -133,12 +135,42 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 									}
 								}
 							}
-							if (!skip)
-								filtered.add(e);
+							else if (activity instanceof SendTask) {
+								if ("Message".equals(elementName)) {
+									skip = true;
+								}
+							}
+							else if (activity instanceof ReceiveTask) {
+								if ("Message".equals(elementName)) {
+									skip = true;
+								}
+								else if ("MessageId".equals(elementName)) {
+									skip = true;
+								}
+							}
+							else if (activity instanceof ServiceTask) {
+								if ("Parameter".equals(elementName)) {
+									skip = true;
+								}
+								else if ("Result".equals(elementName)) {
+									skip = true;
+								}
+								// TODO: these should be automatically added by the "Service Task" tab...
+//								else if ("Interface".equals(elementName)) {
+//									skip = true;
+//								}
+//								else if ("Operation".equals(elementName)) {
+//									skip = true;
+//								}
+//								else if ("ParameterType".equals(elementName)) {
+//									skip = true;
+//								}
+							}
 						}
-						return filtered.toArray();
+						if (!skip)
+							filtered.add(e);
 					}
-					return elements;
+					return filtered.toArray();
 				}
 			};
 		}
