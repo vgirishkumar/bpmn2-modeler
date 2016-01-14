@@ -23,10 +23,6 @@ Red Hat, Inc. - initial API and implementation
       %license
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.wst.wsdl" version="1.2.400.v201505131719"/>
-   </requires>
-   
    <plugin
          id="org.eclipse.bpmn2.modeler.core"
          download-size="0"

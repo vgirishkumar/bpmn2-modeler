@@ -458,8 +458,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				activity.setIoSpecification(ioSpec);
 			}
 		}
+		
+		final InputSet inputSet = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 		if (ioSpec.getInputSets().size()==0) {
-			final InputSet inputSet = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 			ModelUtil.setID(inputSet);
 			if (operationChanged || ioSpec.eContainer()==null)
 			{
@@ -469,8 +470,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				InsertionAdapter.add(ioSpec, Bpmn2Package.eINSTANCE.getInputOutputSpecification_InputSets(), inputSet);
 			}
 		}
+		
+		final OutputSet outputSet = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
 		if (ioSpec.getOutputSets().size()==0) {
-			final OutputSet outputSet = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
 			ModelUtil.setID(outputSet);
 			if (operationChanged || ioSpec.eContainer()==null)
 			{
@@ -574,7 +576,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		if (ioSpec.getDataInputs().size()>0) {
 			input = ioSpec.getDataInputs().get(0);
 			// fix missing InputSet
-			final InputSet inputSet = ioSpec.getInputSets().get(0);
 			if (!inputSet.getDataInputRefs().contains(input)) {
 				final DataInput i = input;
 				TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
@@ -589,7 +590,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		if (ioSpec.getDataOutputs().size()>0) {
 			output = ioSpec.getDataOutputs().get(0);
 			// fix missing OutputSet
-			final OutputSet outputSet = ioSpec.getOutputSets().get(0);
 			if (!outputSet.getDataOutputRefs().contains(output)) {
 				final DataOutput o = output;
 				TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();

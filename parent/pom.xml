@@ -31,6 +31,7 @@
 	<properties>
 		<tycho-version>0.21.0</tycho-version>
 		<tycho-extras-version>${tycho-version}</tycho-extras-version>
+		<BUILD_ALIAS>CI</BUILD_ALIAS>
 	</properties>
 
 	<profiles>
@@ -116,20 +117,6 @@
 				<eclipse-site>http://download.eclipse.org/releases/mars</eclipse-site>
 				<platform-version>[4.5,5.0)</platform-version>
 				<platform-version-name>mars</platform-version-name>
-			</properties>
-		</profile>
-		<profile>
-			<id>platform-neon</id>
-			<activation>
-				<property>
-					<name>platform-version-name</name>
-					<value>neon</value>
-				</property>
-			</activation>
-			<properties>
-				<eclipse-site>http://download.eclipse.org/releases/neon/</eclipse-site>
-				<platform-version>[4.6,5.0)</platform-version>
-				<platform-version-name>neon</platform-version-name>
 			</properties>
 		</profile>
 		<profile>
@@ -281,6 +268,15 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<format>'${BUILD_ALIAS}-v'yyyyMMdd-HHmm</format>
+				</configuration>
+			</plugin>
+			
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-source-feature-plugin</artifactId>

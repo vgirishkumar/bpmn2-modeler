@@ -897,7 +897,7 @@ public class ModelDecorator {
 	public EStructuralFeature findEStructuralFeatureInDocumentRoot(String name, String owningType) {
 		if (name==null)
 			return null;
-			
+		
 		EStructuralFeature feature = null;
 		
 		if (ePackage!=null) {
@@ -981,7 +981,7 @@ public class ModelDecorator {
 	 * the given EPackage.
 	 * 
 	 * @param pkg - the EPackage to search.
-	 * @param name - name of the EClassifier to search for.
+	 * @param typeName - name of the EClassifier to search for.
 	 * @return - an EClassifier if found or null if not found.
 	 */
 	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String typeName) {
