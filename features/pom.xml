@@ -20,7 +20,6 @@
 	<modules>
 		<module>org.eclipse.bpmn2.modeler</module>
 		<module>org.eclipse.bpmn2.modeler.runtime.jboss</module>
-		<module>org.eclipse.bpmn2.modeler.wsil</module>
 		<module>org.eclipse.bpmn2.modeler.examples</module>
 		<module>org.eclipse.bpmn2.modeler.updatesite</module>
 	</modules>
