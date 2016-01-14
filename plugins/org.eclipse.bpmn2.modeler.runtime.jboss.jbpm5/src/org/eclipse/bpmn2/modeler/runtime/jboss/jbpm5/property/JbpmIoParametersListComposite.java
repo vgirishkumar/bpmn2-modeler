@@ -135,7 +135,7 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 									}
 								}
 							}
-							else if (activity instanceof SendTask) {
+							if (activity instanceof SendTask) {
 								if ("Message".equals(elementName)) {
 									skip = true;
 								}
