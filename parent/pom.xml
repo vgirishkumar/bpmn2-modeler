@@ -294,7 +294,7 @@
 					<excludes>
 						<plugin id="org.eclipse.bpmn2.modeler.core.source" />
 						<plugin id="org.eclipse.bpmn2.modeler.ui.source" />
-						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm.source" />
 					</excludes>
 				</configuration>
 			</plugin>
@@ -316,7 +316,7 @@
 					<excludes>
 						<plugin id="org.eclipse.bpmn2.modeler.core.source" />
 						<plugin id="org.eclipse.bpmn2.modeler.ui.source" />
-						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm.source" />
 					</excludes>
 				</configuration>
 			</plugin>

@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -49,6 +50,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -609,8 +611,17 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 			final EList<EObject> list = getItemList();
 			tableViewer.setInput(list);
+
+			sashForm.layout();
+			
+//			Composite root = getParent();
+//			while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
+//				root = root.getParent();
+//			}
+//			ModelUtil.recursivelayout(root);
 		}
-		redrawPageAsync();
+//		redrawPageAsync();
+		redrawPage();
 	}
 	
 	/**
@@ -689,29 +700,34 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		// adjust table columns so they are all equal width,
 		// grow and shrink table height based on number of rows
 		tableComposite.addControlListener(new ControlAdapter() {
+			private boolean redrawing = false;
 			public void controlResized(ControlEvent e) {
-				// When the tableComposite is laid out the table size
-				// will be changed anyway; this just keeps the table
-				// scrollbars from flickering on/off during the layout.
-				Rectangle area = tableComposite.getClientArea();
-				table.setSize(area.width, area.height);
-				// calculate new table size
-				Point size = calculateTableSize(table);
-				int remainingWidth = size.x;
-				int columnCount = table.getColumnCount();
-				for (int index=0; index<columnCount; ++index) {
-					org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
-					if (index==columnCount-1)
-						tc.setWidth(remainingWidth);
-					else
-						tc.setWidth(size.x/columnCount);
-					remainingWidth -= tc.getWidth();
+				if (!redrawing) {
+					redrawing = true;
+					// When the tableComposite is laid out the table size
+					// will be changed anyway; this just keeps the table
+					// scrollbars from flickering on/off during the layout.
+					Rectangle area = tableComposite.getClientArea();
+					table.setSize(area.width, area.height);
+					// calculate new table size
+					Point size = calculateTableSize(table);
+					int remainingWidth = size.x;
+					int columnCount = table.getColumnCount();
+					for (int index=0; index<columnCount; ++index) {
+						org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
+						if (index==columnCount-1)
+							tc.setWidth(remainingWidth);
+						else
+							tc.setWidth(size.x/columnCount);
+						remainingWidth -= tc.getWidth();
+					}
+					
+					gridData.heightHint = size.y + table.getHeaderHeight();
+					gridData.widthHint = 50;
+	
+					redrawPage();
+					redrawing = false;
 				}
-				
-				gridData.heightHint = size.y + table.getHeaderHeight();
-				gridData.widthHint = 50;
-
-				redrawPageAsync();
 			}
 		});
 		
