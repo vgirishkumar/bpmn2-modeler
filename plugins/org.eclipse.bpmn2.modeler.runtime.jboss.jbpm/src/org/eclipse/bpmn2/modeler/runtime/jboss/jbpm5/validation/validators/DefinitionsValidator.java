@@ -51,9 +51,11 @@ public class DefinitionsValidator extends org.eclipse.bpmn2.modeler.core.validat
 
 	@Override
 	public IStatus validate(Definitions object) {
-		if (object.getTargetNamespace()==null || object.getTargetNamespace().isEmpty()) {
-			addStatus(object, Status.ERROR, Messages.DefinitionsValidator_No_TargetNamespace);
-		}
+		// See https://issues.jboss.org/browse/JBPM-4860
+		// TargetNamespace should not be required if we already know this is a jBPM process file
+//		if (object.getTargetNamespace()==null || object.getTargetNamespace().isEmpty()) {
+//			addStatus(object, Status.ERROR, Messages.DefinitionsValidator_No_TargetNamespace);
+//		}
 		if (isLiveValidation()) {
 			TreeIterator<EObject> iter = object.eAllContents();
 			while (iter.hasNext()) {
