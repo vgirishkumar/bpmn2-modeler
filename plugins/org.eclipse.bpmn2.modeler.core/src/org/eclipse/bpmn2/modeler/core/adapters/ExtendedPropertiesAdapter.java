@@ -215,9 +215,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl im
 			resource = getResource(object);
 		
 		ExtendedPropertiesAdapter adapter = null;
-		TargetRuntime rt = TargetRuntimeAdapter.getTargetRuntime(resource);
-		if (rt!=null)
-			TargetRuntimeAdapter.adapt(object, rt);
+		TargetRuntime rt = null;
+		if (resource!=null) {
+			rt = TargetRuntimeAdapter.getTargetRuntime(resource);
+			if (rt!=null)
+				TargetRuntimeAdapter.adapt(object, rt);
+		}
 		adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		
 		if (adapter==null)
