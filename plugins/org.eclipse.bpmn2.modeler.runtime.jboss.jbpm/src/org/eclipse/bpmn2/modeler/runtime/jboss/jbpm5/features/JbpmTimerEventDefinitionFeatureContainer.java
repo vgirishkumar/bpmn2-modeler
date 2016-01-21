@@ -14,7 +14,9 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features;
 
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.ui.features.event.definitions.TimerEventDefinitionContainer;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -31,6 +33,10 @@ public class JbpmTimerEventDefinitionFeatureContainer extends TimerEventDefiniti
 		return new CreateTimerEventDefinition(fp) {
 			public boolean canCreate(ICreateContext context) {
 				if (super.canCreate(context)) {
+					Object o = context.getProperty(GraphitiConstants.PARENT_CONTAINER);
+					if (o instanceof ScriptTask)
+						return false;
+					
 					Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
 					if (bo instanceof ThrowEvent) {
 						ThrowEvent te = (ThrowEvent)bo;
