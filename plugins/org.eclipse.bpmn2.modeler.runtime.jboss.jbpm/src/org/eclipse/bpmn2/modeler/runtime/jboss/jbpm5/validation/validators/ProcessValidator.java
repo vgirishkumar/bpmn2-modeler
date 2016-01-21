@@ -44,28 +44,8 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 	 */
 	@Override
 	public IStatus validate(Process object) {
-		boolean foundStartEvent = false;
-		boolean foundEndEvent = false;
-		List<FlowElement> flowElements = object.getFlowElements();
-		for (FlowElement fe : flowElements) {
-			if (fe instanceof StartEvent) {
-				foundStartEvent = true;
-			}
-			if (fe instanceof EndEvent) {
-				foundEndEvent = true;
-			}
-		}
-		if (!foundStartEvent) {
-			addStatus(object, Status.WARNING, Messages.ProcessValidator_No_Start);
-		}
-		if (!foundEndEvent) {
-			addStatus(object, Status.WARNING, Messages.ProcessValidator_No_End);
-		}
-		
-		if (isEmpty(object.getName())) {
-			addStatus(object, "name", Status.WARNING, Messages.ProcessValidator_No_Name, object.getId()); //$NON-NLS-1$
-		}
-		
+		new org.eclipse.bpmn2.modeler.core.validation.validators.ProcessValidator(this).validate(object);
+
 		EStructuralFeature feature;
 		feature = ModelDecorator.getAnyAttribute(object, "packageName"); //$NON-NLS-1$
 		String name = null;
