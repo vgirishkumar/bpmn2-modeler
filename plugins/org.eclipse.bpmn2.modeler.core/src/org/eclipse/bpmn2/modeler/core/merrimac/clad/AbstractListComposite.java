@@ -24,7 +24,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -50,7 +49,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseEvent;
@@ -613,14 +611,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			tableViewer.setInput(list);
 
 			sashForm.layout();
-			
-//			Composite root = getParent();
-//			while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
-//				root = root.getParent();
-//			}
-//			ModelUtil.recursivelayout(root);
 		}
-//		redrawPageAsync();
 		redrawPage();
 	}
 	

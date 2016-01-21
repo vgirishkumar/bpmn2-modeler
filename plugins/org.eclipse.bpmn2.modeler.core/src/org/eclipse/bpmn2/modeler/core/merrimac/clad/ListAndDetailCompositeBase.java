@@ -98,9 +98,11 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 
 	protected void initialize() {
-		setLayout(new GridLayout(3, false));
+		GridLayout layout = new GridLayout(3, false);
+		layout.marginWidth = 0;
+		setLayout(layout);
 		if (getParent().getLayout() instanceof GridLayout) {
-			GridLayout layout = (GridLayout) getParent().getLayout();
+			layout = (GridLayout) getParent().getLayout();
 			setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, layout.numColumns, 1));
 		}
 		toolkit.adapt(this);
