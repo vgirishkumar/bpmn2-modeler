@@ -18,7 +18,8 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
-import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.ui.AbstractBpmn2RuntimeExtension;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -27,8 +28,10 @@ import org.eclipse.swt.graphics.RGB;
 /**
  *
  */
-public class DataTypeRuntimeExtension extends DefaultBpmn2RuntimeExtension {
+public class DataTypeRuntimeExtension extends AbstractBpmn2RuntimeExtension {
 
+	public final static String TARGET_NAMESPACE = "http://org.eclipse.bpmn2.modeler.examples.datatype";
+	
 	@Override
 	public void notify(LifecycleEvent event) {
 		if (event.eventType.equals(EventType.BUSINESSOBJECT_CREATED)) {
@@ -62,5 +65,10 @@ public class DataTypeRuntimeExtension extends DefaultBpmn2RuntimeExtension {
 		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_ADDED) && event.target instanceof ContainerShape) {
 			ColorChangeAdapter.adapt((ContainerShape) event.target);
 		}
+	}
+
+	@Override
+	public String getTargetNamespace(Bpmn2DiagramType diagramType) {
+		return TARGET_NAMESPACE;
 	}
 }

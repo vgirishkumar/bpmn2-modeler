@@ -11,12 +11,12 @@
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.ui.AbstractBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
 
-public class MyRuntimeExtension extends DefaultBpmn2RuntimeExtension {
+public class MyRuntimeExtension extends AbstractBpmn2RuntimeExtension {
 
 	public final static String TARGET_NAMESPACE = "http://org.eclipse.bpmn2.modeler.examples.customtask";
 	public MyRuntimeExtension() {

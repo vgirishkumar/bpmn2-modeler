@@ -12,11 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -69,19 +65,16 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskDeta
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSequenceFlowDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskDetailComposite;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDLoader;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
-import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension.RootElementParser;
+import org.eclipse.bpmn2.modeler.ui.AbstractBpmn2RuntimeExtension.RootElementParser;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -163,24 +156,28 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	
 			IFile inputFile = ((BPMN2Editor) event.target).getModelFile();
 			if (inputFile!=null) {
-				IContainer folder = inputFile.getParent();
+				IProject project = inputFile.getProject();
 
 				// initialize workItemDefinitions list if necessary
-				getWorkItemDefinitions();
-				workItemDefinitions.clear();
+				getWorkItemDefinitions().clear();
 				try {
-					final WIDResourceVisitor visitor = new WIDResourceVisitor();
-					folder.accept(visitor, IResource.DEPTH_INFINITE, false);
-					if (visitor.getWIDFiles().size() > 0) {
-						Iterator<IFile> fileIter = visitor.getWIDFiles().iterator();
-						while (fileIter.hasNext()) {
-							IFile file = fileIter.next();
-							HashMap<String, WorkItemDefinition> widMap = 
-									new LinkedHashMap<String, WorkItemDefinition>();
-							WIDHandler.evaluateWorkDefinitions(widMap, file);
-							workItemDefinitions.addAll(widMap.values());
+					final WIDLoader loader = new WIDLoader();
+					loader.load(project);
+					
+					if (loader.getClasspathWIDs().size() > 0) {
+						workItemDefinitions.addAll(loader.getClasspathWIDs().values());
+						for (Entry<String, ImageDescriptor> e : loader.getClasspathIcons().entrySet()) {
+							CustomTaskImageProvider.registerImage(e.getKey(), e.getValue());
 						}
 					}
+
+					if (loader.getProjectWIDs().size() > 0) {
+						workItemDefinitions.addAll(loader.getProjectWIDs().values());
+						for (Entry<String, ImageDescriptor> e : loader.getProjectIcons().entrySet()) {
+							CustomTaskImageProvider.registerImage(e.getKey(), e.getValue());
+						}
+					}
+
 					if (!workItemDefinitions.isEmpty()) {
 						List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
 						for (CustomTaskDescriptor d : targetRuntime.getCustomTaskDescriptors()) {
@@ -213,9 +210,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 							}
 						}
 					}
-				} catch (CoreException e) {
-					e.printStackTrace();
-				} catch (WIDException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -252,26 +247,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			
 			// process basic properties here
 			setBasicProps ( ct, wid);
-			
-			// push the icon into the image registry
-			String iconPath = getWIDPropertyValue("icon", wid); //$NON-NLS-1$
-			if (iconPath != null) {
-				Path tempPath = new Path(iconPath);
-				String iconName = tempPath.lastSegment();
-				IconResourceVisitor visitor = new IconResourceVisitor(iconName);
-				try {
-					project.accept(visitor, IResource.DEPTH_INFINITE, false);
-					if (visitor.getIconResources() != null && visitor.getIconResources().size() > 0) {
-						ArrayList<IResource> icons = visitor.getIconResources();
-						IResource icon = icons.get(0);
-						URL url = icon.getLocationURI().toURL();
-						ImageDescriptor image = ImageDescriptor.createFromURL(url);
-						CustomTaskImageProvider.registerImage(iconPath, image);
-					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-			}
 			
 			// process xml properties here - i.e. task variables
 			Property ioSpecification = createIOSpecificationSection(ct, wid);
@@ -441,37 +416,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 		}
 	}
 
-	/*
-	 * Class: Visits each file in the project to see if it's a *.conf/*.wid
-	 * @author bfitzpat
-	 *
-	 */
-	private class WIDResourceVisitor implements IResourceVisitor {
-		
-		private ArrayList<IFile> widFiles = new ArrayList<IFile>();
-		
-		public boolean visit (IResource resource) throws CoreException {
-			if (resource.getType() == IResource.FILE) {
-				if ("conf".equalsIgnoreCase(((IFile)resource).getFileExtension()) || //$NON-NLS-1$
-						"wid".equalsIgnoreCase(((IFile)resource).getFileExtension())) { //$NON-NLS-1$
-					widFiles.add((IFile)resource);
-					return true;
-				}
-			}
-			else if (resource.getType() == IResource.FOLDER) {
-				// skip over "bin" and "target" folders
-				String name = resource.getName();
-				if ("bin".equals(name) || "target".equals(name)) //$NON-NLS-1$ //$NON-NLS-2$
-					return false;
-			}
-			return true;
-		}
-		
-		public ArrayList<IFile> getWIDFiles() {
-			return widFiles;
-		}
-	}
-	
 	/*
 	 * Class: Visits each file in the project looking for the icon
 	 * @author bfitzpat

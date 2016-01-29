@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
@@ -70,65 +71,65 @@ public class EventDefinitionValidator extends AbstractBpmn2ElementValidator<Even
 	 */
 	@Override
 	public IStatus validate(EventDefinition ed) {
-		Event event = (Event) ed.eContainer();
+		BaseElement edContainer = (BaseElement) ed.eContainer();
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
 			if (ted.getTimeDate() == null && ted.getTimeDuration() == null && ted.getTimeCycle() == null) {
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Timer, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Timer, Status.ERROR);
 			}
 		} else if (ed instanceof SignalEventDefinition) {
 			Signal signal = ((SignalEventDefinition) ed).getSignalRef();
 			if (signal==null)
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Signal, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Signal, Status.ERROR);
 			else
 				new SignalValidator(this).validate(signal);
 		} else if (ed instanceof ErrorEventDefinition) {
 			Error error = ((ErrorEventDefinition) ed).getErrorRef();
 			if (error==null)
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Error, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Error, Status.ERROR);
 			else
 				new ErrorValidator(this).validate(error);
 		} else if (ed instanceof ConditionalEventDefinition) {
 			FormalExpression expression = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
 			if (expression==null || isEmpty(expression.getBody()))
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Condition, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Condition, Status.ERROR);
 			else
 				new ExpressionValidator(this).validate(expression);
 		} else if (ed instanceof EscalationEventDefinition) {
 			Escalation escalation = ((EscalationEventDefinition) ed).getEscalationRef();
 			if (escalation==null)
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Escalation, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Escalation, Status.ERROR);
 			else
 				new EscalationValidator(this).validate(escalation);
 		} else if (ed instanceof MessageEventDefinition) {
 			Message message = ((MessageEventDefinition) ed).getMessageRef();
 			if (message==null)
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Message, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_Message, Status.ERROR);
 			else
 				new MessageValidator(this).validate(message);
 		} else if (ed instanceof CompensateEventDefinition) {
 			Activity activity = ((CompensateEventDefinition) ed).getActivityRef();
 			if (activity==null)
-				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_CalledActivity, Status.ERROR);
+				addMissingFeatureStatus(edContainer,Messages.EventDefinitionValidator_CalledActivity, Status.ERROR);
 			else
 				new ActivityValidator(this).validate(activity);
 		}
 		
-		if (EventDefinitionsUtil.hasItemDefinition(ed)) {
+		if (edContainer instanceof Event && EventDefinitionsUtil.hasItemDefinition(ed)) {
 			// get Data Association and make sure both source and target are defined
-			Tuple<ItemAwareElement,DataAssociation> param = EventDefinitionsUtil.getIOParameter(event, ed);
+			Tuple<ItemAwareElement,DataAssociation> param = EventDefinitionsUtil.getIOParameter((Event)edContainer, ed);
 			DataAssociation da = param.getSecond();
-			int severity = ProcessValidator.isContainingProcessExecutable(event) ? Status.ERROR : Status.WARNING;
+			int severity = ProcessValidator.isContainingProcessExecutable(edContainer) ? Status.ERROR : Status.WARNING;
 			if (da instanceof DataInputAssociation) {
 				if (((DataInputAssociation)da).getSourceRef().size()==0) {
-					addStatus(event,severity,Messages.EventDefinitionValidator_No_Source_DataItem,
+					addStatus(edContainer,severity,Messages.EventDefinitionValidator_No_Source_DataItem,
 							ModelUtil.getLabel(ed),
-							ModelUtil.getLabel(event));
+							ModelUtil.getLabel(edContainer));
 				}
 			}
 			else if (da instanceof DataOutputAssociation) {
 				if (((DataOutputAssociation)da).getTargetRef()==null) {
-					addStatus(event,severity,Messages.EventDefinitionValidator_No_Target_DataItem,
+					addStatus(edContainer,severity,Messages.EventDefinitionValidator_No_Target_DataItem,
 							ModelUtil.getLabel(ed));
 				}
 			}

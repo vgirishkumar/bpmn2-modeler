@@ -118,8 +118,13 @@ public class CustomTaskImageProvider {
 	public static void registerImage(String imageId, ImageDescriptor image) {
 		ImageRegistry imageRegistry = GraphitiUIPlugin.getDefault().getImageRegistry();
 		imageId = providerId + "||" + imageId; //$NON-NLS-1$
-		if (imageRegistry.get(imageId) == null)
-			imageRegistry.put(imageId, image);
+		// always re-register images in case new ones are added; this will
+		// remove the "missing image" icon that may have been registered
+		// previously if an icon was not available.
+		org.eclipse.swt.graphics.Image oldImage = imageRegistry.get(imageId);
+		if (oldImage!=null)
+			oldImage.dispose();
+		imageRegistry.put(imageId, image);
 	}
 	
 	public static Image createImage(TargetRuntime rt, GraphicsAlgorithmContainer ga, String icon, IconSize size) {
