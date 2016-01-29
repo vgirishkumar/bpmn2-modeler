@@ -121,9 +121,9 @@ public class CustomTaskImageProvider {
 		// always re-register images in case new ones are added; this will
 		// remove the "missing image" icon that may have been registered
 		// previously if an icon was not available.
-		org.eclipse.swt.graphics.Image oldImage = imageRegistry.get(imageId);
-		if (oldImage!=null)
-			oldImage.dispose();
+		if (imageRegistry.get(imageId)!=null) {
+			imageRegistry.remove(imageId);
+		}
 		imageRegistry.put(imageId, image);
 	}
 	
