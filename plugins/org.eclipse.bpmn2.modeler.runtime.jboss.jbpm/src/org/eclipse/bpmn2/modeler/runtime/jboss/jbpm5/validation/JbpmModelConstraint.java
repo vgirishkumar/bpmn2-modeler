@@ -47,6 +47,7 @@ public class JbpmModelConstraint extends AbstractModelConstraint {
 	@Override
 	public IStatus validate(IValidationContext ctx) {
 		EObject object = ctx.getTarget();
+	
 		if (object instanceof BusinessRuleTask) {
 			return new BusinessRuleTaskValidator(ctx).validate((BusinessRuleTask) object);
 		}

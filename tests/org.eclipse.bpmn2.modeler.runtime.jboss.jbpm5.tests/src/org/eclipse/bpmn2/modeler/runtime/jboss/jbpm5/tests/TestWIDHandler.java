@@ -23,7 +23,7 @@ import java.util.Scanner;
 import junit.framework.Assert;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDParser;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -82,7 +82,7 @@ public class TestWIDHandler {
 		String content = getFile(null);
 		HashMap<String, WorkItemDefinition> widMap = new HashMap<String, WorkItemDefinition>();
 		try {
-			WIDHandler.evaluateWorkDefinitions(widMap, content);
+			widMap = WIDParser.parse(content);
 		} catch (WIDException e) {
 			Assert.fail("Failed with exception " + e.getMessage());
 		}
@@ -98,7 +98,7 @@ public class TestWIDHandler {
 		String content = getFile("widfiles/Email.wid");
 		HashMap<String, WorkItemDefinition> widMap = new HashMap<String, WorkItemDefinition>();
 		try {
-			WIDHandler.evaluateWorkDefinitions(widMap, content);
+			widMap = WIDParser.parse(content);
 		} catch (WIDException e) {
 			Assert.fail("Failed with exception " + e.getMessage());
 		}
@@ -118,7 +118,7 @@ public class TestWIDHandler {
 		String content = getFile("widfiles/java.wid");
 		HashMap<String, WorkItemDefinition> widMap = new HashMap<String, WorkItemDefinition>();
 		try {
-			WIDHandler.evaluateWorkDefinitions(widMap, content);
+			widMap = WIDParser.parse(content);
 		} catch (WIDException e) {
 			Assert.fail("Failed with exception " + e.getMessage());
 		}
@@ -136,7 +136,7 @@ public class TestWIDHandler {
 		System.out.println("testFail: no wid");
 		HashMap<String, WorkItemDefinition> widMap = new HashMap<String, WorkItemDefinition>();
 		try {
-			WIDHandler.evaluateWorkDefinitions(widMap, (String)null);
+			widMap = WIDParser.parse(null);
 		} catch (WIDException e) {
 			Assert.assertTrue(e != null);
 		}
