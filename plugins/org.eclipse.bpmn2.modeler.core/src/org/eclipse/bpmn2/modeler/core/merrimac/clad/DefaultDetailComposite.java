@@ -224,6 +224,16 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				attributesSection = null;
 			}
 		}
+		else if (attributesSection!=null){
+			// Arghhh! This is the only way I could figure out how to force the
+			// Twistie to layout its contents correctly.
+			attributesSection.setRedraw(false);
+			boolean expanded = attributesSection.isExpanded();
+			attributesSection.setExpanded(!expanded);
+			attributesSection.setExpanded(expanded);
+			attributesSection.setRedraw(true);
+		}
+		
 		redrawPage();
 	}
 

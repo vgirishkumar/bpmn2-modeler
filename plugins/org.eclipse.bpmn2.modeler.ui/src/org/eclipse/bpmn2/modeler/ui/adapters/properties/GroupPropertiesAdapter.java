@@ -44,7 +44,8 @@ public class GroupPropertiesAdapter extends ExtendedPropertiesAdapter<Group> {
 	 */
 	public GroupPropertiesAdapter(AdapterFactory adapterFactory, Group object) {
 		super(adapterFactory, object);
-		
+		setProperty(Bpmn2Package.eINSTANCE.getGroup_CategoryValueRef(), UI_CAN_EDIT, Boolean.TRUE);
+
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getGroup_CategoryValueRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
     	
