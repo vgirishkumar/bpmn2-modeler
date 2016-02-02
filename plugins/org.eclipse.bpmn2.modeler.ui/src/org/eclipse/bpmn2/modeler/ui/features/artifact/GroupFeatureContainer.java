@@ -43,9 +43,11 @@ import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -243,6 +245,11 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
+		public IReason updateNeeded(IUpdateContext context) {
+			return super.updateNeeded(context);
+		}
+
+		@Override
 		public boolean update(IUpdateContext context) {
 			PictogramElement pe = context.getPictogramElement();
 			if (FeatureSupport.isGroupShape(pe)) {
@@ -314,6 +321,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 						containedShapes.add(cs);
 					}
 				}
+				FeatureSupport.updateConnections(getFeatureProvider(), containedShapes);
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 			}
 		}

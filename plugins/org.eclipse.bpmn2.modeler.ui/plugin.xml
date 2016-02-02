@@ -656,6 +656,15 @@
 			label="%propertyTab.label.Category">
 		</propertyTab>
 
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.categoryValue.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="value"
+			type="org.eclipse.bpmn2.CategoryValue"
+			label="Category Value">
+		</propertyTab>
+
 		<!-- ============  Item Aware Elements ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"

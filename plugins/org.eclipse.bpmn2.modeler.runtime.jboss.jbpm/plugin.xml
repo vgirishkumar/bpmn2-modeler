@@ -252,6 +252,16 @@
 			features="identifier type"
 			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType">
 		</propertyTab>
+		
+		<propertyTab
+			id="org.jboss.runtime.jbpm5.group.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.group.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmGroupPropertySection"
+			features="categoryValueRef"
+			type="org.eclipse.bpmn2.Group"
+			label="%propertyTab.label.Group">
+		</propertyTab>
 
 <!-- Property Extension Adapters -->
 
@@ -337,6 +347,13 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.ParallelGateway"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
+		</propertyExtension>
+		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.CategoryValue"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.CategoryValue"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmCategoryValuePropertiesAdapter">
 		</propertyExtension>
 		
 		<!-- Things that have ItemDefinition references (data types) need to include the java native types in combo boxes and such -->
@@ -1033,6 +1050,8 @@
 			<enable object="CompensateEventDefinition" feature="activityRef"/>
 			<enable object="CompensateEventDefinition" feature="waitForCompletion"/>
 			<enable object="ConditionalEventDefinition" feature="condition"/>
+			<enable object="Category"/>
+			<enable object="CategoryValue"/>
 			<enable object="DataAssociation"/>
 			<enable object="DataInput" feature="documentation"/>
 			<enable object="DataInput" feature="extensionDefinitions"/>
@@ -1097,6 +1116,7 @@
 			<enable object="Group" feature="documentation"/>
 			<enable object="Group" feature="extensionDefinitions"/>
 			<enable object="Group" feature="extensionValues"/>
+			<enable object="Group" feature="categoryValueRef"/>
 			<enable object="Group" feature="id"/>
 			<enable object="ImportType"/>
 			<enable object="InclusiveGateway" feature="default"/>
