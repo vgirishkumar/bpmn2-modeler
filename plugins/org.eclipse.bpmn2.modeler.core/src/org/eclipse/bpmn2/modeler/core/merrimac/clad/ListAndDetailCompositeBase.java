@@ -173,6 +173,8 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 			while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
 				root = root.getParent();
 			}
+			if (root.getParent()!=null)
+				root = root.getParent();
 			root.setRedraw(false);
 			Point p = root.getSize();
 			p.x++;
