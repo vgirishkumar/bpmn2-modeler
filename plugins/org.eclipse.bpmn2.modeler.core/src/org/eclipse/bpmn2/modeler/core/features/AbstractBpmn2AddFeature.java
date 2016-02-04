@@ -204,7 +204,6 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			ILayoutService layoutService = Graphiti.getLayoutService();
 			Anchor a0 = connection.getStart();
 			Anchor a1 = connection.getEnd();
-			ILocation mp = layoutService.getConnectionMidpoint(connection, 0.5);
 			double x0 = layoutService.getLocationRelativeToDiagram(a0).getX();
 			double y0 = layoutService.getLocationRelativeToDiagram(a0).getY();
 			double x1 = layoutService.getLocationRelativeToDiagram(a1).getX();
@@ -287,8 +286,8 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null)
-				if (isHorizontal(context))
-					return (int) b.getWidth();
+//				if (isHorizontal(context))
+//					return (int) b.getWidth();
 				return (int) b.getHeight();
 		}
 		if (context.getHeight() > 0)
@@ -315,8 +314,8 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null) {
-				if (isHorizontal(context))
-					return (int) b.getHeight();
+//				if (isHorizontal(context))
+//					return (int) b.getHeight();
 				return (int) b.getWidth();
 			}
 		}
