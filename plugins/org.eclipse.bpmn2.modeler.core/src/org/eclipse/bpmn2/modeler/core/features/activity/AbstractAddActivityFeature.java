@@ -77,8 +77,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 			height = Math.min(targetAlgorithm.getHeight(), height);
 		}
 		
+		int oldX = context.getX();
+		int oldY = context.getY();
 		adjustLocation(context,width,height);
-		
 		int x = context.getX();
 		int y = context.getY();
 
@@ -101,6 +102,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		
 		peService.createChopboxAnchor(containerShape);
 
+		((AddContext)context).setX(oldX);
+		((AddContext)context).setY(oldY);
 		splitConnection(context, containerShape);
 		
 		return containerShape;

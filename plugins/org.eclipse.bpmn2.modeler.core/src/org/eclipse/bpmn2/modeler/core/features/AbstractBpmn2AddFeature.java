@@ -204,6 +204,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			ILayoutService layoutService = Graphiti.getLayoutService();
 			Anchor a0 = connection.getStart();
 			Anchor a1 = connection.getEnd();
+			ILocation mp = layoutService.getConnectionMidpoint(connection, 0.5);
 			double x0 = layoutService.getLocationRelativeToDiagram(a0).getX();
 			double y0 = layoutService.getLocationRelativeToDiagram(a0).getY();
 			double x1 = layoutService.getLocationRelativeToDiagram(a1).getX();
@@ -230,7 +231,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 				rc.setTargetPictogramElement(containerShape);
 			}
 			else {
-				anchor = AnchorUtil.createAnchor(oldTargetContainer, GraphicsUtil.getShapeCenter(containerShape));
+				anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
 				rc = new ReconnectionContext(connection, connection.getEnd(), anchor, targetLocation);
 				rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
 				rc.setTargetPictogramElement(containerShape);
