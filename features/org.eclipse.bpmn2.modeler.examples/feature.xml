@@ -3,20 +3,14 @@
       id="org.eclipse.bpmn2.modeler.examples"
       label="BPMN2 Modeler - Examples"
       version="1.3.0.qualifier"
-      provider-name="Eclipse.org">
+      provider-name="%providerName">
 
    <description>
       Example plug-ins demonstrating various features of the BPMN2 Modeler Extension Point API.
    </description>
 
    <copyright>
-      Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc. 
-All rights reserved.
-This program is made available under the terms of the 
-Eclipse Public License v1.0 which accompanies this distribution,
-and is available at http://www.eclipse.org/legal/epl-v10.html
-Contributors: 
-Red Hat, Inc. - initial API and implementation
+      %copyright
    </copyright>
 
    <license url="license.html">
