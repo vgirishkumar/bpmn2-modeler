@@ -77,8 +77,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 			height = Math.min(targetAlgorithm.getHeight(), height);
 		}
 		
+		int oldX = context.getX();
+		int oldY = context.getY();
 		adjustLocation(context,width,height);
-		
 		int x = context.getX();
 		int y = context.getY();
 
@@ -91,8 +92,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
-		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
-		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
+		peService.setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
+		peService.setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
 
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);
@@ -101,6 +102,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		
 		peService.createChopboxAnchor(containerShape);
 
+		((AddContext)context).setX(oldX);
+		((AddContext)context).setY(oldY);
 		splitConnection(context, containerShape);
 		
 		return containerShape;

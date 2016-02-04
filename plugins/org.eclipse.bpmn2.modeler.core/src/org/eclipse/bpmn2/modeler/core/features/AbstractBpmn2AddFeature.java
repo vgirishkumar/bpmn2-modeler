@@ -230,7 +230,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 				rc.setTargetPictogramElement(containerShape);
 			}
 			else {
-				anchor = AnchorUtil.createAnchor(oldTargetContainer, GraphicsUtil.getShapeCenter(containerShape));
+				anchor = AnchorUtil.createAnchor(containerShape, GraphicsUtil.getShapeCenter(containerShape));
 				rc = new ReconnectionContext(connection, connection.getEnd(), anchor, targetLocation);
 				rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
 				rc.setTargetPictogramElement(containerShape);

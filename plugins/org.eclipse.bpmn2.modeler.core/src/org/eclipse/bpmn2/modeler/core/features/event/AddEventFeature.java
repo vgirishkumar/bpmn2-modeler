@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -57,8 +58,9 @@ public abstract class AddEventFeature<T extends Event>
 			width = height = Math.min(width, height);
 		}
 		
+		int oldX = context.getX();
+		int oldY = context.getY();
 		adjustLocation(context,width,height);
-		
 		int x = context.getX();
 		int y = context.getY();
 
@@ -67,8 +69,8 @@ public abstract class AddEventFeature<T extends Event>
 		gaService.setLocationAndSize(invisibleRect, x, y, width, height);
 
 		Shape ellipseShape = peService.createShape(containerShape, false);
-		FeatureSupport.setPropertyValue(ellipseShape, GraphitiConstants.EVENT_ELEMENT, GraphitiConstants.EVENT_CIRCLE);
-		FeatureSupport.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
+		peService.setPropertyValue(ellipseShape, GraphitiConstants.EVENT_ELEMENT, GraphitiConstants.EVENT_CIRCLE);
+		peService.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
 		StyleUtil.applyStyle(ellipse, businessObject);
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
@@ -78,6 +80,8 @@ public abstract class AddEventFeature<T extends Event>
 
 		peService.createChopboxAnchor(containerShape);
 
+		((AddContext)context).setX(oldX);
+		((AddContext)context).setY(oldY);
 		splitConnection(context, containerShape);
 		
 		return containerShape;
