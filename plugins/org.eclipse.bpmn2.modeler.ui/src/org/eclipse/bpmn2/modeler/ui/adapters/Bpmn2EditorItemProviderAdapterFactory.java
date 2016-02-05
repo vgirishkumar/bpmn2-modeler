@@ -255,11 +255,13 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EObject object) {
         	TargetRuntime rt = ExtendedPropertiesAdapter.getTargetRuntime(object);
-			PropertyExtensionDescriptor ped = rt.getPropertyExtension(object.getClass());
-            if (ped==null && rt != TargetRuntime.getDefaultRuntime())
-                ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(object.getClass());
-			if (ped!=null)
-				return ped.getAdapter(adapterFactory,object);
+        	if (rt!=null) {
+				PropertyExtensionDescriptor ped = rt.getPropertyExtension(object.getClass());
+	            if (ped==null && rt != TargetRuntime.getDefaultRuntime())
+	                ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(object.getClass());
+				if (ped!=null)
+					return ped.getAdapter(adapterFactory,object);
+        	}
 			return null;
         }
         
