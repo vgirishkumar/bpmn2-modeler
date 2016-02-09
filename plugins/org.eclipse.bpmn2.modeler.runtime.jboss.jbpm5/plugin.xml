@@ -116,7 +116,7 @@
 			id="bpmn2.jbpm.userTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.userTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
+			class="com.odcgroup.bpmn2.modeler.extensions.property.UserTaskSection"
 			type="org.eclipse.bpmn2.UserTask"
 			label="%propertyTab.label.UserTask">
 		</propertyTab>
@@ -215,7 +215,7 @@
 			id="org.jboss.runtime.jbpm5.activitiy.io.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.activity.io.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmIoParametersPropertySection"
+			class="com.odcgroup.bpmn2.modeler.extensions.property.T24UserTaskIoParametersPropertySection"
 			label="%propertyTab.label.IOParameters">
 		</propertyTab>
 
