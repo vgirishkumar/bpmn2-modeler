@@ -23,10 +23,12 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.core.resources,
  org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ com.odcgroup.jbpm.extension
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5,
+Export-Package: com.odcgroup.bpmn2.modeler.extensions.property,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl,
@@ -38,7 +40,8 @@ Export-Package: org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid
-Import-Package: org.eclipse.bpmn2.modeler.help,
+Import-Package: com.google.common.collect,
+ org.eclipse.bpmn2.modeler.help,
  org.eclipse.bpmn2.modeler.ui,
  org.eclipse.bpmn2.modeler.ui.editor,
  org.eclipse.bpmn2.modeler.ui.features.activity.task,
