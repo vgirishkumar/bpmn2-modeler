@@ -50,6 +50,7 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -98,9 +99,11 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 
 	protected void initialize() {
-		setLayout(new GridLayout(3, false));
+		GridLayout layout = new GridLayout(3, false);
+		layout.marginWidth = 0;
+		setLayout(layout);
 		if (getParent().getLayout() instanceof GridLayout) {
-			GridLayout layout = (GridLayout) getParent().getLayout();
+			layout = (GridLayout) getParent().getLayout();
 			setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, layout.numColumns, 1));
 		}
 		toolkit.adapt(this);
@@ -150,21 +153,41 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return boDelegate;
 	}
 	
+	private boolean redrawing = false;
 	public void redrawPageAsync() {
-		Display.getDefault().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				redrawPage();
-			}
-		});
+		if (!redrawing) {
+			redrawing = true;
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					redrawPage();
+				}
+			});
+			redrawing = false;
+		}
 	}
 	
 	public void redrawPage() {
-		Composite root = getParent();
-		while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
-			root = root.getParent();
+		if (!redrawing) {
+			redrawing = true;
+			Composite root = getParent();
+			while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
+				root = root.getParent();
+			}
+			if (root.getParent()!=null)
+				root = root.getParent();
+			root.setRedraw(false);
+			Point p = root.getSize();
+			p.x++;
+			p.y++;
+			root.setSize(p);
+			p.x--;
+			p.y--;
+			root.setSize(p);
+			root.setRedraw(true);
+//			ModelUtil.recursivelayout(root);
+			redrawing = false;
 		}
-		ModelUtil.recursivelayout(root);
 	}
 	
 	public void setVisible(boolean visible) {

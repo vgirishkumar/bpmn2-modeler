@@ -608,8 +608,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 			final EList<EObject> list = getItemList();
 			tableViewer.setInput(list);
+
+			sashForm.layout();
 		}
-		redrawPageAsync();
+		redrawPage();
 	}
 	
 	/**
@@ -688,29 +690,34 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		// adjust table columns so they are all equal width,
 		// grow and shrink table height based on number of rows
 		tableComposite.addControlListener(new ControlAdapter() {
+			private boolean redrawing = false;
 			public void controlResized(ControlEvent e) {
-				// When the tableComposite is laid out the table size
-				// will be changed anyway; this just keeps the table
-				// scrollbars from flickering on/off during the layout.
-				Rectangle area = tableComposite.getClientArea();
-				table.setSize(area.width, area.height);
-				// calculate new table size
-				Point size = calculateTableSize(table);
-				int remainingWidth = size.x;
-				int columnCount = table.getColumnCount();
-				for (int index=0; index<columnCount; ++index) {
-					org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
-					if (index==columnCount-1)
-						tc.setWidth(remainingWidth + 7);
-					else
-						tc.setWidth(size.x/columnCount);
-					remainingWidth -= tc.getWidth();
+				if (!redrawing) {
+					redrawing = true;
+					// When the tableComposite is laid out the table size
+					// will be changed anyway; this just keeps the table
+					// scrollbars from flickering on/off during the layout.
+					Rectangle area = tableComposite.getClientArea();
+					table.setSize(area.width, area.height);
+					// calculate new table size
+					Point size = calculateTableSize(table);
+					int remainingWidth = size.x;
+					int columnCount = table.getColumnCount();
+					for (int index=0; index<columnCount; ++index) {
+						org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
+						if (index==columnCount-1)
+							tc.setWidth(remainingWidth);
+						else
+							tc.setWidth(size.x/columnCount);
+						remainingWidth -= tc.getWidth();
+					}
+					
+					gridData.heightHint = size.y + table.getHeaderHeight();
+					gridData.widthHint = 50;
+	
+					redrawPage();
+					redrawing = false;
 				}
-				
-				gridData.heightHint = size.y + table.getHeaderHeight();
-				gridData.widthHint = 50;
-				
-				redrawPageAsync();
 			}
 		});
 		
@@ -726,9 +733,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-
-							EObject newItem = addListItem(businessObject, feature);
-							if (newItem != null) {
+							EObject newItem = addListItem(businessObject,feature);
+							if (newItem!=null) {
 								final EList<EObject> list = getItemList();
 								tableViewer.setInput(list);
 								tableViewer.setSelection(new StructuredSelection(newItem));

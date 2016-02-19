@@ -358,6 +358,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				if (prefKey!=null) {
 					preferenceStore.setValue(prefKey, e.getState());
 				}
+				redrawPage();
 			}
 		});
 		

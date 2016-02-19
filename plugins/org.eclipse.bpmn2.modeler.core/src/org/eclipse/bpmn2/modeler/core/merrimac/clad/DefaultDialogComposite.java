@@ -215,9 +215,9 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 				// in case they need to display additional information
 				// depending on what type of referencing object created this
 				// feature editing dialog.
-				Object data = this.getData("container");
+				Object data = this.getData("container"); //$NON-NLS-1$
 				if (data!=null)
-					detail.setData("container",data);
+					detail.setData("container",data); //$NON-NLS-1$
 				detail.setBusinessObject(bo);
 			}
 		}
