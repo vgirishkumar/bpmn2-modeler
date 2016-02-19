@@ -31,6 +31,7 @@
 	<properties>
 		<tycho-version>0.21.0</tycho-version>
 		<tycho-extras-version>${tycho-version}</tycho-extras-version>
+		<BUILD_ALIAS>Final</BUILD_ALIAS>
 	</properties>
 
 	<profiles>
@@ -246,6 +247,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<format>'${BUILD_ALIAS}-v'yyyyMMdd-HHmm'-B100'</format>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-source-feature-plugin</artifactId>

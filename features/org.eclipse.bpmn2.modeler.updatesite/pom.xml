@@ -34,7 +34,6 @@
 		<update.site.description>Development Milestone</update.site.description>
 		<target.eclipse.version>4.4 (Luna)</target.eclipse.version>
 		<siteTemplateFolder>siteTemplateFolder</siteTemplateFolder>
-		<BUILD_ALIAS>Beta2</BUILD_ALIAS>
 	</properties>
 
 	<build>
@@ -44,7 +43,6 @@
 				<artifactId>tycho-packaging-plugin</artifactId>
 				<version>${tycho-version}</version>
 				<configuration>
-					<format>'${BUILD_ALIAS}-v'yyyyMMdd-HHmm'-B100'</format>
 					<archiveSite>true</archiveSite>
 					<environments>
 						<environment>
