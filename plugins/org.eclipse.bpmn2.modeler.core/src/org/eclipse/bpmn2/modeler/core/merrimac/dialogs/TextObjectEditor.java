@@ -73,7 +73,7 @@ public class TextObjectEditor extends ObjectEditor {
 		}
 		text.setLayoutData(data);
 
-		int textLimit = Bpmn2Preferences.getInstance(object).getTextLimit();
+		int textLimit = multiLine ? Text.LIMIT : Bpmn2Preferences.getInstance(object).getTextLimit();
 		text.setTextLimit(textLimit);
 
 		text.addTraverseListener(new TraverseListener() {
