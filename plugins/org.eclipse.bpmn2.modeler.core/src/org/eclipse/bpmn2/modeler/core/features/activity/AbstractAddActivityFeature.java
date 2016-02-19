@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -78,8 +77,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 			height = Math.min(targetAlgorithm.getHeight(), height);
 		}
 		
+		int oldX = context.getX();
+		int oldY = context.getY();
 		adjustLocation(context,width,height);
-		
 		int x = context.getX();
 		int y = context.getY();
 
@@ -102,6 +102,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		
 		peService.createChopboxAnchor(containerShape);
 
+		((AddContext)context).setX(oldX);
+		((AddContext)context).setY(oldY);
 		splitConnection(context, containerShape);
 		
 		return containerShape;
