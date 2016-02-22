@@ -154,7 +154,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 	
 	private boolean redrawing = false;
-	public void redrawPageAsync() {
+	public synchronized void redrawPageAsync() {
 		if (!redrawing) {
 			redrawing = true;
 			Display.getDefault().asyncExec(new Runnable() {
@@ -167,7 +167,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		}
 	}
 	
-	public void redrawPage() {
+	public synchronized void redrawPage() {
 		if (!redrawing) {
 			redrawing = true;
 			Composite root = getParent();
@@ -177,6 +177,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 			if (root.getParent()!=null)
 				root = root.getParent();
 			root.setRedraw(false);
+			root.layout();
 			Point p = root.getSize();
 			p.x++;
 			p.y++;
@@ -185,7 +186,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 			p.y--;
 			root.setSize(p);
 			root.setRedraw(true);
-//			ModelUtil.recursivelayout(root);
 			redrawing = false;
 		}
 	}
