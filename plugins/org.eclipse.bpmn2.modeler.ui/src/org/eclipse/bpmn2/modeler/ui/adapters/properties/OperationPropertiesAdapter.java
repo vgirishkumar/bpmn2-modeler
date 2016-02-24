@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -53,6 +54,16 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getOperation_ImplementationRef();
     	setFeatureDescriptor(ref, new ImplementationRefFeatureDescriptor<Operation>(this, adapterFactory, object, ref));
 
+    	ref = Bpmn2Package.eINSTANCE.getOperation_Name();
+    	setFeatureDescriptor(ref, new FeatureDescriptor<Operation>(this,object, ref) {
+			
+			@Override
+			public String getLabel() {
+				return Messages.Operation_Name_Label;
+			}
+
+    	});
+    	
     	ref = Bpmn2Package.eINSTANCE.getOperation_InMessageRef();
     	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(this,object,ref));
        	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);

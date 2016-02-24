@@ -315,6 +315,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 						containedShapes.add(cs);
 					}
 				}
+				FeatureSupport.updateConnections(getFeatureProvider(), containedShapes);
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 			}
 		}

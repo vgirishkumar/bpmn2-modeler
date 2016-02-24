@@ -15,6 +15,8 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.DataInput;
@@ -22,6 +24,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.LinkEventDefinition;
+import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -29,6 +32,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
@@ -68,6 +72,19 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 		if (isModelObjectEnabled(object.eClass(), feature)) {
 			if ("eventDefinitions".equals(feature.getName())) { //$NON-NLS-1$
 				eventsTable = new EventDefinitionsListComposite(this, (Event)object) {
+
+					@Override
+					protected List<EClass> getAllowedEventDefinitions(Event event, Object parentContainer) {
+						List<EClass> list = FeatureSupport.getAllowedEventDefinitions(event, parentContainer);
+						if (event instanceof BoundaryEvent) {
+							if (((BoundaryEvent)event).getAttachedToRef() instanceof ScriptTask) {
+								// See https://bugzilla.redhat.com/show_bug.cgi?id=1141619
+								// remove timer event because it's not allowed on a ScriptTask
+								list.remove(Bpmn2Package.eINSTANCE.getTimerEventDefinition());
+							}
+						}
+						return list;
+					}
 
 					@Override
 					public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
@@ -125,7 +142,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 				eventsTable.setTitle(Messages.JbpmCommonEventDetailComposite_Title);
 				return eventsTable;
 			}
-			else if ("dataInputs".equals(feature.getName()) || "dataOutputs".equals(feature.getName())) { //$NON-NLS-1$
+			else if ("dataInputs".equals(feature.getName()) || "dataOutputs".equals(feature.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
 				// only show Input/Output list if the event definition requires it
 				List<EventDefinition> eventDefinitions = null;
 				if (object instanceof ThrowEvent)

@@ -56,9 +56,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
-				Operation operation = Bpmn2ModelerFactory.create(Operation.class);
-				ModelUtil.setID(operation, resource);
-				operation.setName( ModelUtil.toCanonicalString(operation.getId()) );
+				Operation operation = Bpmn2ModelerFactory.create(resource, Operation.class);
 //				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
 				object.getOperations().add(operation);
 				return operation;
@@ -86,6 +84,15 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			}
     	});
     	
+    	feature = Bpmn2Package.eINSTANCE.getInterface_Name();
+    	setFeatureDescriptor(feature, new FeatureDescriptor<Interface>(this,object, feature) {
+			
+			@Override
+			public String getLabel() {
+				return Messages.Interface_Name_Label;
+			}
+
+    	});
     	
 	}
 
@@ -150,7 +157,12 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 		
 		@Override
 		public String getLabel() {
-			return Messages.Interface_Implementation_Label;
+			if (object instanceof Interface)
+				return Messages.Interface_Implementation_Label;
+			else if (object instanceof Operation)
+				return Messages.Operation_Implementation_Label;
+			else
+				return "Implementation";
 		}
 
 		@Override
@@ -158,7 +170,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			Resource resource = ObjectPropertyProvider.getResource(object);
 			
 			if (value==null)
-				value = "";
+				value = ""; //$NON-NLS-1$
 			if (value instanceof PortType) {
 				PortType portType = (PortType)value;
 				value = NamespaceUtil.normalizeQName(resource, portType.getQName());;
