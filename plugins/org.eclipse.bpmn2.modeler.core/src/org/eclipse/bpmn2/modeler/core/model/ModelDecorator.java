@@ -190,6 +190,9 @@ public class ModelDecorator {
 	 * @return the dynamic EPackage or null if not found.
 	 */
 	public static EPackage getEPackage(String nsURI) {
+		if (nsURI==null)
+			return null;
+		
 		EPackage pkg = (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
 		if (pkg!=null)
 			return pkg;

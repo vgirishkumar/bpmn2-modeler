@@ -48,6 +48,8 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
@@ -103,7 +105,6 @@ import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
-import org.eclipse.emf.ecore.xmi.impl.StringSegment;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
@@ -887,6 +888,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
    				}
             }
             super.endElement(uri, localName, name);
+    		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_LOADED, peekObject));
         }
 	}
 	

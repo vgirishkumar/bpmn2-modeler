@@ -73,6 +73,7 @@ import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
@@ -222,6 +223,28 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			}
 			else if (MetaDataTypeAdapter.appliesTo(object)) {
 				MetaDataTypeAdapter.adapt(object);
+			}
+		}
+		else if (event.eventType == EventType.BUSINESSOBJECT_LOADED ||
+				event.eventType == EventType.BUSINESSOBJECT_INITIALIZED) {
+			EObject object = (EObject) event.target;
+			if (object instanceof GlobalType) {
+				// The BaseElement feature "id" is not saved, but it MUST be kept in sync with the
+				// GlobalType feature "identifier" - this acts like the "name" feature of other
+				// ItemAwareElements that treat "name" like an ID.
+				// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
+				((GlobalType) object).setId(((GlobalType) object).getIdentifier());
+			}
+			else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
+				EStructuralFeature nameFeature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+				String n = (String) object.eGet(nameFeature);
+				if (n==null || n.isEmpty()) {
+					EStructuralFeature idFeature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+					object.eSet(nameFeature, object.eGet(idFeature));
+				}
+			}
+			else if (ElementNameChangeAdapter.appliesTo(object)) {
+				ElementNameChangeAdapter.adapt(object);
 			}
 		}
 	}

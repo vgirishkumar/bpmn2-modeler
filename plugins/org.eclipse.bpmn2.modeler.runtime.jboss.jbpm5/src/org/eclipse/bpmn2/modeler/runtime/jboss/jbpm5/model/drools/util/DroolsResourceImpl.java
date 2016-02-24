@@ -13,7 +13,6 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +31,6 @@ import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
@@ -47,7 +45,7 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
@@ -68,7 +66,6 @@ import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.BasicInternalEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -504,22 +501,6 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 							}
 							if (removed.size()>0)
 								anyMap.removeAll(removed);
-						}
-					}
-					
-					if (childObject instanceof GlobalType) {
-						// The BaseElement feature "id" is not saved, but it MUST be kept in sync with the
-						// GlobalType feature "identifier" - this acts like the "name" feature of other
-						// ItemAwareElements that treat "name" like an ID.
-						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
-						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
-					}
-					else if (ProcessVariableNameChangeAdapter.appliesTo(childObject)) {
-						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-						String n = (String) childObject.eGet(nameFeature);
-						if (n==null || n.isEmpty()) {
-							EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
-							childObject.eSet(nameFeature, childObject.eGet(idFeature));
 						}
 					}
 				}
