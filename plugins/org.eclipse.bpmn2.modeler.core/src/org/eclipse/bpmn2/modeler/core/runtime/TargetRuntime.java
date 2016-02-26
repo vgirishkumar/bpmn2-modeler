@@ -40,6 +40,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -299,7 +300,19 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		}
 		return null;
 	}
-	
+
+	public static TargetRuntime getRuntime(EPackage ePackage) {
+		if (ePackage!=null) {
+			for (TargetRuntime rt :TargetRuntime.createTargetRuntimes()) {
+				for (ModelDescriptor md : rt.getModelDescriptors()) {
+					if (ePackage == md.getEPackage())
+						return rt;
+				}
+			}
+		}
+		return null;
+	}
+
 	public static TargetRuntime getRuntime(IEditorInput input) {
 		TargetRuntime runtime = null;
 		if (input!=null) {
