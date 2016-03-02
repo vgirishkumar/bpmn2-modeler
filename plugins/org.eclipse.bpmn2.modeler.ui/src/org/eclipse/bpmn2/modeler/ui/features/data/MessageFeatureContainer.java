@@ -303,7 +303,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		public Message createBusinessObject(ICreateContext context) {
 			changesDone = true;
 
-			Message message = Bpmn2ModelerFactory.create(Message.class);
+			Message message = Bpmn2ModelerFactory.createObject(Message.class);
 			String oldName = message.getName();
 			message.setName(Messages.MessageFeatureContainer_New);
 			message.setId(null);

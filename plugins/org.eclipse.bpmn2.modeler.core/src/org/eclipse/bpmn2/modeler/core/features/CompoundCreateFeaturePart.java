@@ -409,7 +409,7 @@ public class CompoundCreateFeaturePart<CONTEXT> implements ICompoundCreateFeatur
 				if (((String)value).startsWith("$")) { //$NON-NLS-1$
 					String name = ((String)value).substring(1);
 					EClass eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(name);
-					value = Bpmn2ModelerFactory.create(be.eResource(), (EClass)eClass);
+					value = Bpmn2ModelerFactory.createObject(be.eResource(), (EClass)eClass);
 				}
 				
 				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);

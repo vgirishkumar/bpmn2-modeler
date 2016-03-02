@@ -247,8 +247,8 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			changesDone = true;
 				ModelHandler mh = ModelHandler.getInstance(getDiagram());
 
-			DataStoreReference dataStoreRef = Bpmn2ModelerFactory.create(DataStoreReference.class);
-				DataStore dataStore = Bpmn2ModelerFactory.create(DataStore.class);
+			DataStoreReference dataStoreRef = Bpmn2ModelerFactory.createObject(DataStoreReference.class);
+				DataStore dataStore = Bpmn2ModelerFactory.createObject(DataStore.class);
 				String oldName = dataStore.getName();
 				dataStore.setName(Messages.DataStoreReferenceFeatureContainer_New);
 				dataStore.setId(null);

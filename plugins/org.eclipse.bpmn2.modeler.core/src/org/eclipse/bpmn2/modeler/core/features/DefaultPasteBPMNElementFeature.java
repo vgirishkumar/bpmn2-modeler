@@ -287,7 +287,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			protected EObject createCopy(EObject eObject) {
 				EClass eClass = getTarget(eObject.eClass());
 				if (eClass.getEPackage().getEFactoryInstance() == Bpmn2Factory.eINSTANCE) {
-					return Bpmn2ModelerFactory.create(resource, eClass);
+					return Bpmn2ModelerFactory.createObject(resource, eClass);
 				}
 				return super.createCopy(eObject); 
 			}
@@ -318,7 +318,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			// need to create a Process for target container if it doesn't have one yet
 			Participant participant = (Participant) targetContainerObject;
 			if (participant.getProcessRef()==null) {
-				Process process = Bpmn2ModelerFactory.create(resource, Process.class);
+				Process process = Bpmn2ModelerFactory.createObject(resource, Process.class);
 				participant.setProcessRef(process);
 			}
 			targetContainerObject = participant.getProcessRef();
@@ -342,7 +342,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 					fc.getLaneSets().get(0).getLanes().add((Lane)newObject);
 				}
 				else {
-					LaneSet ls = Bpmn2ModelerFactory.create(resource, LaneSet.class);
+					LaneSet ls = Bpmn2ModelerFactory.createObject(resource, LaneSet.class);
 					fc.getLaneSets().add(ls);
 					ls.getLanes().add((Lane)newObject);
 				}
@@ -350,7 +350,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			else if (targetContainerObject instanceof Lane) {
 				Lane ln = (Lane)targetContainerObject;
 				if (ln.getChildLaneSet()==null) {
-					LaneSet ls = Bpmn2ModelerFactory.create(resource, LaneSet.class);
+					LaneSet ls = Bpmn2ModelerFactory.createObject(resource, LaneSet.class);
 					ln.setChildLaneSet(ls);
 				}
 				ln.getChildLaneSet().getLanes().add((Lane)newObject);
@@ -373,7 +373,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			Participant participant = (Participant)newObject;
 			if (((Participant) newObject).getProcessRef()!=null) {
 				// need to create a new Process for this thing
-				Process process = Bpmn2ModelerFactory.create(resource, Process.class);
+				Process process = Bpmn2ModelerFactory.createObject(resource, Process.class);
 				participant.setProcessRef(process);
 			}
 			if (targetContainerObject instanceof Collaboration) {

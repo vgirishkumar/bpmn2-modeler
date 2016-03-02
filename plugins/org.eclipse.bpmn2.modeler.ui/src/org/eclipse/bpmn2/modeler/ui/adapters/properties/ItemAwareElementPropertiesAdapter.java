@@ -59,7 +59,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 				protected void internalSet(ItemAwareElement element, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof String) {
 						// construct a DataState from the given name string
-						DataState ds = Bpmn2ModelerFactory.create(DataState.class);
+						DataState ds = Bpmn2ModelerFactory.createObject(DataState.class);
 						ds.setName((String)value);
 						value = ds;
 					}

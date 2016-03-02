@@ -1210,7 +1210,7 @@ public class ModelDecorator {
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
-			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(ExtensionAttributeValue.class);
+			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.createObject(ExtensionAttributeValue.class);
 			ModelUtil.setID(newItem);
 			FeatureMap map = newItem.getValue();
 			map.add(feature, value);
@@ -1269,7 +1269,7 @@ public class ModelDecorator {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								Process process = Bpmn2ModelerFactory.create(Process.class);
+								Process process = Bpmn2ModelerFactory.createObject(Process.class);
 								participant.setProcessRef(process);
 								definitions.getRootElements().add(process);
 								ModelUtil.setID(process);

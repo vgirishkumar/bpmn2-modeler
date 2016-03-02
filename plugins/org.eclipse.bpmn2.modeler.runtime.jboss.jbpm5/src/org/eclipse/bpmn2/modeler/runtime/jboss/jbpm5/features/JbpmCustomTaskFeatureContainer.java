@@ -115,11 +115,11 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			if (ioSpecification!=null) {
 				Resource resource = getResource(context);
 				if (ioSpecification.getInputSets().size()==0) {
-					InputSet is = Bpmn2ModelerFactory.create(resource, InputSet.class);
+					InputSet is = Bpmn2ModelerFactory.createObject(resource, InputSet.class);
 					ioSpecification.getInputSets().add(is);
 				}
 				if (ioSpecification.getOutputSets().size()==0) {
-					OutputSet os = Bpmn2ModelerFactory.create(resource, OutputSet.class);
+					OutputSet os = Bpmn2ModelerFactory.createObject(resource, OutputSet.class);
 					ioSpecification.getOutputSets().add(os);
 				}
 			}
@@ -327,7 +327,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 						if (value!=null && !value.isEmpty()) {
 							EObject structureRef = ModelUtil.createStringWrapper(value);
 							if (itemDefinition==null) {
-								itemDefinition = Bpmn2ModelerFactory.create(ItemDefinition.class);
+								itemDefinition = Bpmn2ModelerFactory.createObject(ItemDefinition.class);
 								ModelUtil.getDefinitions(task).getRootElements().add(itemDefinition);
 								ModelUtil.setID(itemDefinition);
 							}

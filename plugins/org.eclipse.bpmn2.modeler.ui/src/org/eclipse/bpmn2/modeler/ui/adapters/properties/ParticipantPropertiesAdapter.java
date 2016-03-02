@@ -84,14 +84,14 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 			        	if (bpmnDiagram!=null)
 			        		be = bpmnDiagram.getPlane().getBpmnElement();
 			        	// no Collaboration element found - create one
-			        	Collaboration collaboration = Bpmn2ModelerFactory.eINSTANCE.createCollaboration();
+			        	Collaboration collaboration = Bpmn2ModelerFactory.create(resource, Collaboration.class);
 			        	definitions.getRootElements().add(collaboration);
 			        	collaboration.getParticipants().add(participant);
 			        	if (be instanceof Process) {
 			        		// convert the existing Process diagram to a Collaboration
 			        		// by creating a new Participant for the default Process.
 			        		Process process = (Process) be;
-			        		Participant defaultParticipant = Bpmn2ModelerFactory.eINSTANCE.createParticipant();
+			        		Participant defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
 			        		defaultParticipant.setName(process.getName() +  " Pool");
 			        		defaultParticipant.setProcessRef(process);
 			        		collaboration.getParticipants().add(defaultParticipant);

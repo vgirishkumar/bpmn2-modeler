@@ -99,7 +99,7 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 			        		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(process);
 			        		if (bpmnDiagram!=null) {
 				        		// create a Participant for the Default Process so we can add it to the Collaboration
-								Participant defaultParticipant = Bpmn2ModelerFactory.eINSTANCE.createParticipant();
+								Participant defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
 								defaultParticipant.setProcessRef(process);
 								defaultParticipant.setName(process.getName() +  " Pool"); //$NON-NLS-1$
 					        	collaboration.getParticipants().add(defaultParticipant);
@@ -128,7 +128,7 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 									}
 								}
 								if (defaultParticipant==null)
-									defaultParticipant = Bpmn2ModelerFactory.eINSTANCE.createParticipant();
+									defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
 								defaultParticipant.setProcessRef(process);
 								defaultParticipant.setName(process.getName() +  " Pool"); //$NON-NLS-1$
 					        	collaboration.getParticipants().add(defaultParticipant);

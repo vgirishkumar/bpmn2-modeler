@@ -237,7 +237,7 @@ public class JbpmModelUtil {
 
 	public static void removeImport(ImportType importType) {
 		Definitions definitions = ModelUtil.getDefinitions(importType);
-		Import imp = Bpmn2ModelerFactory.create(Import.class);
+		Import imp = Bpmn2ModelerFactory.createObject(Import.class);
 		imp.setImportType(ImportUtil.IMPORT_TYPE_JAVA);
 		imp.setLocation(importType.getName());
 		definitions.getImports().add(imp);
@@ -402,7 +402,7 @@ public class JbpmModelUtil {
 		}
 		if (itemDef==null)
 		{
-			itemDef = Bpmn2ModelerFactory.create(resource, ItemDefinition.class);
+			itemDef = Bpmn2ModelerFactory.createObject(resource, ItemDefinition.class);
 			itemDef.setStructureRef(ModelUtil.createStringWrapper(structureRef));
 			itemDef.setItemKind(ItemKind.INFORMATION);
 
@@ -418,7 +418,7 @@ public class JbpmModelUtil {
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {
-			rel = Bpmn2ModelerFactory.create(resource, Relationship.class);
+			rel = Bpmn2ModelerFactory.createObject(resource, Relationship.class);
 			definitions.getRelationships().add(rel);
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);

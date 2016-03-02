@@ -56,7 +56,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 		}
 		
 		if (rootElement==null) {
-			rootElement = Bpmn2ModelerFactory.create(resource, eClass);
+			rootElement = Bpmn2ModelerFactory.createObject(resource, eClass);
 		}
 		
 		return rootElement;

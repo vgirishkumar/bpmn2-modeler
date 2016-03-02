@@ -131,7 +131,7 @@ public class CompensateEventDefinitionPropertiesAdapter extends EventDefinitionP
 							// create a new Association:
 							// Note that this is only for the purpose of getting an ExtendedPropertiesAdapter
 							// for the Association and having it create the Association Connection.
-							association = (Association) Bpmn2ModelerFactory.create(resource, Bpmn2Package.eINSTANCE.getAssociation());
+							association = (Association) Bpmn2ModelerFactory.createObject(resource, Bpmn2Package.eINSTANCE.getAssociation());
 						}
 						// and set the Event as the source reference
 						ExtendedPropertiesProvider.setValue(association, Bpmn2Package.eINSTANCE.getAssociation_SourceRef(), event);

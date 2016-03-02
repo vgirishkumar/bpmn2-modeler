@@ -52,9 +52,9 @@ public class JbpmGroupDetailComposite extends DefaultDetailComposite {
 					break;
 				}
 			}
-			categoryValue = (CategoryValue) Bpmn2ModelerFactory.create(CategoryValue.class);
+			categoryValue = (CategoryValue) Bpmn2ModelerFactory.createObject(CategoryValue.class);
 			if (category==null) {
-				category = Bpmn2ModelerFactory.create(Category.class);
+				category = Bpmn2ModelerFactory.createObject(Category.class);
 				category.setName("default");
 				category.getCategoryValue().add(categoryValue);
 				InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), category);

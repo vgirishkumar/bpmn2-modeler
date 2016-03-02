@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
@@ -58,7 +59,7 @@ public class GroupPropertiesAdapter extends ExtendedPropertiesAdapter<Group> {
 				Definitions definitions = ModelUtil.getDefinitions(resource);
 				List<Category> categories = ModelUtil.getAllRootElements(definitions, Category.class);
 				if (categories.size()==0) {
-					category = (Category) Bpmn2Factory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getCategory());
+					category = (Category) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getCategory());
 					ModelUtil.setID(category, resource);
 					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), category);
 				}
@@ -70,7 +71,7 @@ public class GroupPropertiesAdapter extends ExtendedPropertiesAdapter<Group> {
 				if (dialog.open() == Window.OK) {
 					String name = dialog.getValue();
 					if (!name.isEmpty()) {
-						categoryValue = (CategoryValue) Bpmn2Factory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getCategoryValue());
+						categoryValue = (CategoryValue) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getCategoryValue());
 						ModelUtil.setID(categoryValue,resource);
 						categoryValue.setValue(name);
 						category.getCategoryValue().add(categoryValue);

@@ -30,12 +30,14 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -120,10 +122,28 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
         return documentRoot;
     }
 
+	public EObject createInternal(EClass eClass) {
+		return super.create(eClass);
+	}
+	
+	// convenience methods
+	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
+		EClass eClass = getEClass(clazz);
+		T object = (T) Bpmn2ModelerFactory.eINSTANCE.create(eClass);
+		ModelUtil.setID(object, resource);
+		return object;
+	}
+
 	@Override
     public EObject create(EClass eClass) {
     	
-		EObject object = super.create(eClass);
+		EObject object = null;
+		
+		EFactory factory = eClass.getEPackage().getEFactoryInstance();
+		if (factory instanceof Bpmn2ModelerFactory)
+			object = ((Bpmn2ModelerFactory) factory).createInternal(eClass);
+		else
+			object = factory.create(eClass);
 
     	ObjectPropertyProvider adapter = ObjectPropertyProvider.getAdapter(this);
 		try {
@@ -190,16 +210,16 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     	return enableModelExtensions;
     }
 	
-	public static <T extends EObject> T create(Class<T> clazz) {
-		return create(null, clazz);
+	public static <T extends EObject> T createObject(Class<T> clazz) {
+		return createObject(null, clazz);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
+	public static <T extends EObject> T createObject(Resource resource, Class<T> clazz) {
 		EClass eClass = getEClass(clazz);
 		T newObject = null;
 		if (eClass!=null) {
-			newObject = (T) create(resource, eClass);
+			newObject = (T) createObject(resource, eClass);
 		}
 		else {
 			// maybe it's a DI object type?
@@ -211,7 +231,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		return newObject;
 	}
 	
-	public static EObject create(Resource resource, EClass eClass) {
+	public static EObject createObject(Resource resource, EClass eClass) {
 		Assert.isTrue(eClass!=null);
 		
 		EObject newObject = null;

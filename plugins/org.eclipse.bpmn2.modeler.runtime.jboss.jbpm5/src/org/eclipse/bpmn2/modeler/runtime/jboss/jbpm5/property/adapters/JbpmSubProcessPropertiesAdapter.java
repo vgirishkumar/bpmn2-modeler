@@ -24,11 +24,11 @@ public class JbpmSubProcessPropertiesAdapter extends ActivityPropertiesAdapter<S
 					protected void internalSet(SubProcess object, EStructuralFeature feature, Object value, int index) {
 						if (value instanceof String) {
 							if ("MultiInstanceLoopCharacteristics".equals(value)) { //$NON-NLS-1$
-								MultiInstanceLoopCharacteristics milc = Bpmn2ModelerFactory.create(getResource(), MultiInstanceLoopCharacteristics.class);
+								MultiInstanceLoopCharacteristics milc = Bpmn2ModelerFactory.createObject(getResource(), MultiInstanceLoopCharacteristics.class);
 								value = milc;
 							}
 							else if ("StandardLoopCharacteristics".equals(value)) { //$NON-NLS-1$
-								StandardLoopCharacteristics milc = Bpmn2ModelerFactory.create(getResource(), StandardLoopCharacteristics.class);
+								StandardLoopCharacteristics milc = Bpmn2ModelerFactory.createObject(getResource(), StandardLoopCharacteristics.class);
 								value = milc;
 							}
 						}
