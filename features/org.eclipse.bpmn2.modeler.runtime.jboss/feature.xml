@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.bpmn2.modeler.runtime.jboss"
       label="BPMN2 Modeler - jBPM Runtime Extension Feature"
-      version="1.1.5.qualifier"
+      version="1.1.6.qualifier"
       provider-name="JBoss by Red Hat">
 
    <description url="http://jbpm.jboss.org/">
