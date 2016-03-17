@@ -48,9 +48,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.NCNameObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -59,8 +57,6 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.AreaContext;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -110,31 +106,37 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	 */
 	protected void createInputParameterBindings(final Task task) {
 		
-		// this may no longer be required since populateObject() is now called
-		// in Bpmn2ModelerFactory.create(). See https://issues.jboss.org/browse/SWITCHYARD-2484
-		// for details.
-		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
-		if (adapter==null) {
-			AddContext context = new AddContext(new AreaContext(), task);
-			String id = CustomElementFeatureContainer.getId(context);
+		// Get the Model Extension Descriptor for this Custom Task.
+		// This will contain the Data Inputs and Outputs that were
+		// defined for the Custom Task either in the plugin.xml
+		// or by way of Work Item Definition files contained in
+		// the project or the project's classpath.
+		ModelExtensionDescriptor med = null;
+		ExtendedPropertiesAdapter<?> adapter = ExtendedPropertiesAdapter.adapt(task);
+		if (adapter!=null) {
+			// look for it in the property adapter first
+			med = (ModelExtensionDescriptor) adapter.getProperty(ModelExtensionDescriptor.class.getName());
+		}
+
+		if (med==null) {
+			// not found? get the Custom Task ID from the Task object
+			String id = CustomElementFeatureContainer.findId(task);
 			if (id!=null) {
-		    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-		    	ctd.populateObject(task, task.eResource(), true);
-		    	adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
+				// and look it up in the Target Runtime's list of
+				// Custom Task Descriptors
+		    	TargetRuntime rt = TargetRuntime.getRuntime(task);
+		    	med = rt.getCustomTask(id);
 			}
 		}
 		
-		if (adapter != null) {
-//		ModelExtensionDescriptor med = BaseRuntimeExtensionDescriptor.getDescriptor(task, ModelExtensionDescriptor.class);
-//		if (med != null) {
-			// This Task object has <modelExtension> properties defined in the plugin.xml
-			// check if any of the <property> elements extend the DataInputs or DataOutputs
+		if (med!=null) {
+			// This Task object has additional properties defined either by way of the
+			// <modelExtension> defined in the plugin.xml or in Work Item Definitions.
+			// Check if any of the extension properties extend the DataInputs or DataOutputs
 			// (i.e. the I/O Parameter mappings) and create Object Editors for them.
 			// If the Task does not define these parameter mappings, create temporary objects
 			// for the editors (these will go away if they are not touched by the user)
-//			List<Property> props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
-			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+			List<Property> props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			InputOutputSpecification ioSpec = task.getIoSpecification();
 			if (ioSpec==null) {
 				ioSpec = createModelObject(InputOutputSpecification.class);
@@ -170,7 +172,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				if (parameter==null) {
                     ItemDefinition itemDef = createModelObject(ItemDefinition.class);
                     itemDef.setItemKind(ItemKind.INFORMATION);
-                    itemDef.setStructureRef( ModelUtil.createStringWrapper("Object") );
+                    itemDef.setStructureRef( ModelUtil.createStringWrapper("Object") ); //$NON-NLS-1$
                     InsertionAdapter.add(definitions,
                             PACKAGE.getDefinitions_RootElements(),
                             itemDef);
@@ -240,12 +242,12 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					editor = new BooleanObjectEditor(this,fromExpression,attribute) {
 						@Override
 						public Boolean getValue() {
-							if (task instanceof UserTask && "Skippable".equals(name)) {
+							if (task instanceof UserTask && "Skippable".equals(name)) { //$NON-NLS-1$
 								// Sheesh! All this just to set the default value of
 								// the User Task "Skippable" Data Input to true by default!
 								UserTask ut = (UserTask) task;
 								for (DataInput di : ut.getIoSpecification().getDataInputs()) {
-									if ("Skippable".equals(di.getName())) {
+									if ("Skippable".equals(di.getName())) { //$NON-NLS-1$
 										for (DataInputAssociation dia : ut.getDataInputAssociations()) {
 											if (dia.getTargetRef() == di) {
 												if (dia.getAssignment().size()==0) {
@@ -265,7 +267,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				}
 				else {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
-					boolean isCDATA = "CDATA".equals(dataType);
+					boolean isCDATA = "CDATA".equals(dataType); //$NON-NLS-1$
 					((TextObjectEditor)editor).setMultiLine(isCDATA);
 				}
 				editor.createControl(getAttributesParent(),ModelUtil.toCanonicalString(name));

@@ -965,6 +965,10 @@
 		</modelExtension>
 		
 		<!-- customized Receive Task -->
+		<!-- Looks like MessageId is not used by jBPM, even though it is referenced
+		     by /jbpm-bpmn2/src/main/java/org/jbpm/bpmn2/handler/ReceiveTaskHandler.java
+		     and /jbpm-bpmn2/src/main/java/org/jbpm/bpmn2/xml/ReceiveTaskHandler.java
+		     and /jbpm-bpmn2/src/main/java/org/jbpm/bpmn2/xml/XmlBPMNProcessDumper.java
 		
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.receiveTask"
@@ -1009,6 +1013,7 @@
 				</value>
 			</property>
 		</modelExtension>
+		-->
 		
 <!-- Model Enablements and Profiles -->
 
