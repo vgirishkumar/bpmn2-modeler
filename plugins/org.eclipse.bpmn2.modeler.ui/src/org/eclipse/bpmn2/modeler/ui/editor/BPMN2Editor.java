@@ -167,6 +167,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	private IEditorInput currentInput;
 	private static ITabDescriptorProvider tabDescriptorProvider;
 	private BPMN2EditingDomainListener editingDomainListener;
+	private boolean selectionChanging;
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
@@ -1095,36 +1096,44 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// Filter out label shapes as these are controlled by their ContainerShape owners
-		// For example a "Select All" key action would select Labels as well.
-		Iterator iter = ((IStructuredSelection)selection).iterator();
-		List<Object> filteredObjects = new ArrayList<Object>();
-		List<PictogramElement> pictogramElements = new ArrayList<PictogramElement>();
-		while (iter.hasNext()) {
-			boolean addIt = true;
-			Object o = iter.next();
-			if (o instanceof EditPart) {
-				Object model = ((EditPart)o).getModel();
-				if (model instanceof PictogramElement) {
-					if (FeatureSupport.isLabelShape((PictogramElement)model)) {
-						addIt = false;
+		if (!selectionChanging && selection instanceof IStructuredSelection) {
+			try {
+				selectionChanging = true;
+				// Filter out label shapes as these are controlled by their ContainerShape owners
+				// For example a "Select All" key action would select Labels as well.
+				Iterator iter = ((IStructuredSelection)selection).iterator();
+				List<Object> filteredObjects = new ArrayList<Object>();
+				List<PictogramElement> pictogramElements = new ArrayList<PictogramElement>();
+				while (iter.hasNext()) {
+					boolean addIt = true;
+					Object o = iter.next();
+					if (o instanceof EditPart) {
+						Object model = ((EditPart)o).getModel();
+						if (model instanceof PictogramElement) {
+							if (FeatureSupport.isLabelShape((PictogramElement)model)) {
+								addIt = false;
+							}
+							else {
+								pictogramElements.add((PictogramElement)model);
+							}
+						}
 					}
-					else {
-						pictogramElements.add((PictogramElement)model);
-					}
+					if (addIt)
+						filteredObjects.add(o);
 				}
-			}
-			if (addIt)
-				filteredObjects.add(o);
-		}
-		IStructuredSelection filteredSelection = new StructuredSelection(filteredObjects);
-
-		// Graphiti understands multipage editors
-		// but apparently GEF doesn't
-		super.selectionChanged(part,filteredSelection); // Graphiti's DiagramEditorInternal
-		super.selectPictogramElements(pictogramElements.toArray(new PictogramElement[pictogramElements.size()]));
+				IStructuredSelection filteredSelection = new StructuredSelection(filteredObjects);
 		
-		updateActions(getSelectionActions()); // usually done in GEF's GraphicalEditor
+				// Graphiti understands multipage editors
+				// but apparently GEF doesn't
+				super.selectionChanged(part,filteredSelection); // Graphiti's DiagramEditorInternal
+				super.selectPictogramElements(pictogramElements.toArray(new PictogramElement[pictogramElements.size()]));
+				
+				updateActions(getSelectionActions()); // usually done in GEF's GraphicalEditor
+			}
+			finally {
+				selectionChanging = false;
+			}
+		}
 		
 		// if the selected element is obscured by another shape
 		// send it to the top of the z-stack.
