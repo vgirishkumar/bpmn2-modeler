@@ -112,14 +112,7 @@
 			label="%propertyTab.label.Task">
 		</propertyTab>
 
-		<propertyTab
-			id="bpmn2.jbpm.userTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.userTask.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
-			type="org.eclipse.bpmn2.UserTask"
-			label="%propertyTab.label.UserTask">
-		</propertyTab>
+
 
 		<propertyTab
 			id="bpmn2.jbpm.businessRuleTask.tab"
@@ -211,13 +204,7 @@
 			label="%propertyTab.label.SequenceFlow">
 		</propertyTab>
 
-		<propertyTab
-			id="org.jboss.runtime.jbpm5.activitiy.io.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.activity.io.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmIoParametersPropertySection"
-			label="%propertyTab.label.IOParameters">
-		</propertyTab>
+
 
 		<propertyTab
 			id="org.jboss.runtime.jbpm5.commonEvent.tab"
